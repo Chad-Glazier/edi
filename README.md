@@ -20,6 +20,39 @@ You can then run a test of the project with
 mvn exec:java "-Dexec.mainClass=ubc.cosc322.COSC322Test" "-Dexec.args=username password"
 ```
 
+# The Heuristic Evaluation Function
+
+Heuristic evaluation functions are in the `ubc.cosc322.eval` package. To use a heuristic evaluation function to score a board state, run the following:
+
+```java
+import ubc.cosc322.eval.MinDist; // at the time of writing, this is the only 
+								 // evaluation function.
+
+// ...
+
+	int[] boardState = // ... some board state
+
+	HeuristicMethod heuristic = new MinDist();
+	heuristic.setBoard(boardState); // this part is necessary
+	
+	double whiteScore = heuristic.evaluate(true);
+	//
+	// or, if you want to evaluate black's position:
+	//
+	double blackScore = heuristic.evaluate(false);
+```
+
+Note that the board state is an `int[100]`, not an `int[10][10]`. To convert an `int[10][10]` to `int[100]`, you can use the helper function `Util.convertBoard`, which can be imported from `ubc.cosc322.eval.Util`.
+
+If you want to evaluate multiple board states, just call `.setBoard` with the new board state, then run the `.evaluate` method again. 
+
+To run a test of the heuristic evaluation function run:
+
+```sh
+mvn compile
+mvn exec:java "-Dexec.mainClass=ubc.cosc322.eval.Test"
+```
+
 # Contributing Guidelines
 
 (*This section is for group members.*)

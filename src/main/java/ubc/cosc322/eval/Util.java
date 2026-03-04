@@ -28,7 +28,7 @@ public class Util {
 	 * @param board an `int[10][10]` representation of a board state.
 	 * @return an `int[100]` representation of a board. 
 	 */
-	public int[] convertBoard(int[][] board) {
+	public static int[] flatten(int[][] board) {
 		int[] arr = new int[100];
 
 		for (int i = 0; i < 10; i++) {

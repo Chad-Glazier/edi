@@ -16,9 +16,6 @@ public class LocalGameRunner {
 
     // Use the refactored board model
     private BoardState boardState;
-    
-    // Initialize teammate's conversion utility (2D -> 1D)
-    private Util util = new Util();
 
     public LocalGameRunner() {
         this.boardState = new BoardState();
@@ -65,7 +62,7 @@ public class LocalGameRunner {
         
         // --- Connect to teammate's evaluation function ---
         // 1. Convert 2D array to 1D
-        int[] flatBoard = util.convertBoard(this.boardState.board);
+        int[] flatBoard = Util.flatten(this.boardState.board);
         
         // 2. Initialize MinDist evaluator
         MinDist evaluator = new MinDist();
@@ -92,7 +89,7 @@ public class LocalGameRunner {
             
             // --- Print live evaluation ---
             MinDist evaluator = new MinDist();
-            evaluator.setBoard(util.convertBoard(this.boardState.board));
+            evaluator.setBoard(Util.flatten(this.boardState.board));
             System.out.printf("[Live Eval] White: %.1f%% | Black: %.1f%%\n\n", 
                     evaluator.evaluate(true) * 100, 
                     evaluator.evaluate(false) * 100);

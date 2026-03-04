@@ -101,6 +101,13 @@ public class MinDist implements HeuristicMethod {
 	}
 
 	public void visualize() {
+		final String arrowMark = "X"; // "\u21A1"
+		final String blackTerritory = "b"; // "\u25A0";
+		final String whiteTerritory = "w"; // "\u25A1";
+		final String contestedTerritory = "?"; // "\u2591";
+		final String whiteQueen = "W"; // Character.toString(0x1FA0A);
+		final String blackQueen = "B"; // Character.toString(0x1FA3A);
+
 		byte[] blackMinDistBoard = Graph.distance(empty, black[0]);
 		byte[] whiteMinDistBoard = Graph.distance(empty, white[0]);
 
@@ -129,35 +136,29 @@ public class MinDist implements HeuristicMethod {
 		for (int i = 0; i < SIZE; i++) {
 			if (!BitBoard.flagged(empty, i)) {
 				availableSquares--;
-				// boardDisplay[i] = "\u21A1";
-				boardDisplay[i] = "X";
+				boardDisplay[i] = arrowMark;
 				continue;
 			}
 			if (blackMinDistBoard[i] < whiteMinDistBoard[i]) {
 				blackSquares++;
-				// boardDisplay[i] = "\u25A0";
-				boardDisplay[i] = "b";
+				boardDisplay[i] = blackTerritory;
 				continue;
 			}
 			if (whiteMinDistBoard[i] < blackMinDistBoard[i]) {
 				whiteSquares++;
-				// boardDisplay[i] = "\u25A1";
-				boardDisplay[i] = "w";
+				boardDisplay[i] = whiteTerritory;
 				continue;
 			}
-			// boardDisplay[i] = "\u2591";
-			boardDisplay[i] = "?";
+			boardDisplay[i] = contestedTerritory;
 			contestedSquares++;
 		}
 
 		for (int queen : white) {
-			// boardDisplay[queen] = Character.toString(0x1FA0A);
-			boardDisplay[queen] = "W";
+			boardDisplay[queen] = whiteQueen;
 		}
 
 		for (int queen : black) {
-			// boardDisplay[queen] = Character.toString(0x1FA3A);
-			boardDisplay[queen] = "B";
+			boardDisplay[queen] = blackQueen;
 		}
 
 		for (int i = 0; i < SIZE; i++) {
@@ -174,22 +175,29 @@ public class MinDist implements HeuristicMethod {
 					System.out.print("\t-----------------------");
 					break;
 				case 2:
-					System.out.print("\tX: arrow-struck square");
+					System.out.print(
+						"\t"+ arrowMark + ": arrow-struck square"
+					);
 					break;
 				case 3:
-					System.out.print("\tW: white queen");
+					System.out.print(
+						"\t" + whiteQueen + ": white queen");
 					break;
 				case 4:
-					System.out.print("\tB: black queen");
+					System.out.print(
+						"\t" + blackQueen + ": black queen");
 					break;
 				case 5:
-					System.out.print("\tw: white territory");
+					System.out.print(
+						"\t" + whiteTerritory + ": white territory");
 					break;
 				case 6:
-					System.out.print("\tb: black territory");
+					System.out.print(
+						"\t" + blackTerritory + ": black territory");
 					break;
 				case 7:
-					System.out.print("\tc: contested territory");
+					System.out.print(
+						"\t" + contestedTerritory + ": contested territory");
 					break;
 				}
 			}
@@ -208,5 +216,14 @@ public class MinDist implements HeuristicMethod {
 			100 * (contestedSquares / (double) availableSquares)
 		);
 		System.out.println();
+
+		System.out.printf(
+			"\tHeuristic evaluation for White: %.2f%%\n", 
+			(((double) (whiteSquares - blackSquares)) / ((double) 2 * availableSquares) + 0.50) * 100
+		);
+		System.out.printf(
+			"\tHeuristic evaluation for Black: %.2f%%\n\n", 
+			(((double) (blackSquares - whiteSquares)) / ((double) 2 * availableSquares) + 0.50) * 100
+		);
 	}
 }

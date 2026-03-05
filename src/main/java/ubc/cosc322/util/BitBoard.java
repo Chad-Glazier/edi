@@ -18,18 +18,18 @@ package ubc.cosc322.util;
  */
 public class BitBoard {
 	/**
-	 * Creates a new bitboard with at least <code>size</code> bits. 
-	 */
-	public static long[] create(int size) {
-		// there are 64 bits in a `long`.
-		return new long[size / 64 + 1];
-	}
-	/**
 	 * Creates a new bitboard for representing a 10x10 board (i.e., there are
 	 * at least 100 bits).
 	 */
 	public static long[] create() {
 		return new long[2];
+	}
+
+	/**
+	 * Creates a copy of a bitboard.
+	 */
+	public static long[] copy(long[] original) {
+		return new long[] { original[0], original[1] };
 	}
 
 	/**
@@ -43,6 +43,16 @@ public class BitBoard {
 	}
 
 	/**
+	 * Returns a copy of the given bitboard, but with the specified index
+	 * flagged.
+	 */
+	public static long[] flagCopy(long[] bitboard, byte index) {
+		final long[] newBitboard = { bitboard[0], bitboard[1] };
+		flag(newBitboard, index);
+		return newBitboard;
+	}
+
+	/**
 	 * Un-flags the specified index (i.e., sets it to <code>0</code> in the
 	 * bitboard).
 	 */
@@ -51,8 +61,17 @@ public class BitBoard {
 	}
 
 	/**
-	 * Moves a flag from one position to another. Unlike the other bitboard
-	 * operations defined on this utility class, this function creates and
+	 * Returns a copy of the given bitboard, but with the specified index un-
+	 * flagged.
+	 */
+	public static long[] unflagCopy(long[] bitboard, byte index) {
+		final long[] newBitboard = { bitboard[0], bitboard[1] };
+		unflag(newBitboard, index);
+		return newBitboard;
+	}
+
+	/**
+	 * Moves a flag from one position to another. his function creates and
 	 * returns a copy, leaving the original bitboard unchanged.
 	 * 
 	 * To help performance, this function assumes that the original bitboard
@@ -63,7 +82,7 @@ public class BitBoard {
 	 * @param dst The position index to move the bit to.
 	 * @returns A copy of the original bitboard with the move applied.
 	 */
-	public static long[] move(long[] bitboard, byte src, byte dst) {
+	public static long[] moveCopy(long[] bitboard, byte src, byte dst) {
 		long lo = bitboard[0];
 		long hi = bitboard[1];
 
@@ -94,8 +113,7 @@ public class BitBoard {
 	 * Zeroes a bitboard.
 	 */
 	public static void clear(long[] bitboard) {
-		for (int i = 0; i < bitboard.length; i++) {
-			bitboard[i] = 0L;
-		}
+		bitboard[0] = 0L;
+		bitboard[1] = 0L;
 	}
 }

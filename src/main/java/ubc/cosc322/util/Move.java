@@ -95,7 +95,8 @@ public class Move {
 		IntArrayList moves = new IntArrayList();
 
 		for (byte end : Graph.neighbors(empty, queen)) {
-			for (byte arrow : Graph.neighbors(empty, end)) {
+			long[] newEmpty = BitBoard.flagCopy(empty, queen);
+			for (byte arrow : Graph.neighbors(newEmpty, end)) {
 				moves.add(encode(queen, end, arrow));
 			}
 		}
@@ -120,7 +121,8 @@ public class Move {
 
 		for (byte queen : queens) {
 			for (byte end : Graph.neighbors(empty, queen)) {
-				for (byte arrow : Graph.neighbors(empty, end)) {
+				long[] newEmpty = BitBoard.flagCopy(empty, queen);
+				for (byte arrow : Graph.neighbors(newEmpty, end)) {
 					moves.add(encode(queen, end, arrow));
 				}
 			}			

@@ -28,7 +28,7 @@ public class BitBoardTest {
 		byte dst = 23;
 
 		BitBoard.flag(bb, src);
-		long[] moved = BitBoard.move(bb, src, dst);
+		long[] moved = BitBoard.moveCopy(bb, src, dst);
 
 		assertFalse(BitBoard.flagged(moved, src));
 		assertTrue(BitBoard.flagged(moved, dst));

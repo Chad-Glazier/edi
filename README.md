@@ -53,6 +53,18 @@ mvn compile
 mvn exec:java "-Dexec.mainClass=ubc.cosc322.eval.Demo"
 ```
 
+# Unit Tests
+
+We are using the [JUnit](https://junit.org/) testing framework.
+
+You can add unit tests to the [test folder](src/test/java/ubc/cosc322/), and then execute them with:
+
+```sh
+mvn test
+```
+
+The file structure of the test folder should mirror the main folder, and tests for a given class `ClassName` should be put in a class named `ClassNameTest`. See [BitBoardTest](src/test/java/ubc/cosc322/util/BitBoardTest.java) for a simple example.
+
 # Contributing Guidelines
 
 (*This section is for group members.*)

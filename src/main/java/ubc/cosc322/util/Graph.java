@@ -2,6 +2,8 @@ package ubc.cosc322.util;
 
 import java.util.LinkedList;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+
 /**
  * This class contains a number of static methods meant for analyzing a given
  * board state as a graph.
@@ -29,7 +31,7 @@ public class Graph {
 	 * neighbors.
 	 * @return A list of all vertices adjacent to <code>vertex</code>
 	 */
-	public static LinkedList<Integer> neighbors(long[] empty, int vertex) {
+	public static IntArrayList neighbors(long[] empty, int vertex) {
 
 		// TODO: figure out a more performant propagation method, or use the
 		// bitboard method
@@ -54,7 +56,7 @@ public class Graph {
 			{  1,  1 }
 		};
 
-		final LinkedList<Integer> neighbors = new LinkedList<Integer>();
+		final IntArrayList neighbors = new IntArrayList();
 
 		for (int[] delta : directions) {
 			int row = origin[0];
@@ -70,7 +72,7 @@ public class Graph {
 				col < M && col >= 0 &&
 				BitBoard.flagged(empty, row * M + col)
 			) {
-				neighbors.push(row * M + col);
+				neighbors.add(row * M + col);
 
 				row += rowDelta;
 				col += colDelta;

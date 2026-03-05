@@ -55,6 +55,17 @@ public class MinDist implements HeuristicMethod {
 		}
 	}
 
+	public void setBoard(long[] empty, int[] white, int[] black) {
+		for (int i = 0; i < SIZE / 64 + 1; i++) {
+			this.empty[i] = empty[i];
+		}
+
+		for (int i = 0; i < QUEENS; i++) {
+			this.white[i] = white[i];
+			this.black[i] = black[i];
+		}
+	}
+
 	public double evaluate(boolean playerIsWhite) {
 		byte[] blackMinDistBoard = Graph.distance(empty, black[0]);
 		byte[] whiteMinDistBoard = Graph.distance(empty, white[0]);

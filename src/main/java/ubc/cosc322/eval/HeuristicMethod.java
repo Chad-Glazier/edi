@@ -18,6 +18,15 @@ public interface HeuristicMethod {
 	 * row.
 	 */
 	void setBoard(int[] board);
+	/**
+	 * Sets the board via a bitboard and the positions of each queen, preparing
+	 * it for evaluation. Make sure to run this before {@code evaluate}.
+	 * 
+	 * @param empty A bitboard where each empty square is flagged.
+	 * @param black The position indices of each black queen.
+	 * @param white The position indices of each white queen.
+	 */
+	void setBoard(long[] empty, int[] white, int[] black);
 
 	/**
 	 * Evaluates the board state. Make sure that you run {@code setBoard}

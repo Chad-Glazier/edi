@@ -64,8 +64,8 @@ public class BitBoard {
 	 * @returns A copy of the original bitboard with the move applied.
 	 */
 	public static long[] move(long[] bitboard, int src, int dst) {
-		long hi = bitboard[0];
-		long lo = bitboard[1];
+		long lo = bitboard[0];
+		long hi = bitboard[1];
 
 		if (src < 64) {
 			lo ^= (1L << src);
@@ -79,7 +79,7 @@ public class BitBoard {
 			hi ^= (1L << (dst - 64));
 		}
 
-		return new long[]{ hi, lo };
+		return new long[]{ lo, hi };
 	}
 
 	/**

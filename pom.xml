@@ -11,7 +11,12 @@
     <description>A simple Game of the Amazons AI for group 09 in COSC 322</description>
     <inceptionYear>2026</inceptionYear>
 	
-    <dependencies> 
+    <dependencies>
+    	<dependency>
+    		<groupId>it.unimi.dsi</groupId>
+    		<artifactId>fastutil</artifactId>
+    		<version>8.5.16</version>
+    	</dependency>
         <dependency>	        
 	    <groupId>ubc-yong-gao</groupId>
             <artifactId>ygraph-ai-smartfox-client</artifactId>

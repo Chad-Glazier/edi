@@ -20,7 +20,20 @@ You can then run a test of the project with
 mvn exec:java "-Dexec.mainClass=ubc.cosc322.COSC322Test" "-Dexec.args=username password"
 ```
 
-# The Heuristic Evaluation Function
+# Guidelines for Making Contributions
+
+(*This section is for group members.*)
+
+The following are a list of rules for contributing to the project when making any significant changes (i.e. anything other than a minor bug fix or change to documentation):
+1) Open an issue (you can do that from [here](https://github.com/Chad-Glazier/game-of-the-amazons-ai/issues)).
+1) Create a new branch for the issue (i.e. go to the issue page, and click on the "create a branch" link).
+2) Make changes to the branch.
+3) Submit a pull request to merge the branch to `main`.
+4) Wait for another group member to review the changes and merge the changes. Once the PR is merged, the issue should automatically be marked as closed.
+
+# About the Code
+
+## The Heuristic Evaluation Function
 
 Heuristic evaluation functions are in the `ubc.cosc322.eval` package. To use a heuristic evaluation function to score a board state, run the following:
 
@@ -53,7 +66,7 @@ mvn compile
 mvn exec:java "-Dexec.mainClass=ubc.cosc322.eval.Demo"
 ```
 
-# Unit Tests
+## Unit Tests
 
 We are using the [JUnit](https://junit.org/) testing framework.
 
@@ -65,13 +78,8 @@ mvn test
 
 The file structure of the test folder should mirror the main folder, and tests for a given class `ClassName` should be put in a class named `ClassNameTest`. See [BitBoardTest](src/test/java/ubc/cosc322/util/BitBoardTest.java) for a simple example.
 
-# Contributing Guidelines
+## Dependencies 
 
-(*This section is for group members.*)
-
-The following are a list of rules for contributing to the project when making any significant changes (i.e. anything other than a minor bug fix or change to documentation):
-1) Open an issue (you can do that from [here](https://github.com/Chad-Glazier/game-of-the-amazons-ai/issues)).
-1) Create a new branch for the issue (i.e. go to the issue page, and click on the "create a branch" link).
-2) Make changes to the branch.
-3) Submit a pull request to merge the branch to `main`.
-4) Wait for another group member to review the changes and merge the changes. (Once the PR is merged, the issue should automatically be marked as closed.)
+This project depends on the following packages:
+- [fastutil](https://javadoc.io/doc/it.unimi.dsi/fastutil/latest/index.html), which we use for alternatives to `ArrayList` that avoid the performance overhead of boxing numeric values.
+- [Junit](https://docs.junit.org/5.10.5/user-guide/), which is used for creating the unit tests [here](src/test/java/ubc/cosc322/).

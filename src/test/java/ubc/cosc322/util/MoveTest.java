@@ -44,7 +44,9 @@ public class MoveTest {
 			assertTrue(oneHitStart);
 			BitBoard.flag(allEmpty, i);
 		}
+	}
 
-
+	@Test public void testApplyMoves() {
+		// TODO: Implement tests here.
 	}
 }

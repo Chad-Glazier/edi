@@ -37,6 +37,8 @@ public class Move {
 	private static final int END_MASK = 0x0000ff00;
 	private static final int ARROW_MASK = 0x00ff0000;
 
+	private static final int QUEENS = 4;
+
 	/**
 	 * Encodes a move as an integer.
 	 * 
@@ -129,5 +131,85 @@ public class Move {
 		}
 
 		return moves;
+	}
+
+	/**
+	 * Given a board state and a move, this function applies the move and then
+	 * updates the inputs (in place) to reflect the new state.
+	 * 
+	 * @param empty A bitboard where each empty square is flagged. This will be
+	 * mutated to reflect the new boardstate.
+	 * @param white The position indices of each white queen. This will be
+	 * mutated to reflect the new boardstate.
+	 * @param black The position indices of each black queen. This will be
+	 * mutated to reflect the new boardstate.
+	 * @param move The move to apply.
+	 */
+	public static void apply(
+		long[] empty, byte[] white, byte[] black, int move
+	) {
+		final byte start = start(move);
+		final byte end = end(move);
+		final byte arrow = arrow(move);
+
+		BitBoard.flag(empty, start);	// the original position is now empty
+		BitBoard.unflag(empty, end); 	// the new position is not empty
+		BitBoard.unflag(empty, arrow);  // the arrow's position is not empty
+
+		// update the position of the queen
+		for (int i = 0; i < QUEENS; i++) {
+			if (white[i] == start) {
+				white[i] = end;
+				return;
+			}
+			if (black[i] == start) {
+				black[i] = end;
+				return;
+			}
+		}
+	}
+
+	/**
+	 * Given a board state and a move, this function applies the move and then
+	 * writes the new state into the specified "new" objects.
+	 * 
+	 * @param empty A bitboard where each empty square is flagged. This will be
+	 * not be mutated.
+	 * @param white The position indices of each white queen. This will not be
+	 * mutated.
+	 * @param black The position indices of each black queen. This will not be
+	 * mutated.
+	 * @param move The move to apply.
+	 * @param newEmpty The bitboard in which the updated state will be stored.
+	 * @param newWhite The array in which the updated positions of the white
+	 * queens will be stored.
+	 * @param newBlack The array in which the updated positions of the black
+	 * queens will be stored.
+	 */
+	public static void apply(
+		long[] empty, byte[] white, byte[] black, int move,
+		long[] newEmpty, byte[] newWhite, byte[] newBlack
+	) {
+		final byte start = start(move);
+		final byte end = end(move);
+		final byte arrow = arrow(move);
+
+		BitBoard.copyTo(empty, newEmpty);
+
+		BitBoard.flag(newEmpty, start);	  // the original position is now empty
+		BitBoard.unflag(newEmpty, end);   // the new position is not empty
+		BitBoard.unflag(newEmpty, arrow); // the arrow's position is not empty
+
+		// update the position of the queen
+		for (int i = 0; i < QUEENS; i++) {
+			if (white[i] == start) {
+				newWhite[i] = end;
+				return;
+			}
+			if (black[i] == start) {
+				newBlack[i] = end;
+				return;
+			}
+		}
 	}
 }

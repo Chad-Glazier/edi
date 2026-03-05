@@ -33,6 +33,14 @@ public class BitBoard {
 	}
 
 	/**
+	 * Copies the <code>src</code> bitboard into the <code>dst</code> bitboard.
+	 */
+	public static void copyTo(long[] src, long[] dst) {
+		dst[0] = src[0];
+		dst[1] = src[1];
+	}
+
+	/**
 	 * Flags the specified index (i.e., sets it to <code>1</code> in the
 	 * bitboard).
 	 */

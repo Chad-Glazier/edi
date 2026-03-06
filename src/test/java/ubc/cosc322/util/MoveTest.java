@@ -143,7 +143,7 @@ public class MoveTest {
 				(int) (Math.random() * possibleMoves.size())
 			);
 
-			sequence.addLast(randomMove);
+			sequence.add(randomMove);
 			Move.apply(emptyCpy, whiteCpy, blackCpy, randomMove);
 
 			activePlayer = activePlayer == WHITE ? BLACK : WHITE;

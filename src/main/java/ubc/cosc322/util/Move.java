@@ -290,4 +290,38 @@ public class Move {
 		heuristic.setBoard(empty, white, black);
 		return heuristic.evaluate(player);
 	}
+
+	/**
+	 * Evaluates the board state after making a specific move. This function
+	 * doesn't mutate the original board state.
+	 * 
+	 * @param empty A bitboard where each empty square is flagged. This will be
+	 * not be mutated.
+	 * @param white The position indices of each white queen. This will not be
+	 * mutated.
+	 * @param black The position indices of each black queen. This will not be
+	 * mutated.
+	 * @param move The move to be applied before evaluating the new board
+	 * state.
+	 * @param heuristic The heuristic method used to evaluate the new board
+	 * state.
+	 * @param player The player whose position we are evaluating; 
+	 * <code>0</code> for White, and <code>1</code> for Black.
+	 * @return
+	 */
+	public static double evaluate(
+		long[] empty, byte[] white, byte[] black,
+		int move, HeuristicMethod heuristic, byte player
+	) {
+		// make copies so that we can do in-place operations without mutating
+		// the original board state.
+		empty = BitBoard.copy(empty);
+		white = new byte[]{ white[0], white[1], white[2], white[3] };
+		black = new byte[]{ black[0], black[1], black[2], black[3] };
+
+		apply(empty, white, black, move);
+
+		heuristic.setBoard(empty, white, black);
+		return heuristic.evaluate(player);
+	}
 }

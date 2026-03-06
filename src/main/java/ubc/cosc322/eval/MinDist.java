@@ -3,6 +3,42 @@ package ubc.cosc322.eval;
 import ubc.cosc322.util.BitBoard;
 import ubc.cosc322.util.Graph;
 
+/**
+ * <h3>Min-Dist Heuristic Evaluation</h3>
+ * 
+ * This class implements the minimum-distance ("mindist") heuristic evaluation
+ * function described by Martin Müller and Theodore Tegos.
+ * 
+ * <h4>Example</h4>
+ * 
+ * Suppose that you have some <code>int[100]</code> array called 
+ * <code>board</code> that represents a board state 
+ * (see {@link Util#flatten} for more information about how to represent a
+ * board in this way). You can then evaluate its board state like so:
+ * <pre>{@code
+ * HeuristicMethod mindist = new HeuristicMethod();
+ * mindist.setBoard(board);
+ * double score = mindist.evaluate(playerColor); 
+ * }</pre>
+ * 
+ * <code>playerColor</code> is a byte that indicates whether the player is
+ * White or Black, where <code>0</code> represents White and <code>1</code>
+ * represents Black. A higher <code>score</code> indicates a better position
+ * for the specified player.
+ * 
+ * <br /><br />
+ * 
+ * To evaluate a second board state, you need not instantiate this class again.
+ * Instead, you can just use {@link #setBoard()} to update the board state
+ * before running {@link #evaluate()} again.
+ * 
+ * <hr />
+ * 
+ * <h4>See Also</h4>
+ * <ul>
+ * 	<li>Müller M, Tegos T. <em><a href="http://doi.org/10.1017/9781316135167.018">Experiments in Computer Amazons</a></em>. The algorithm is described in section 6.2.</li>
+ * </ul>
+ */
 public class MinDist implements HeuristicMethod {
 	/** The number of rows on the board. */
 	private static final int N = 10;
@@ -31,8 +67,6 @@ public class MinDist implements HeuristicMethod {
 	 * Stores the indices of each black queen.
 	 */
 	private final byte[] black = new byte[QUEENS];
-
-	public MinDist() {}
 
 	public void setBoard(int[] board) {
 		BitBoard.clear(empty);

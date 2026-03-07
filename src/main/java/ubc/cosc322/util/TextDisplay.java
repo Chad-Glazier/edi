@@ -139,6 +139,10 @@ class TextBoard {
 		System.out.print(gap + centerPad(right.label, 22));
 		System.out.print("\n\n");
 	}
+
+	public static void printMove(int move) {
+		
+	}
 }
 
 /**
@@ -146,7 +150,7 @@ class TextBoard {
  * various parts of the game, including board states, moves, the game tree,
  * etc.
  */
-public class Display {
+public class TextDisplay {
 	public static void boardWithLegend(
 		long[] empty, byte[] white, byte[] black, String label
 	) {

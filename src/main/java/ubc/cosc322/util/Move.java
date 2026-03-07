@@ -106,6 +106,26 @@ public class Move {
 	}
 
 	/**
+	 * Returns <code>true</code> if and only if there are no possible moves
+	 * in the given board state.
+	 * 
+	 * @param empty A bitboard where each empty square is flagged.
+	 * @param queens The position indices of each queen that could be moved 
+	 * next. E.g., if you want to know all possible moves that White could 
+	 * make, you should set this argument to the list of white queen positions.
+	 * @return <code>true</code> if and only if none of the specified queens
+	 * can move in the given board state.
+	 */
+	public static boolean impossible(long[] empty, byte[] queens) {
+		for (byte queen : queens) {
+			if (!Graph.neighbors(empty, queen).isEmpty()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * Given a board state, this function returns all possible moves that
 	 * could be made by a queen at the specified position.
 	 * 
@@ -233,6 +253,11 @@ public class Move {
 		BitBoard.flag(newEmpty, start);	  // the original position is now empty
 		BitBoard.unflag(newEmpty, end);   // the new position is not empty
 		BitBoard.unflag(newEmpty, arrow); // the arrow's position is not empty
+
+		for (int i = 0; i < QUEENS; i++) {
+			newWhite[i] = white[i];
+			newBlack[i] = black[i];
+		}
 
 		// update the position of the queen
 		if (player == WHITE) {

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import ubc.cosc322.eval.MinDist;
+import ubc.cosc322.bitboard.BitBoard;
 import ubc.cosc322.eval.HeuristicMethod;
 
 import static org.junit.jupiter.api.Assertions.*;

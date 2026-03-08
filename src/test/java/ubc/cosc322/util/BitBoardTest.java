@@ -1,6 +1,9 @@
 package ubc.cosc322.util;
 
 import org.junit.jupiter.api.Test;
+
+import ubc.cosc322.bitboard.BitBoard;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BitBoardTest {

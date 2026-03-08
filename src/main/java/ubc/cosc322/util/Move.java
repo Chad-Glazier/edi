@@ -1,6 +1,7 @@
 package ubc.cosc322.util;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import ubc.cosc322.bitboard.BitBoard;
 import ubc.cosc322.eval.HeuristicMethod;
 
 /**

@@ -2,9 +2,9 @@ package ubc.cosc322.search;
 
 import java.util.concurrent.TimeoutException;
 
+import ubc.cosc322.bitboard.BitBoard;
 import ubc.cosc322.eval.HeuristicMethod;
 import ubc.cosc322.gametree.State;
-import ubc.cosc322.util.BitBoard;
 
 class SearchTimeout extends RuntimeException {}
 

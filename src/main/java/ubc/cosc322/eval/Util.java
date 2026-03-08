@@ -5,6 +5,10 @@ package ubc.cosc322.eval;
  * evaluation functions.
  */
 public class Util {
+	public static final long[][][] get = {
+		{ {} }
+	};
+
 	/**
 	 * Converts a board from `int[10][10]` to `int[100]`, which is the format
 	 * used by heuristic evaluation functions at the time of writing.

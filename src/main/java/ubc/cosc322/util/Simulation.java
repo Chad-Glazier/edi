@@ -1,5 +1,6 @@
 package ubc.cosc322.util;
 
+import ubc.cosc322.bitboard.BitBoard;
 import ubc.cosc322.search.SearchMethod;
 
 /**

@@ -1,8 +1,8 @@
 package ubc.cosc322.gametree;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import ubc.cosc322.bitboard.BitBoard;
 import ubc.cosc322.eval.HeuristicMethod;
-import ubc.cosc322.util.BitBoard;
 import ubc.cosc322.util.Move;
 
 /**

@@ -1,5 +1,7 @@
 package ubc.cosc322.util;
 
+import ubc.cosc322.bitboard.BitBoard;
+
 class TextBoard {
 	private static final int N = 10; // number of rows
 	private static final int M = 10; // number of columns

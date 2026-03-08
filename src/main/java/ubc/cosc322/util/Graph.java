@@ -3,6 +3,7 @@ package ubc.cosc322.util;
 import java.util.LinkedList;
 
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
+import ubc.cosc322.bitboard.BitBoard;
 
 /**
  * This class contains a number of static methods meant for analyzing a given

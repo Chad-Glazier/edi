@@ -1,4 +1,4 @@
-package ubc.cosc322.util;
+package ubc.cosc322.bitboard;
 
 /**
  * A bitboard is a means of representing a board such that each square 
@@ -7,12 +7,16 @@ package ubc.cosc322.util;
  * E.g., you could have one bitboard that flags all queens, one that flags all
  * arrows, etc. 
  * <br /><br />
- * Apart from the obvious point of saving memory, bitboards can also take
- * advantage of bitwise operators to perform certain actions much faster than
- * could be done with a more intuitive memory representation.
+ * In typical chess games, bitboards offer a tradeoff: extremely fast bit
+ * operations against increased memory consumption (due to the number of
+ * bitboards necessary to represent a complex chess state). In Amazons, the
+ * math is a little different. Bitboards in Amazons generally use <em>less</em>
+ * memory because there's only one kind of piece and only 8 of them, but their
+ * operations aren't quite as fast as chess operations because the 10x10 board
+ * cannot be represented by a single <code>long</code>.
  * <br /><br />
  * Since bitboards are meant to be performant, this class is not meant to
- * wrap a bitboard with a neat interface (and thereby discard a ton of
+ * wrap a bitboard with a neat interface (and thereby discard sone of the
  * performance gain); instead, it simply consists of a number of static utility
  * functions useful for creating and interacting with bitboards.
  */
@@ -124,4 +128,44 @@ public class BitBoard {
 		bitboard[0] = 0L;
 		bitboard[1] = 0L;
 	}
+
+	/**
+	 * Performs a left-shift on the bitboard.
+	 */
+	public static void lshift(int bits, long[] bitboard) {
+		bitboard[1] = (bitboard[1] << bits) | (bitboard[0] >>> (64 - bits));
+		bitboard[0] <<= bits;
+	}
+
+	/**
+	 * Performs a right-shift on the bitboard.
+	 */
+	public static void rshift(long[] bitboard, int bits) {
+		bitboard[0] = (bitboard[0] >>> bits) | (bitboard[1] << (64 - bits));
+		bitboard[1] >>>= bits;
+	}
+
+	/**
+	 * Performs a left-shift on the bitboard and returns a new bitboard
+	 * with the result rather than mutating the existing one.
+	 */
+	public static long[] lshiftCopy(int bits, long[] bitboard) {
+		return new long[]{
+			(bitboard[1] << bits) | (bitboard[0] >>> (64 - bits)),
+			bitboard[0] << bits
+		};
+	}
+
+	/**
+	 * Performs a right-shift on the bitboard and returns a new bitboard
+	 * with the result rather than mutating the original one.
+	 */
+	public static long[] rshiftCopy(long[] bitboard, int bits) {
+		return new long[]{
+			(bitboard[0] >>> bits) | (bitboard[1] << (64 - bits)),
+			bitboard[1] >>> bits
+		};
+	}
+
+	
 }

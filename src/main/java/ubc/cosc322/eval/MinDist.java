@@ -1,6 +1,6 @@
 package ubc.cosc322.eval;
 
-import ubc.cosc322.util.BitBoard;
+import ubc.cosc322.bitboard.BitBoard;
 import ubc.cosc322.util.Graph;
 
 /**

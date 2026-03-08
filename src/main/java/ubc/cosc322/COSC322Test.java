@@ -3,6 +3,7 @@ package ubc.cosc322;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import sfs2x.client.entities.Room;
 import ygraph.ai.smartfox.games.BaseGameGUI;
@@ -11,8 +12,8 @@ import ygraph.ai.smartfox.games.GamePlayer;
 import ygraph.ai.smartfox.games.GameMessage;
 
 /**
- * An example illustrating how to implement a GamePlayer
- * @author Yong Gao (yong.gao@ubc.ca)
+ * Main Game Client & Server Communication
+ * Supports interactive dynamic time allocation via console.
  */
 public class COSC322Test extends GamePlayer {
 
@@ -21,118 +22,112 @@ public class COSC322Test extends GamePlayer {
     
     private String userName = null;
     private String passwd = null;
-    
-    // Variable to store your assigned color
-    // 1 = White, 2 = Black
     private int myColor = -1; 
     
-    // NEW: The dedicated object to handle all board logic and move generation
     private BoardState boardState = new BoardState();
+
+    // Time Management Variables (in milliseconds)
+    private long remainingTimeBankMs;
+    private long hardLimitPerMoveMs;
  
-    
     public static void main(String[] args) {                 
         String user = (args.length > 0) ? args[0] : "spectator";
         String pwd  = (args.length > 1) ? args[1] : "pwd";
 
-        COSC322Test player = new COSC322Test(user, pwd);
+        long timeBankSec = 1800; 
+        long hardLimitSec = 30;  
+
+        // If time args are passed via command line, use them
+        if (args.length > 3) {
+            try { 
+                timeBankSec = Long.parseLong(args[2]); 
+                hardLimitSec = Long.parseLong(args[3]);
+            } catch (Exception e) { 
+                System.out.println("Invalid args. Falling back to manual input."); 
+            }
+        } 
+        // Otherwise, prompt the user interactively in the console
+        else {
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("===================================");
+            System.out.println("   AMAZONS ONLINE CLIENT SETUP");
+            System.out.println("===================================");
+            
+            System.out.print("Enter Total Time Bank in seconds (e.g., 1800 for 30m): ");
+            timeBankSec = scanner.nextLong();
+            
+            System.out.print("Enter Hard Limit per move in seconds (e.g., 30): ");
+            hardLimitSec = scanner.nextLong();
+        }
+
+        COSC322Test player = new COSC322Test(user, pwd, timeBankSec, hardLimitSec);
         
         if(player.getGameGUI() == null) {
             player.Go();
-        }
-        else {
+        } else {
             BaseGameGUI.sys_setup();
-            java.awt.EventQueue.invokeLater(new Runnable() {
-                public void run() {
-                    player.Go();
-                }
-            });
+            java.awt.EventQueue.invokeLater(() -> player.Go());
         }
     }
     
-    public COSC322Test(String userName, String passwd) {
+    public COSC322Test(String userName, String passwd, long timeBankSec, long hardLimitSec) {
         this.userName = userName;
         this.passwd = passwd;
-        
-        // Enable GUI instance
         this.gamegui = new BaseGameGUI(this);
+
+        this.remainingTimeBankMs = timeBankSec * 1000L;
+        this.hardLimitPerMoveMs = hardLimitSec * 1000L;
+        
+        System.out.printf("\nTime Config Saved - Bank: %ds, Hard Limit: %ds\n", timeBankSec, hardLimitSec);
     }
  
     @Override
     public void onLogin() {
-        System.out.println("Congratulations!!! Login successful.");
-        
+        System.out.println("Login successful.");
         this.userName = gameClient.getUserName();
-        if (gamegui != null) {
-            gamegui.setRoomInformation(gameClient.getRoomList());
-        }
+        if (gamegui != null) gamegui.setRoomInformation(gameClient.getRoomList());
 
-        List<Room> rooms = gameClient.getRoomList();
         String targetRoom = "Okanagan Lake"; 
-        boolean joined = false;
-
-        System.out.println("Searching for room: " + targetRoom);
-
-        for (Room room : rooms) {
+        for (Room room : gameClient.getRoomList()) {
             if (room.getName().equals(targetRoom)) {
-                System.out.println("Found it! Joining " + targetRoom + "...");
                 gameClient.joinRoom(targetRoom); 
-                joined = true;
                 break;
             }
-        }
-
-        if (!joined) {
-            System.out.println("Room '" + targetRoom + "' not found. Available rooms are:");
-            for (Room r : rooms) {
-                System.out.println("- " + r.getName());
-            }
-            System.out.println("Please double-click a room in the GUI to proceed.");
         }
     }
 
     @Override
     public boolean handleGameMessage(String messageType, Map<String, Object> msgDetails) {
-        // 1. Handling chessboard initialization state
+        
         if (messageType.equals(GameMessage.GAME_STATE_BOARD)) {
             if (gamegui != null) {
                 @SuppressWarnings("unchecked")
                 ArrayList<Integer> state = (ArrayList<Integer>) msgDetails.get("game-state"); 
-                
                 if (state != null) {
                     gamegui.setGameState(state);
-                    // Delegate board setup to our new BoardState class
                     boardState.setupLocalBoard(state); 
-                } else {
-                    System.err.println("ERROR: Received GAME_STATE_BOARD but 'game-state' data is null!");
                 }
             }
             return true;
         }
 
-        // 2. Identify Role (Black vs White)
         if (messageType.equals(GameMessage.GAME_ACTION_START)) {
             String whiteUser = (String) msgDetails.get("player-white");
             String blackUser = (String) msgDetails.get("player-black");
             
-            System.out.println("Game Starting!");
-            System.out.println("White Player: " + whiteUser);
-            System.out.println("Black Player: " + blackUser);
-
             if (whiteUser.equals(this.userName)) {
                 this.myColor = 1; 
-                System.out.println("I am playing as WHITE (First move).");
+                System.out.println("I am WHITE (First move).");
+                thinkAndMakeMove(); 
             } else if (blackUser.equals(this.userName)) {
                 this.myColor = 2;
-                System.out.println("I am playing as BLACK (Second move).");
+                System.out.println("I am BLACK.");
             }
             return true;
         }
 
-        // 3. Handling piece movement
         if (messageType.equals(GameMessage.GAME_ACTION_MOVE)) {
-            if (gamegui != null) {
-                gamegui.updateGameState(msgDetails);
-            }
+            if (gamegui != null) gamegui.updateGameState(msgDetails);
             
             @SuppressWarnings("unchecked")
             ArrayList<Integer> queenPosCurr = (ArrayList<Integer>) msgDetails.get("queen-position-current");
@@ -141,13 +136,49 @@ public class COSC322Test extends GamePlayer {
             @SuppressWarnings("unchecked")
             ArrayList<Integer> arrowPos = (ArrayList<Integer>) msgDetails.get("arrow-position");
             
-            // Delegate updating the board to our new BoardState class
             boardState.updateLocalBoard(queenPosCurr, queenPosNext, arrowPos);
             
+            int movingQueenColor = boardState.board[queenPosNext.get(0) - 1][queenPosNext.get(1) - 1];
+            if (movingQueenColor != this.myColor) {
+                thinkAndMakeMove(); 
+            }
             return true;
         }
-                
         return true;    
+    }
+
+    /**
+     * Dynamic Time Manager & Move Execution
+     */
+    private void thinkAndMakeMove() {
+        System.out.println("\nAI is calculating...");
+        
+        // 1. Calculate dynamic time allocation (10% of remaining time)
+        long allocatedMs = remainingTimeBankMs / 10;
+        
+        // 2. Cap at hard limit minus 4 seconds (network safety buffer)
+        long maxSafeMs = Math.max(1000L, hardLimitPerMoveMs - 4000L);
+        allocatedMs = Math.min(allocatedMs, maxSafeMs);
+        allocatedMs = Math.max(allocatedMs, 1000L); // Minimum 1 second
+
+        System.out.printf("[Time Manager] Bank: %ds | Allocated: %ds\n", remainingTimeBankMs/1000, allocatedMs/1000);
+        
+        long startTime = System.currentTimeMillis();
+        
+        // 3. Run AI
+        GameAI ai = new GameAI(allocatedMs);
+        AmazonMove bestMove = ai.getBestMove(this.boardState, this.myColor);
+        
+        // 4. Update Time Bank
+        long elapsedMs = System.currentTimeMillis() - startTime;
+        this.remainingTimeBankMs = Math.max(0, this.remainingTimeBankMs - elapsedMs);
+        
+        // 5. Send Move
+        if (bestMove != null) {
+            gameClient.sendMoveMessage(bestMove.getServerQStart(), bestMove.getServerQEnd(), bestMove.getServerArrow());
+        } else {
+            System.out.println("No moves available. Game Over.");
+        }
     }
 
     // =========================================================
@@ -155,23 +186,14 @@ public class COSC322Test extends GamePlayer {
     // =========================================================
 
     @Override
-    public String userName() {
-        return userName;
-    }
+    public String userName() { return userName; }
 
     @Override
-    public GameClient getGameClient() {
-        return this.gameClient;
-    }
+    public GameClient getGameClient() { return this.gameClient; }
     
     @Override
-    public BaseGameGUI getGameGUI() {
-        return this.gamegui; 
-    }
+    public BaseGameGUI getGameGUI() { return this.gamegui; }
 
     @Override
-    public void connect() {
-        gameClient = new GameClient(userName, passwd, this);            
-    }
-
+    public void connect() { gameClient = new GameClient(userName, passwd, this); }
 }

@@ -9,12 +9,17 @@ import ubc.cosc322.util.Move;
 
 /**
  * Local Offline Runner
- * Allows testing of AI logic and legal move generation without connecting to the server.
- * Provides three different testing modes.
+ * Allows testing of AI logic without connecting to the server.
+ * Supports configurable dynamic time allocation for both players.
  */
 public class LocalGameRunner {
 
     private BoardState boardState;
+    
+    // Independent time banks for White and Black (in milliseconds)
+    private long whiteTimeBankMs;
+    private long blackTimeBankMs;
+    private long hardLimitPerMoveMs;
 
     public LocalGameRunner() {
         this.boardState = new BoardState();
@@ -33,6 +38,19 @@ public class LocalGameRunner {
 
         Scanner scanner = new Scanner(System.in);
         int mode = scanner.nextInt();
+
+        // Prompt for Time Bank and Hard Limit if AI is involved
+        if (mode == 2 || mode == 3) {
+            System.out.print("Enter Total Time Bank in seconds (e.g., 1800 for 30m): ");
+            long timeBankSec = scanner.nextLong();
+            runner.whiteTimeBankMs = timeBankSec * 1000L;
+            runner.blackTimeBankMs = timeBankSec * 1000L;
+
+            System.out.print("Enter Hard Limit per move in seconds (e.g., 30): ");
+            runner.hardLimitPerMoveMs = scanner.nextLong() * 1000L;
+            
+            System.out.println("\n[Setup Complete] Starting game...\n");
+        }
 
         switch (mode) {
             case 1:
@@ -142,6 +160,10 @@ public class LocalGameRunner {
                 printBoard();
                 String winner = (currentPlayer == 1) ? "Black (2)" : "White (1)";
                 System.out.println("Game Over! " + winner + " wins after " + turnCount + " total moves.");
+                
+                // Print final time usage
+                System.out.printf("\n[Final Time Remaining] White: %ds | Black: %ds\n", 
+                        whiteTimeBankMs/1000, blackTimeBankMs/1000);
                 break;
             }
 
@@ -175,29 +197,48 @@ public class LocalGameRunner {
     }
 
     /**
-     * Adapter method to call the AlphaBeta engine and decode the result into AmazonMove.
+     * Time Manager and Engine execution for local testing
      */
     private AmazonMove getAIMove(int color) {
-        // Convert 1(White)/2(Black) to 0(White)/1(Black)
+        String colorName = (color == 1) ? "White" : "Black";
+        long remainingBank = (color == 1) ? whiteTimeBankMs : blackTimeBankMs;
+        
+        // 1. Calculate dynamic time allocation (10% of remaining time)
+        long allocatedMs = remainingBank / 10;
+        
+        // 2. Cap at hard limit (Local testing doesn't need network buffers)
+        allocatedMs = Math.min(allocatedMs, hardLimitPerMoveMs);
+        allocatedMs = Math.max(allocatedMs, 1000L); // Minimum 1 second
+
+        System.out.printf("[Local Time Manager] %s Bank: %ds | Allocated: %ds\n", 
+                colorName, remainingBank/1000, allocatedMs/1000);
+
+        long startTime = System.currentTimeMillis();
+
+        // 3. Setup and Run AI Engine
         byte teammateColor = (color == 1) ? (byte) 0 : (byte) 1;
-
         AlphaBeta aiEngine = new AlphaBeta(new MinDist(), teammateColor);
-        aiEngine.setTimeLimit(5); 
+        aiEngine.setTimeLimitMs(allocatedMs); 
         aiEngine.showOutput(); 
-
         aiEngine.setBoard(Util.flatten(this.boardState.board));
 
         int encodedMove = aiEngine.execute();
         
-        // Game over protection
+        // 4. Update the respective player's Time Bank
+        long elapsedMs = System.currentTimeMillis() - startTime;
+        if (color == 1) {
+            whiteTimeBankMs = Math.max(0, whiteTimeBankMs - elapsedMs);
+        } else {
+            blackTimeBankMs = Math.max(0, blackTimeBankMs - elapsedMs);
+        }
+
         if (encodedMove == 0) return null; 
 
-        // Decode the 0-99 1D coordinates from the integer
+        // 5. Decode results
         byte startIdx = Move.start(encodedMove);
         byte endIdx   = Move.end(encodedMove);
         byte arrowIdx = Move.arrow(encodedMove);
 
-        // Convert 1D coordinates to 2D coordinates
         int[] startCoords = { startIdx / 10, startIdx % 10 };
         int[] endCoords   = { endIdx / 10, endIdx % 10 };
         int[] arrowCoords = { arrowIdx / 10, arrowIdx % 10 };

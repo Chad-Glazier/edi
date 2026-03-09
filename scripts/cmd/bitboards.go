@@ -63,6 +63,14 @@ func writeMoves(w io.Writer) {
 	writeRayBoards(w)
 	writeInclusiveRayBoards(w)
 	writeSquareBoards(w)
+	
+	// Currently, there are too many in-between boards to fit in the JVM's
+	// hard-set limit for static methods. To use these boards, we need to put
+	// them into an encoded binary file and then load them explicitly in the
+	// Java class.
+	// TODO: Maybe create a static method for the Java class, "initialize," 
+	// which does this.
+	// writeInBetweenBoards(w)
 }
 
 var header = `//
@@ -170,7 +178,7 @@ func writeInclusiveRayBoards(w io.Writer) {
 	 * NOTE: This matrix is distinct from {@link #ray} because this one
 	 * includes the given position as part of the ray. You shouldn't typically
 	 * use this for queen movements, but it may be useful in calculating
-	 * the ray segment that should be remove from a blocker.
+	 * the ray segment that should be removed due to a blocker.
 	 */
 	public static final long[][][] inclusiveRay = {` + "\n"))
 
@@ -181,6 +189,39 @@ func writeInclusiveRayBoards(w io.Writer) {
 				fmt.Fprintf(w, "\t\t\t")
 				bitboard.Write(w, bitboard.InclusiveRay(row, col, dir))
 				fmt.Fprintf(w, ",\n")
+			}
+			fmt.Fprintf(w, "\t\t},\n")
+		}
+	}
+
+	fmt.Fprintf(w, "\t};\n")
+}
+
+func writeInBetweenBoards(w io.Writer) {
+	w.Write([]byte(`
+	/**
+	 * A matrix that stores the bitboards that represent ray segments between
+	 * two given positions (exclusive). E.g, if you have a queen at position
+	 * 11 and a blocker at 14, the available squares the queen could move to
+	 * between her starting position and the blocker would be given by:
+	 *
+	 * <pre>{@code
+	 * long[] positions = P.between[11][14];
+	 * }</pre>
+	 */
+	public static final long[][][] between = {` + "\n"))
+
+	for arow := range 10 {
+		for acol := range 10 {
+			fmt.Fprintf(w, "\t\t{\n")
+			for brow := range 10 {
+				for bcol := range 10 {
+					fmt.Fprintf(w, "\t\t\t")
+					bitboard.Write(w, bitboard.SegmentBetween(
+						arow, acol, brow, bcol,
+					))
+					fmt.Fprintf(w, ",\n")
+				}
 			}
 			fmt.Fprintf(w, "\t\t},\n")
 		}

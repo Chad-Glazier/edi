@@ -1056,7 +1056,7 @@ public class P {
 	 * NOTE: This matrix is distinct from {@link #ray} because this one
 	 * includes the given position as part of the ray. You shouldn't typically
 	 * use this for queen movements, but it may be useful in calculating
-	 * the ray segment that should be remove from a blocker.
+	 * the ray segment that should be removed due to a blocker.
 	 */
 	public static final long[][][] inclusiveRay = {
 		{

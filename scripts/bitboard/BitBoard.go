@@ -43,7 +43,7 @@ func Ray(row, col, direction int) BitBoard {
 	// Column indices are indexed left-to-right, so incrementing the column
 	// index is the same as moving "east."
 
-	for true {
+	for {
 		switch direction {
 		case N: 
 			row--
@@ -87,7 +87,7 @@ func InclusiveRay(row, col, direction int) BitBoard {
 
 	Flag(&board, row, col)
 
-	for true {
+	for {
 		switch direction {
 		case N: 
 			row--

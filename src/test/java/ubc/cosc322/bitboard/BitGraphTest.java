@@ -41,6 +41,8 @@ public class BitGraphTest {
 
 	@Test
 	void testPerf() {
+		System.out.printf("\n\tRunning comparison of move search functions...\n");
+
 		long totalTimeGraph = 0;
 
 		for (byte queen = 0; queen < 100; queen++) {
@@ -89,7 +91,7 @@ public class BitGraphTest {
 			totalTimeBitGraph += System.currentTimeMillis() - start;
 		}
 
-		System.out.printf("\n%d Iterations\n\tGraph time: %.2f\n\tBitgraph time:%.2f\n\t", ITERATIONS, (double) totalTimeGraph / (double) 1000, (double) totalTimeBitGraph / (double) 1000);
+		System.out.printf("\n\t%d Function calls\n\n\tGraph.neighbors() time:   \t%.2fs\n\tBitGraph.neighbors() time: \t%.2fs\n\n", ITERATIONS * 100, (double) totalTimeGraph / (double) 1000, (double) totalTimeBitGraph / (double) 1000);
 	}
 
 	// @Test

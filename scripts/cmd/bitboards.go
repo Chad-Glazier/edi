@@ -61,6 +61,7 @@ func writeMoves(w io.Writer) {
 	defer w.Write([]byte (footer))
 
 	writeRayBoards(w)
+	writeInclusiveRayBoards(w)
 	writeSquareBoards(w)
 }
 
@@ -77,22 +78,23 @@ package ubc.cosc322.bitboard;
  * in that directory for more information.
  */
 public class P {
-	/* Represents the "North" direction; i.e., lesser row indices. */
-	public static final byte N = 0;
-	/* Represents the "Northeast" direction. */ 
-	public static final byte NE = 1;
-	/* Represents the "East" direction; i.e., greater column indices. */
-	public static final byte E = 2;
-	/* Represents the "Southeast" direction. */
-	public static final byte SE = 3;
-	/* Represnts the "South" direction; i.e., greater row indices. */
-	public static final byte S = 4;
-	/* Represents the "Southwest" direction. */
-	public static final byte SW = 5;
-	/* Represents the "West" direction; i.e., lesser column indices. */
-	public static final byte W = 6;
-	/* Represents the "Northwest" direction. */
-	public static final byte NW = 7;
+	/** Represents the "West" direction; i.e., lesser column indices. */
+	public static final byte W = 0;
+	/** Represents the "Northwest" direction. */
+	public static final byte NW = 1;
+	/** Represents the "North" direction; i.e., lesser row indices. */
+	public static final byte N = 2;
+	/** Represents the "Northeast" direction. */ 
+	public static final byte NE = 3;
+	/** Represents the "East" direction; i.e., greater column indices. */
+	public static final byte E = 4;
+	/** Represents the "Southeast" direction. */
+	public static final byte SE = 5;
+	/** Represnts the "South" direction; i.e., greater row indices. */
+	public static final byte S = 6;
+	/** Represents the "Southwest" direction. */
+	public static final byte SW = 7;
+
 
 `
 var footer = `
@@ -101,17 +103,6 @@ var footer = `
 
 
 func writeRayBoards(w io.Writer) {
-	const (
-		N int = iota
-		NE
-		E 
-		SE 
-		S 
-		SW
-		W
-		NW
-	)
-
 	w.Write([]byte(`
 	/**
 	 * A matrix that stores the bitboards that represent rays a queen can
@@ -128,7 +119,7 @@ func writeRayBoards(w io.Writer) {
 	for row := range 10 {
 		for col := range 10 {
 			fmt.Fprintf(w, "\t\t{\n")
-			for dir := range NW + 1 {
+			for dir := range 8 {
 				fmt.Fprintf(w, "\t\t\t")
 				bitboard.Write(w, bitboard.Ray(row, col, dir))
 				fmt.Fprintf(w, ",\n")
@@ -141,17 +132,6 @@ func writeRayBoards(w io.Writer) {
 }
 
 func writeSquareBoards(w io.Writer) {
-	const (
-		N int = iota
-		NE
-		E 
-		SE 
-		S 
-		SW
-		W
-		NW
-	)
-
 	w.Write([]byte(`
 	/**
 	 * Stores bitboards that have only a single square flagged; the indexed
@@ -169,6 +149,40 @@ func writeSquareBoards(w io.Writer) {
 			fmt.Fprintf(w, "\t\t")
 			bitboard.Write(w, bitboard.Square(row, col))
 			fmt.Fprintf(w, ",\n")
+		}
+	}
+
+	fmt.Fprintf(w, "\t};\n")
+}
+
+func writeInclusiveRayBoards(w io.Writer) {
+	w.Write([]byte(`
+	/**
+	 * A matrix that stores the bitboards that represent rays a queen can
+	 * move along based on (1) the starting position index and (2) the 
+	 * direction of the move. E.g., to get the move bitboard for a queen at 
+	 * position 32 moving North, you would access:
+	 *
+	 * <pre>{@code
+	 * long[] ray = P.ray[32][P.N];
+	 * }</pre>
+	 * 
+	 * NOTE: This matrix is distinct from {@link #ray} because this one
+	 * includes the given position as part of the ray. You shouldn't typically
+	 * use this for queen movements, but it may be useful in calculating
+	 * the ray segment that should be remove from a blocker.
+	 */
+	public static final long[][][] inclusiveRay = {` + "\n"))
+
+	for row := range 10 {
+		for col := range 10 {
+			fmt.Fprintf(w, "\t\t{\n")
+			for dir := range 8 {
+				fmt.Fprintf(w, "\t\t\t")
+				bitboard.Write(w, bitboard.InclusiveRay(row, col, dir))
+				fmt.Fprintf(w, ",\n")
+			}
+			fmt.Fprintf(w, "\t\t},\n")
 		}
 	}
 

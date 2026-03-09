@@ -6,14 +6,14 @@ import (
 )
 
 const (
-	N int = iota
+	W int = iota
+	NW
+	N
 	NE
 	E 
 	SE 
 	S 
 	SW
-	W
-	NW
 )
 
 type BitBoard = [2]int64
@@ -66,7 +66,51 @@ func Ray(row, col, direction int) BitBoard {
 			row--
 			col--
 		}
-		if row > 10 || row < 0 || col > 10 || col < 0 {
+		if row >= 10 || row < 0 || col >= 10 || col < 0 {
+			break
+		}
+
+		Flag(&board, row, col)
+	}
+
+	return board
+}
+
+func InclusiveRay(row, col, direction int) BitBoard {
+	board := BitBoard{}
+
+	// Rows are indexed from the top to the bottom. So, to move "north," we
+	// would need to decrement the row index.
+	//
+	// Column indices are indexed left-to-right, so incrementing the column
+	// index is the same as moving "east."
+
+	Flag(&board, row, col)
+
+	for true {
+		switch direction {
+		case N: 
+			row--
+		case NE:
+			row--
+			col++
+		case E:
+			col++
+		case SE:
+			row++
+			col++
+		case S:
+			row++
+		case SW:
+			row++
+			col--
+		case W:
+			col--
+		case NW:
+			row--
+			col--
+		}
+		if row >= 10 || row < 0 || col >= 10 || col < 0 {
 			break
 		}
 

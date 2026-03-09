@@ -1,8 +1,6 @@
-package ubc.cosc322.util;
+package ubc.cosc322.bitboard;
 
 import org.junit.jupiter.api.Test;
-
-import ubc.cosc322.bitboard.BitBoard;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -37,5 +35,24 @@ public class BitBoardTest {
 		assertTrue(BitBoard.flagged(moved, dst));
 
 		assertNotEquals(bb, moved);
+	}
+
+	@Test
+	void testNoLeadingZeros() {
+		long[] b = BitBoard.create();
+
+		for (byte i = 0; i < 100; i++) {
+			if (Math.random() > 0.5) {
+				BitBoard.flag(b, i);
+			}
+		}
+
+		final long mask = ~ ((1L << 36) - 1);
+
+		assertEquals(mask & b[1], 0);
+
+		BitBoard.not(b);
+		assertTrue(BitBoard.lsb(b) >= 0);
+		assertTrue(BitBoard.msb(b) < 100);
 	}
 }

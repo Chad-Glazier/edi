@@ -22,6 +22,13 @@ package ubc.cosc322.bitboard;
  */
 public class BitBoard {
 	/**
+	 * A mask to zero all but the least significant 36 bits. This can be used
+	 * on the higher <code>long</code> of the bitboard to zero any leftover
+	 * bits from a left-shift.
+	 */
+	private static final long LSB_MASK = (1L << 36) - 1;
+
+	/**
 	 * Creates a new bitboard for representing a 10x10 board (i.e., there are
 	 * at least 100 bits).
 	 */
@@ -130,42 +137,51 @@ public class BitBoard {
 	}
 
 	/**
-	 * Performs a left-shift on the bitboard.
+	 * Inverts all bits on the board.
 	 */
-	public static void lshift(int bits, long[] bitboard) {
-		bitboard[1] = (bitboard[1] << bits) | (bitboard[0] >>> (64 - bits));
-		bitboard[0] <<= bits;
+	public static void not(long[] bitboard) {
+		bitboard[0] = ~ bitboard[0];
+		bitboard[1] = (~ bitboard[1]) & LSB_MASK;
 	}
 
 	/**
-	 * Performs a right-shift on the bitboard.
+	 * Returns a new bitboard with all the bits opposite of the original, which
+	 * is left unchanged.
 	 */
-	public static void rshift(long[] bitboard, int bits) {
-		bitboard[0] = (bitboard[0] >>> bits) | (bitboard[1] << (64 - bits));
-		bitboard[1] >>>= bits;
-	}
-
-	/**
-	 * Performs a left-shift on the bitboard and returns a new bitboard
-	 * with the result rather than mutating the existing one.
-	 */
-	public static long[] lshiftCopy(int bits, long[] bitboard) {
+	public static long[] notCopy(long[] bitboard) {
 		return new long[]{
-			(bitboard[1] << bits) | (bitboard[0] >>> (64 - bits)),
-			bitboard[0] << bits
+			~ bitboard[0],
+			(~ bitboard[1]) & LSB_MASK
 		};
 	}
 
 	/**
-	 * Performs a right-shift on the bitboard and returns a new bitboard
-	 * with the result rather than mutating the original one.
+	 * Returns the position index (0-99) of the least-significant bit. If there
+	 * is no such bit (i.e., the bitboard is zero), then <code>-1</code> is
+	 * returned.
 	 */
-	public static long[] rshiftCopy(long[] bitboard, int bits) {
-		return new long[]{
-			(bitboard[0] >>> bits) | (bitboard[1] << (64 - bits)),
-			bitboard[1] >>> bits
-		};
+	public static byte lsb(long[] bitboard) {
+		if (bitboard[0] != 0) {
+			return (byte) Long.numberOfTrailingZeros(bitboard[0]);
+		} 
+		if (bitboard[1] != 0) {
+			return (byte) (64 + Long.numberOfTrailingZeros(bitboard[1]));
+		}
+		return -1;
 	}
 
-	
+	/**
+	 * Returns the position index (0-99) of the most-significant bit. If there
+	 * is no such bit (i.e., the bitboard is zero), then <code>-1</code> is
+	 * returned.
+	 */
+	public static byte msb(long[] bitboard) {
+		if (bitboard[1] != 0) {
+			return (byte) (127 - Long.numberOfLeadingZeros(bitboard[1]));
+		}
+		if (bitboard[0] != 0) {
+			return (byte) (63 - Long.numberOfLeadingZeros(bitboard[0]));
+		}
+		return -1;
+	}
 }

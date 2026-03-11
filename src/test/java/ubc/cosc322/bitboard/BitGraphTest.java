@@ -36,62 +36,62 @@ public class BitGraphTest {
 		}
 	}
 
-	private final int ITERATIONS = 1000000;
+	// private final int ITERATIONS = 1000000;
 
-	@Test
-	void testPerf() {
-		System.out.printf("\n\tRunning comparison of move search functions...\n");
+	// @Test
+	// void testPerf() {
+	// 	System.out.printf("\n\tRunning comparison of move search functions...\n");
 
-		long totalTimeGraph = 0;
+	// 	long totalTimeGraph = 0;
 
-		for (byte queen = 0; queen < 100; queen++) {
-			long[] empty = BitBoard.create();
+	// 	for (byte queen = 0; queen < 100; queen++) {
+	// 		long[] empty = BitBoard.create();
 
-			for (byte i = 0; i < 100; i++) {
-				if (Math.random() > 0.3) {
-					BitBoard.flag(empty, i);
-				}
-			}
+	// 		for (byte i = 0; i < 100; i++) {
+	// 			if (Math.random() > 0.3) {
+	// 				BitBoard.flag(empty, i);
+	// 			}
+	// 		}
 
-			if (BitBoard.flagged(empty, queen)) {
-				BitBoard.unflag(empty, queen);
-			}
+	// 		if (BitBoard.flagged(empty, queen)) {
+	// 			BitBoard.unflag(empty, queen);
+	// 		}
 
-			long[] occupied = BitBoard.notCopy(empty);
+	// 		long[] occupied = BitBoard.notCopy(empty);
 
-			long start = System.currentTimeMillis();
-			for (int i = 0; i < ITERATIONS; i++) {
-				Graph.neighbors(empty, queen);
-			}
-			totalTimeGraph += System.currentTimeMillis() - start;
-		}
+	// 		long start = System.currentTimeMillis();
+	// 		for (int i = 0; i < ITERATIONS; i++) {
+	// 			Graph.neighbors(empty, queen);
+	// 		}
+	// 		totalTimeGraph += System.currentTimeMillis() - start;
+	// 	}
 
-		long totalTimeBitGraph = 0;
+	// 	long totalTimeBitGraph = 0;
 
-		for (byte queen = 0; queen < 100; queen++) {
-			long[] empty = BitBoard.create();
+	// 	for (byte queen = 0; queen < 100; queen++) {
+	// 		long[] empty = BitBoard.create();
 
-			for (byte i = 0; i < 100; i++) {
-				if (Math.random() > 0.3) {
-					BitBoard.flag(empty, i);
-				}
-			}
+	// 		for (byte i = 0; i < 100; i++) {
+	// 			if (Math.random() > 0.3) {
+	// 				BitBoard.flag(empty, i);
+	// 			}
+	// 		}
 
-			if (BitBoard.flagged(empty, queen)) {
-				BitBoard.unflag(empty, queen);
-			}
+	// 		if (BitBoard.flagged(empty, queen)) {
+	// 			BitBoard.unflag(empty, queen);
+	// 		}
 
-			long[] occupied = BitBoard.notCopy(empty);
+	// 		long[] occupied = BitBoard.notCopy(empty);
 
-			long start = System.currentTimeMillis();
-			for (int i = 0; i < ITERATIONS; i++) {
-				long[] moves = BitGraph.neighbors(queen, occupied);
-			}
-			totalTimeBitGraph += System.currentTimeMillis() - start;
-		}
+	// 		long start = System.currentTimeMillis();
+	// 		for (int i = 0; i < ITERATIONS; i++) {
+	// 			long[] moves = BitGraph.neighbors(queen, occupied);
+	// 		}
+	// 		totalTimeBitGraph += System.currentTimeMillis() - start;
+	// 	}
 
-		System.out.printf("\n\t%d Function calls\n\n\tGraph.neighbors() time:   \t%.2fs\n\tBitGraph.neighbors() time: \t%.2fs\n\n", ITERATIONS * 100, (double) totalTimeGraph / (double) 1000, (double) totalTimeBitGraph / (double) 1000);
-	}
+	// 	System.out.printf("\n\t%d Function calls\n\n\tGraph.neighbors() time:   \t%.2fs\n\tBitGraph.neighbors() time: \t%.2fs\n\n", ITERATIONS * 100, (double) totalTimeGraph / (double) 1000, (double) totalTimeBitGraph / (double) 1000);
+	// }
 
 	// @Test
 	// void testRays() {

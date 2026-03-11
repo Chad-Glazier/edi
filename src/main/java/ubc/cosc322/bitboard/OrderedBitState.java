@@ -9,7 +9,7 @@ import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import ubc.cosc322.eval.HeuristicMethod;
 
-public class OrderedBitState {
+public class OrderedBitState extends BitState {
 	private static final int MAX_CHILDREN = 400;
 
 	private final long[] occupancy = new long[2];
@@ -36,7 +36,8 @@ public class OrderedBitState {
 		long[] occupancy, 
 		byte[] queens,
 		HeuristicMethod heuristic,
-		IntAVLTreeSet killers
+		IntAVLTreeSet[] killers,
+		int depth
 	) {
 		this.activePlayer = activePlayer;
 		this.occupancy[0] = occupancy[0];
@@ -51,44 +52,7 @@ public class OrderedBitState {
 		this.queens[7] = queens[7];
 	}
 
-	public double maxChild() {
 
-	}
-
-	public Iterator<OrderedBitState> children() {
-		return new Iterator<OrderedBitState>() {
-
-			byte i = 0;
-			byte queen = queens[activePlayer * 4 + i];
-
-			long[] destinations = BitGraph.neighbors(queen, occupancy);
-			byte destination = BitBoard.poll(destinations);
-			
-			long[] arrows = BitGraph.neighbors(destination, occupancy);
-			byte arrow = BitBoard.poll(arrows);
-
-			@Override
-			public boolean hasNext() {
-				return false;
-			}
-
-			@Override
-			public OrderedBitState next() {
-				// for each queen ...
-				//		for each destination ...
-				//			for each arrow...
-				//
-				// we need to track the (a) active queen, (b) the active
-				// destination, and (c) the arrows. When we deplete all arrows,
-				// we move to the next destination. When we deplete all
-				// destinations, we move to the next queen. When we deplete all
-				// queens, the iteration is done. 
-
-				if (i >= 4) {
-					
-				}
-			}
-			
-		};
-	}
 }
+
+

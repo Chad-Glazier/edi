@@ -55,4 +55,9 @@ public class BitBoardTest {
 		assertTrue(BitBoard.lsb(b) >= 0);
 		assertTrue(BitBoard.msb(b) < 100);
 	}
+
+	@Test
+	void testPoll() {
+		
+	}
 }

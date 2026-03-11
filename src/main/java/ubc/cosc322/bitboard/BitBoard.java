@@ -90,11 +90,9 @@ public class BitBoard {
 	}
 
 	/**
-	 * Moves a flag from one position to another. his function creates and
-	 * returns a copy, leaving the original bitboard unchanged.
-	 * 
-	 * To help performance, this function assumes that the original bitboard
-	 * is representing a normal 10x10 board.
+	 * Moves a flag from one position to another. This function creates and
+	 * returns a copy that reflects the new board state, rather than mutating
+	 * the original.
 	 * 
 	 * @param bitboard The original bitboard. This will be unchanged.
 	 * @param src The position index to remove the bit from.
@@ -118,6 +116,39 @@ public class BitBoard {
 		}
 
 		return new long[]{ lo, hi };
+	}
+
+	/**
+	 * Moves a flag from one position to another. This function will reflect
+	 * the updated boardstate in <code>updated</code>, rather than mutating the
+	 * original bitboard.
+	 * 
+	 * @param initial The original bitboard. This will be unchanged.
+	 * @param src The position index to remove the bit from.
+	 * @param dst The position index to move the bit to.
+	 * @param updated The bitboard that will reflect the new state.
+	 */
+	public static void move(
+		long[] initial, byte src, byte dst,
+		long[] updated
+	) {
+		long lo = initial[0];
+		long hi = initial[1];
+
+		if (src < 64) {
+			lo ^= (1L << src);
+		} else {
+			hi ^= (1L << (src - 64));
+		}
+
+		if (dst < 64) {
+			lo ^= (1L << dst);
+		} else {
+			hi ^= (1L << (dst - 64));
+		}
+
+		updated[0] = lo;
+		updated[1] = hi;
 	}
 
 	/**
@@ -203,9 +234,12 @@ public class BitBoard {
 			idx = (byte) Long.numberOfTrailingZeros(bitboard[0]);
 			bitboard[0] &= bitboard[0] - 1;
 		} else if (bitboard[1] != 0) {
-			idx = (byte) (64 + Long.numberOfTrailingZeros(bitboard[0]));
+			idx = (byte) (64 + Long.numberOfTrailingZeros(bitboard[1]));
 			bitboard[1] &= bitboard[1] - 1;
 		}
 		return idx;
 	}
 }
+
+
+

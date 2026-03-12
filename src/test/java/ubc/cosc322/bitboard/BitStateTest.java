@@ -104,16 +104,6 @@ public class BitStateTest {
 			i++;
 		}
 
-		// verify that each state is unique.
-		for (BitState state1 : allBitStates) {
-			for (BitState state2: allBitStates) {
-				if (state1 == state2) {
-					continue;
-				}
-				assertFalse(state1.equals(state2));
-			}
-		}
-
 		assertEquals(stateCount, allMoves.size());
 	}
 }

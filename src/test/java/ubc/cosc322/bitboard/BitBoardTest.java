@@ -57,7 +57,18 @@ public class BitBoardTest {
 	}
 
 	@Test
-	void testPoll() {
-		
+	void testCount() {
+		for (int i = 0; i < 100; i++) {
+			long[] board = BitBoard.create();
+			int flagCount = 0;
+			double flagDensity = Math.random();
+			for (byte j = 0; j < 100; j++) {
+				if (Math.random() < flagDensity) {
+					BitBoard.flag(board, j);
+					flagCount++;
+				}
+			}
+			assertEquals(flagCount, BitBoard.count(board));
+		}
 	}
 }

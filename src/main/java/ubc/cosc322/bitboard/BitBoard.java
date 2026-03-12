@@ -239,6 +239,26 @@ public class BitBoard {
 		}
 		return idx;
 	}
+
+	/**
+	 * Returns the number of flags in the bitboard. The bitboard will be
+	 * mutated.
+	 */
+	public static int count(long[] bitboard) {
+		int count = 0;
+		
+		while (bitboard[0] != 0) {
+			bitboard[0] &= bitboard[0] - 1;
+			count++;
+		}
+
+		while (bitboard[1] != 0) {
+			bitboard[1] &= bitboard[1] - 1;
+			count++;
+		}
+
+		return count;
+	}
 }
 
 

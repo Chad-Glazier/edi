@@ -133,13 +133,14 @@ public class BitGraph {
 	/**
 	 * 
 	 * 
-	 * @param positions A bitboard with each possible origin flagged. This
-	 * argument <em>will be mutated</em>.
+	 * @param originalPositions A bitboard with each possible origin flagged.
 	 * @param occupancy
 	 * @return
 	 */
-	public static long[] neighbors(long[] positions, long[] occupancy) {
-
+	public static long[] neighbors(
+		long[] originalPositions, long[] occupancy
+	) {
+		long[] positions = BitBoard.copy(originalPositions);
 		long[] domain = BitBoard.create();
 
 		for (
@@ -155,13 +156,5 @@ public class BitGraph {
 
 		return domain;
 
-	}
-
-	public static byte[] queenDistance(byte position, long[] occupancy) {
-		return new byte[100];
-	}
-
-	public static byte[] kingDistance(byte position, long[] occupancy) {
-		return new byte[100];
 	}
 }

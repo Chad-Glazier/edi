@@ -138,11 +138,12 @@ public class MinDist implements HeuristicMethod {
 			}
 		}
 
-		if (player == WHITE) {
-			return ((double) (whiteSquares - blackSquares)) / ((double) 2 * availableSquares) + 0.50;
-		} else {
-			return ((double) (blackSquares - whiteSquares)) / ((double) 2 * availableSquares) + 0.50;
-		}
+		// if (player == WHITE) {
+		// 	return ((double) (whiteSquares - blackSquares)) / ((double) 2 * availableSquares) + 0.50;
+		// } else {
+		// 	return ((double) (blackSquares - whiteSquares)) / ((double) 2 * availableSquares) + 0.50;
+		// }
+		return whiteSquares - blackSquares;
 	}
 
 	public void visualize() {

@@ -12,6 +12,13 @@
     <inceptionYear>2026</inceptionYear>
 	
     <dependencies>
+
+    	<dependency>
+    		<groupId>com.google.guava</groupId>
+    		<artifactId>guava</artifactId>
+    		<version>33.4.8-jre</version>
+    	</dependency>
+
     	<dependency>
     		<groupId>it.unimi.dsi</groupId>
     		<artifactId>fastutil</artifactId>

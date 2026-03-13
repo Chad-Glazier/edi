@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import ubc.cosc322.util.Move;
 
-public class BitStateTest {
+public class StateTest {
 	private static final byte WHITE = 0;
 	private static final byte BLACK = 1;
 
@@ -43,7 +43,7 @@ public class BitStateTest {
 
 		// generate moves with the old, correct method.
 		IntArrayList allMoves = Move.getAll(empty, white, WHITE);
-		BitState[] allStates = new BitState[allMoves.size()];
+		State[] allStates = new State[allMoves.size()];
 
 		for (int i = 0; i < allMoves.size(); i++) {
 			
@@ -70,27 +70,27 @@ public class BitStateTest {
 				newBlack[3],
 			};
 			byte activePlayer = BLACK;
-			allStates[i] = new BitState(
+			allStates[i] = new State(
 				newOcc, newQueens, activePlayer, allMoves.getInt(i)
 			);
 		}
 
 		// generate states with the new method.
-		BitState initial = new BitState(occupancy, queens, WHITE);
-		BitStateGenerator children = initial.children();
+		State initial = new State(occupancy, queens, WHITE);
+		StateGenerator children = initial.children();
 		int i = 0;
-		BitState[] allBitStates = new BitState[allMoves.size()]; 
+		State[] allBitStates = new State[allMoves.size()]; 
 
 		int stateCount = 0;
 		for (
-			BitState child = children.next(); 
+			State child = children.next(); 
 			child != null; 
 			child = children.next()
 		) {
 			stateCount++;
 
 			boolean matchFound = false;
-			for (BitState state : allStates) {
+			for (State state : allStates) {
 				if (child.equals(state)) {
 					matchFound = true;
 					assertEquals(child.move, state.move);

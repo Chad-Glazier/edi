@@ -1,6 +1,6 @@
 package ubc.cosc322.bitboard;
 
-public class BitGraph {
+public class QGraph {
 	public static long[] neighbors(byte position, long[] occupancy) {
 
 		// We divide the 8 directions into two groups:
@@ -135,7 +135,6 @@ public class BitGraph {
 	 * 
 	 * @param originalPositions A bitboard with each possible origin flagged.
 	 * @param occupancy
-	 * @return
 	 */
 	public static long[] neighbors(
 		long[] originalPositions, long[] occupancy
@@ -155,6 +154,5 @@ public class BitGraph {
 		}
 
 		return domain;
-
 	}
 }

@@ -4,11 +4,11 @@ import java.util.Arrays;
 
 import ubc.cosc322.util.Move;
 
-class BitStateGenerator {
+class StateGenerator {
 	private final static byte WHITE = 0;
 	private final static byte BLACK = 1;
 
-	private final BitState parent;
+	private final State parent;
 
 	private int queenIdx;
 	private long[] arrows;
@@ -16,11 +16,11 @@ class BitStateGenerator {
 	private final long[] occupancy;
 	private byte destination = -1;
 
-	public BitStateGenerator(BitState parent) {
+	public StateGenerator(State parent) {
 		this.parent = parent;
 		queenIdx = parent.activePlayer * 4;
 
-		destinations = BitGraph.neighbors(
+		destinations = QGraph.neighbors(
 			parent.queens[queenIdx], parent.occupancy
 		);
 		destination = BitBoard.poll(destinations);
@@ -33,17 +33,15 @@ class BitStateGenerator {
 		if (destination == -1) {
 			this.arrows = new long[2];
 		} else {
-			arrows = BitGraph.neighbors(destination, occupancy);
+			arrows = QGraph.neighbors(destination, occupancy);
 		}
 	}
 
-	public BitState next() {
-		//
+	public State next() {
 		// TODO: Optimize by replacing `poll`. Right now, `poll` will scan
 		// both `long`s in a bitboard if needed, which leads to unnecessary
 		// operations if we already know that the `lo` half of the bitboard
 		// has been exhausted.
-		//
 
 		// try to get the next arrow
 		byte arrow = BitBoard.poll(arrows);
@@ -60,7 +58,7 @@ class BitStateGenerator {
 				}
 
 				queenIdx++;
-				destinations = BitGraph.neighbors(
+				destinations = QGraph.neighbors(
 					parent.queens[queenIdx], parent.occupancy
 				);
 
@@ -74,11 +72,11 @@ class BitStateGenerator {
 				occupancy
 			);
 
-			arrows = BitGraph.neighbors(destination, occupancy);
+			arrows = QGraph.neighbors(destination, occupancy);
 			arrow = BitBoard.poll(arrows);
 		}
 
-		BitState child = new BitState(
+		State child = new State(
 			BitBoard.flagCopy(occupancy, arrow),
 			Arrays.copyOf(parent.queens, 8),
 			parent.activePlayer == WHITE ? BLACK : WHITE,

@@ -1,13 +1,14 @@
 package ubc.cosc322.bitboard;
 
-public class BitMinDist {
-	private final BitState state;
+public class MinDist implements HeuristicMethod {
+	// TODO: see if memoization improves performance by any significant amount.
 
-	public BitMinDist(BitState state) {
-		this.state = state;
-	}
-
-	public int evaluate() {
+	/**
+	 * Returns a double in the range of -1 to +1, where lower values represent
+	 * greater favorability for Black, and higher values represent greater
+	 * favorability for White.
+	 */
+	public double evaluate(State state) {
 		
 		// Store the territory belonging to each color.
 
@@ -51,37 +52,28 @@ public class BitMinDist {
 
 			long[] tmp;
 
-			tmp = BitGraph.neighbors(whiteFrontier, state.occupancy);
+			tmp = QGraph.neighbors(whiteFrontier, state.occupancy);
 			whiteFrontier[0] = tmp[0] & ~visited[0];
 			whiteFrontier[1] = tmp[1] & ~visited[1];
 
-			tmp = BitGraph.neighbors(blackFrontier, state.occupancy);
+			tmp = QGraph.neighbors(blackFrontier, state.occupancy);
 			blackFrontier[0] = tmp[0] & ~visited[0];
 			blackFrontier[1] = tmp[1] & ~visited[1];
 
 			// Next, we let white and black claim their respective territory.
 			// Any new territory on the black frontier that is neither on the
-			// white territory nor the white frontier is claimed, and vice 
-			// versa.
+			// white territory nor the white frontier is claimed for black, and
+			// vice versa.
 
-			long[] whiteClaim = new long[2];
-			long[] blackClaim = new long[2];
-
-			whiteClaim[0] = 
+			whiteTerritory[0] |= 
 				whiteFrontier[0] & ~(blackFrontier[0] | blackTerritory[0]);
-			whiteClaim[1] = 
+			whiteTerritory[1] |= 
 				whiteFrontier[1] & ~(blackFrontier[1] | blackTerritory[1]);
 
-			blackClaim[0] |= 
+			blackTerritory[0] |= 
 				blackFrontier[0] & ~(whiteFrontier[0] | whiteTerritory[0]);
-			blackClaim[1] |= 
+			blackTerritory[1] |= 
 				blackFrontier[1] & ~(whiteFrontier[1] | whiteTerritory[1]);
-
-			whiteTerritory[0] |= whiteClaim[0];
-			whiteTerritory[1] |= whiteClaim[1];
-
-			blackTerritory[0] |= blackClaim[0];
-			blackTerritory[1] |= blackClaim[1];
 			
 			// Finally, update the "visited" board to reflect that the new
 			// frontiers have been explored.
@@ -93,6 +85,8 @@ public class BitMinDist {
 			visited[1] |= blackFrontier[1];
 		}
 
-		return BitBoard.count(whiteTerritory) - BitBoard.count(blackTerritory);
+		return 
+			(BitBoard.count(whiteTerritory) - BitBoard.count(blackTerritory))
+			/ (double) BitBoard.count(visited); 
 	}
 }

@@ -76,7 +76,7 @@ public class StateTest {
 		}
 
 		// generate states with the new method.
-		State initial = new State(occupancy, queens, WHITE);
+		State initial = new State(occupancy, queens, WHITE, 0);
 		StateGenerator children = initial.children();
 		int i = 0;
 		State[] allBitStates = new State[allMoves.size()]; 

@@ -2,7 +2,7 @@ package ubc.cosc322.search;
 
 import java.util.concurrent.TimeoutException;
 
-class TimeConstrained {
+public class TimeConstrained {
 	private long endTimeMs = 0;
 	private long timeLimitMs = 10 * 1000;
 

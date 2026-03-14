@@ -1,274 +1,96 @@
 package ubc.cosc322.eval;
 
-import ubc.cosc322.util.BitBoard;
-import ubc.cosc322.util.Graph;
+import ubc.cosc322.bitboard.BitBoard;
+import ubc.cosc322.state.QGraph;
+import ubc.cosc322.state.State;
 
-/**
- * <h3>Min-Dist Heuristic Evaluation</h3>
- * 
- * This class implements the minimum-distance ("mindist") heuristic evaluation
- * function described by Martin Müller and Theodore Tegos.
- * 
- * <h4>Example</h4>
- * 
- * Suppose that you have some <code>int[100]</code> array called 
- * <code>board</code> that represents a board state 
- * (see {@link Util#flatten} for more information about how to represent a
- * board in this way). You can then evaluate its board state like so:
- * <pre>{@code
- * HeuristicMethod mindist = new HeuristicMethod();
- * mindist.setBoard(board);
- * double score = mindist.evaluate(playerColor); 
- * }</pre>
- * 
- * <code>playerColor</code> is a byte that indicates whether the player is
- * White or Black, where <code>0</code> represents White and <code>1</code>
- * represents Black. A higher <code>score</code> indicates a better position
- * for the specified player.
- * 
- * <br /><br />
- * 
- * To evaluate a second board state, you need not instantiate this class again.
- * Instead, you can just use {@link #setBoard()} to update the board state
- * before running {@link #evaluate()} again.
- * 
- * <hr />
- * 
- * <h4>See Also</h4>
- * <ul>
- * 	<li>Müller M, Tegos T. <em><a href="http://doi.org/10.1017/9781316135167.018">Experiments in Computer Amazons</a></em>. The algorithm is described in section 6.2.</li>
- * </ul>
- */
 public class MinDist implements HeuristicMethod {
-	/** The number of rows on the board. */
-	private static final int N = 10;
-	/** The number of columns on the board. */
-	private static final int M = 10;
-	/** The number of squares on the board. */
-	private static final int SIZE = N * M;
-	/** The number of queens per player. */
-	private static final int QUEENS = 4;
-
-	private static final int EMPTY = 0;
-	private static final int WHITE_QUEEN = 1;
-	private static final int BLACK_QUEEN = 2;
-
-	private static final int WHITE = 0;
+	// TODO: see if memoization improves performance by any significant amount.
 
 	/**
-	 * Bitboard where empty squares should be flagged.
+	 * Returns a double in the range of -1 to +1, where lower values represent
+	 * greater favorability for Black, and higher values represent greater
+	 * favorability for White.
 	 */
-	private final long[] empty = BitBoard.create();
-	/**
-	 * Stores the indices of each white queen.
-	 */
-	private final byte[] white = new byte[QUEENS];
-	/**
-	 * Stores the indices of each black queen.
-	 */
-	private final byte[] black = new byte[QUEENS];
+	public double evaluate(State state) {
+		
+		// Store the territory belonging to each color.
 
-	public void setBoard(int[] board) {
-		BitBoard.clear(empty);
+		long[] whiteTerritory = BitBoard.create();
+		long[] blackTerritory = BitBoard.create();
 
-		int whiteQueensMarked = 0;
-		int blackQueensMarked = 0;
+		// Track which squares have already been visited.
 
-		for (byte i = 0; i < SIZE; i++) {
-			switch (board[i]) {
-			case EMPTY:
-				BitBoard.flag(empty, i);
-				break;
-			case WHITE_QUEEN:
-				white[whiteQueensMarked] = i;
-				whiteQueensMarked++;
-				break;
-			case BLACK_QUEEN:
-				black[blackQueensMarked] = i;
-				blackQueensMarked++;
-				break;
-			}
-		}
-	}
+		long[] visited = BitBoard.create();
 
-	public void setBoard(long[] empty, byte[] white, byte[] black) {
-		BitBoard.copyTo(empty, this.empty);
+		// Track the "frontier"; i.e., the squares that each territory is
+		// expanding into and hasn't already visited.
 
-		for (int i = 0; i < QUEENS; i++) {
-			this.white[i] = white[i];
-			this.black[i] = black[i];
-		}
-	}
+		long[] whiteFrontier = BitBoard.create();
+		long[] blackFrontier = BitBoard.create();
 
-	public double evaluate(byte player) {
-		byte[] blackMinDistBoard = Graph.distance(empty, black[0]);
-		byte[] whiteMinDistBoard = Graph.distance(empty, white[0]);
-
-		for (int queen = 1; queen < QUEENS; queen++) {
-			byte[] newBlackDistBoard = Graph.distance(empty, black[queen]);
-			for (int i = 0; i < SIZE; i++) {
-				if (newBlackDistBoard[i] < blackMinDistBoard[i]) {
-					blackMinDistBoard[i] = newBlackDistBoard[i];
-				}
-			}
-
-			byte[] newWhiteDistBoard = Graph.distance(empty, white[queen]);
-			for (int i = 0; i < SIZE; i++) {
-				if (newWhiteDistBoard[i] < whiteMinDistBoard[i]) {
-					whiteMinDistBoard[i] = newWhiteDistBoard[i];
-				}
-			}
+		// The frontiers each start simply with each side's queens. These are
+		// the zero-distance squares. Since two queens can't sit on the same
+		// square, we can also add these to their respective territories.
+		
+		for (int i = 0; i < 4; i++) {
+			BitBoard.flag(whiteFrontier, state.queens[i]);
+			BitBoard.flag(visited, state.queens[i]);
+			BitBoard.flag(whiteTerritory, state.queens[i]);
 		}
 
-		int blackSquares = 0;
-		int whiteSquares = 0;
-		int availableSquares = 100;
-		for (byte i = 0; i < SIZE; i++) {
-			if (!BitBoard.flagged(empty, i)) {
-				availableSquares--;
-				continue;
-			}
-			if (blackMinDistBoard[i] < whiteMinDistBoard[i]) {
-				blackSquares++;
-				continue;
-			}
-			if (whiteMinDistBoard[i] < blackMinDistBoard[i]) {
-				whiteSquares++;
-				continue;
-			}
+		for (int i = 4; i < 8; i++) {
+			BitBoard.flag(blackFrontier, state.queens[i]);
+			BitBoard.flag(visited, state.queens[i]);
+			BitBoard.flag(blackTerritory, state.queens[i]);
 		}
 
-		if (player == WHITE) {
-			return ((double) (whiteSquares - blackSquares)) / ((double) 2 * availableSquares) + 0.50;
-		} else {
-			return ((double) (blackSquares - whiteSquares)) / ((double) 2 * availableSquares) + 0.50;
-		}
-	}
+		// Now, the frontiers are expanded incrementally, until there is no
+		// accessible territory that hasn't been explored.
 
-	public void visualize() {
-		final String arrowMark = "X"; // "\u21A1"
-		final String blackTerritory = "b"; // "\u25A0";
-		final String whiteTerritory = "w"; // "\u25A1";
-		final String contestedTerritory = "?"; // "\u2591";
-		final String whiteQueen = "W"; // Character.toString(0x1FA0A);
-		final String blackQueen = "B"; // Character.toString(0x1FA3A);
+		while (!BitBoard.isEmpty(blackFrontier) 
+			|| !BitBoard.isEmpty(whiteFrontier)) {
 
-		byte[] blackMinDistBoard = Graph.distance(empty, black[0]);
-		byte[] whiteMinDistBoard = Graph.distance(empty, white[0]);
+			// First, we expand the frontiers, omitting any previously explored
+			// territory.
 
-		for (int queen = 1; queen < QUEENS; queen++) {
-			byte[] newBlackDistBoard = Graph.distance(empty, black[queen]);
-			for (int i = 0; i < SIZE; i++) {
-				if (newBlackDistBoard[i] < blackMinDistBoard[i]) {
-					blackMinDistBoard[i] = newBlackDistBoard[i];
-				}
-			}
+			long[] tmp;
 
-			byte[] newWhiteDistBoard = Graph.distance(empty, white[queen]);
-			for (int i = 0; i < SIZE; i++) {
-				if (newWhiteDistBoard[i] < whiteMinDistBoard[i]) {
-					whiteMinDistBoard[i] = newWhiteDistBoard[i];
-				}
-			}
-		}
+			tmp = QGraph.neighbors(whiteFrontier, state.occupancy);
+			whiteFrontier[0] = tmp[0] & ~visited[0];
+			whiteFrontier[1] = tmp[1] & ~visited[1];
 
-		String[] boardDisplay = new String[SIZE];
+			tmp = QGraph.neighbors(blackFrontier, state.occupancy);
+			blackFrontier[0] = tmp[0] & ~visited[0];
+			blackFrontier[1] = tmp[1] & ~visited[1];
 
-		int blackSquares = 0;
-		int whiteSquares = 0;
-		int availableSquares = SIZE;
-		int contestedSquares = 0;
-		for (byte i = 0; i < SIZE; i++) {
-			if (!BitBoard.flagged(empty, i)) {
-				availableSquares--;
-				boardDisplay[i] = arrowMark;
-				continue;
-			}
-			if (blackMinDistBoard[i] < whiteMinDistBoard[i]) {
-				blackSquares++;
-				boardDisplay[i] = blackTerritory;
-				continue;
-			}
-			if (whiteMinDistBoard[i] < blackMinDistBoard[i]) {
-				whiteSquares++;
-				boardDisplay[i] = whiteTerritory;
-				continue;
-			}
-			boardDisplay[i] = contestedTerritory;
-			contestedSquares++;
+			// Next, we let white and black claim their respective territory.
+			// Any new territory on the black frontier that is neither on the
+			// white territory nor the white frontier is claimed for black, and
+			// vice versa.
+
+			whiteTerritory[0] |= 
+				whiteFrontier[0] & ~(blackFrontier[0] | blackTerritory[0]);
+			whiteTerritory[1] |= 
+				whiteFrontier[1] & ~(blackFrontier[1] | blackTerritory[1]);
+
+			blackTerritory[0] |= 
+				blackFrontier[0] & ~(whiteFrontier[0] | whiteTerritory[0]);
+			blackTerritory[1] |= 
+				blackFrontier[1] & ~(whiteFrontier[1] | whiteTerritory[1]);
+			
+			// Finally, update the "visited" board to reflect that the new
+			// frontiers have been explored.
+
+			visited[0] |= whiteFrontier[0];
+			visited[1] |= whiteFrontier[1];
+
+			visited[0] |= blackFrontier[0];
+			visited[1] |= blackFrontier[1];
 		}
 
-		for (int queen : white) {
-			boardDisplay[queen] = whiteQueen;
-		}
-
-		for (int queen : black) {
-			boardDisplay[queen] = blackQueen;
-		}
-
-		for (int i = 0; i < SIZE; i++) {
-			if (i % M == 0) {
-				System.out.print("\n\t");
-			}
-			System.out.print(boardDisplay[i] + " ");
-			if (i % M == M - 1) {
-				switch (i / M) {
-				case 0:
-					System.out.print("\tLegend");
-					break;
-				case 1: 
-					System.out.print("\t-----------------------");
-					break;
-				case 2:
-					System.out.print(
-						"\t"+ arrowMark + ": arrow-struck square"
-					);
-					break;
-				case 3:
-					System.out.print(
-						"\t" + whiteQueen + ": white queen");
-					break;
-				case 4:
-					System.out.print(
-						"\t" + blackQueen + ": black queen");
-					break;
-				case 5:
-					System.out.print(
-						"\t" + whiteTerritory + ": white territory");
-					break;
-				case 6:
-					System.out.print(
-						"\t" + blackTerritory + ": black territory");
-					break;
-				case 7:
-					System.out.print(
-						"\t" + contestedTerritory + ": contested territory");
-					break;
-				}
-			}
-		}
-		System.out.print("\n\n");
-		System.out.printf("\tWhite squares:      %d (%.0f%%)\n", 
-			whiteSquares,
-			100 * (whiteSquares / (double) availableSquares)
-		);
-		System.out.printf("\tBlack squares:      %d (%.0f%%)\n", 
-			blackSquares,
-			100 * (blackSquares / (double) availableSquares)
-		);
-		System.out.printf("\tContested squares:  %d (%.0f%%)\n", 
-			contestedSquares,
-			100 * (contestedSquares / (double) availableSquares)
-		);
-		System.out.println();
-
-		System.out.printf(
-			"\tHeuristic evaluation for White: %.2f%%\n", 
-			(((double) (whiteSquares - blackSquares)) / ((double) 2 * availableSquares) + 0.50) * 100
-		);
-		System.out.printf(
-			"\tHeuristic evaluation for Black: %.2f%%\n\n", 
-			(((double) (blackSquares - whiteSquares)) / ((double) 2 * availableSquares) + 0.50) * 100
-		);
+		return 
+			(BitBoard.count(whiteTerritory) - BitBoard.count(blackTerritory))
+			/ (double) BitBoard.count(visited); 
 	}
 }

@@ -28,7 +28,7 @@ public class HistoryTable {
 	}
 
 	/**
-	 * Indicates that a move is sufficient; i.e., it's score should be
+	 * Used to indicate that a move is sufficient; i.e., it's score should be
 	 * increased.
 	 * 
 	 * @param move

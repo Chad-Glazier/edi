@@ -1,5 +1,7 @@
 package ubc.cosc322.state;
 
+import ubc.cosc322.bitboard.BitBoard;
+
 /**
  * This class is used to handle moves on the board. Use this class to: encode
  * or decode moves as <code>int</code>s.
@@ -94,5 +96,32 @@ public class Move {
 	 */
 	public static byte player(int move) {
 		return (byte) ((move & PLAYER_MASK) >>> PLAYER_OFFSET);
+	}
+
+	/**
+	 * Returns <code>true</code> if and only if a move is legal from a given
+	 * board state.
+	 */
+	public static boolean isLegal(State board, int move) {
+		if (board.activePlayer != player(move)) {
+			return false;
+		}
+
+		long[] neighbors = QGraph.neighbors(start(move), board.occupancy);
+
+		if (!BitBoard.flagged(neighbors, end(move))) {
+			return false;
+		}
+
+		long[] occupancy = BitBoard.unflagCopy(board.occupancy, start(move));
+		BitBoard.flag(occupancy, end(move));
+
+		neighbors = QGraph.neighbors(end(move), occupancy);
+
+		if (!BitBoard.flagged(neighbors, arrow(move))) {
+			return false;
+		}
+
+		return true;
 	}
 }

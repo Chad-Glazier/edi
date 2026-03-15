@@ -26,13 +26,24 @@ import ubc.cosc322.view.Ansi;
  * 
  * <h4>Example</h4>
  * 
- * <pre>{@code
+ * Assume that <code>board</code> and <code>heuristic</code> are already 
+ * defined.
  * 
+ * <pre>{@code
+ * SearchMethod alphaBeta = new AlphaBeta(board, heuristic, C.WHITE);
+ * alphaBeta.setTimeLimit(10); // 10 seconds per search
+ * alphaBeta.setShowOutput(true); // `false` by default
+ * 
+ * // Then, whenever the boardstate changes,
+ * alphaBeta.setBoard(board);
+ * int move = alphaBeta.search();
  * }</pre>
  * 
+ * Configuration options like the time limit and the maximizing player color
+ * will be preserved between <code>search</code> calls. The only thing you 
+ * need to remember to update is the board state.
  * 
- * 
- * <br /><br />
+ * <h4>Remarks</h4>
  * 
  * The <code>move</code> output of a search function is an encoded integer. To
  * get details about the move from this integer, use the methods from the
@@ -55,7 +66,10 @@ import ubc.cosc322.view.Ansi;
  *  <li>Schaeffer, J. <em><a href="https://webdocs.cs.ualberta.ca/~jonathan/publications/ai_publications/pami.pdf">The History Heuristic and Alpha-Beta Search Enhancements in Practice</a></em>.</li>
  * </ul>
  */
-public class AlphaBeta extends TimeConstrained {
+public class AlphaBeta 
+	extends TimeConstrained 
+	implements SearchMethod
+	{
 	private static final int MAX_DEPTH = 100;
 
 	/** The table of history scores. */
@@ -123,16 +137,8 @@ public class AlphaBeta extends TimeConstrained {
 					}
 				}
 			}				
-		} catch (TimeoutException e) {
-			if (showOutput) {
-				System.out.printf(
-					Ansi.ITALIC +
-					Ansi.FG_BRIGHT_BLACK +
-					"     Timeout." +
-					Ansi.RESET
-				);
-			}
-		}
+		} catch (TimeoutException e) {}
+		
 		return bestMove;
 	}
 

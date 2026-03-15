@@ -70,7 +70,7 @@ public class Display {
 					System.out.print(
 						Ansi.BG_CYAN + 
 						Ansi.FG_BRIGHT_WHITE +
-						"Q" + 
+						" " + 
 						Ansi.RESET + 
 						" "
 					);
@@ -79,7 +79,7 @@ public class Display {
 					System.out.print(
 						Ansi.BG_RED + 
 						Ansi.FG_BLACK +
-						"Q" + 
+						" " + 
 						Ansi.RESET + 
 						" "
 					);
@@ -157,12 +157,16 @@ public class Display {
 		
 		if (player == C.WHITE) {
 			out += Ansi.BG_CYAN;
+			out += "  ";
+			out += Ansi.RESET;
 			out += Ansi.FG_BRIGHT_WHITE;
-			out += "White";		
+			out += " White";		
 		} else {
 			out += Ansi.BG_RED;
+			out += "  ";
+			out += Ansi.RESET;
 			out += Ansi.FG_BRIGHT_BLACK;
-			out += "Black";	
+			out += " Black";	
 		}
 
 		out += Ansi.RESET;
@@ -208,7 +212,7 @@ public class Display {
 		int arrowRow = Move.arrow(move) / 10;
 		int arrowCol = Move.arrow(move) % 10;
 
-		out += Ansi.FG_BRIGHT_WHITE;
+		out += Ansi.FG_BRIGHT_BLACK;
 		out += String.format("(%d, %d)", arrowRow, arrowCol);	
 		out += Ansi.RESET;
 

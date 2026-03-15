@@ -62,8 +62,6 @@ public class State {
 		queens[7] = prev.queens[7];
 		this.move = move;
 
-		BitBoard.flag(occupancy, Move.arrow(move));
-
 		for (byte i = 0; i < 8; i++) {
 			if (queens[i] == Move.start(move)) {
 				BitBoard.unflag(occupancy, queens[i]);
@@ -71,6 +69,8 @@ public class State {
 				BitBoard.flag(occupancy, queens[i]);
 			}
 		}
+
+		BitBoard.flag(occupancy, Move.arrow(move));
 	}
 
 	/**

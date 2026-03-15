@@ -16,6 +16,18 @@ mvn exec:java "-Dexec.mainClass=ubc.cosc322.demo.RunGame"
 
 At the time of writing, this demo doesn't actually check if the game is over, so the end state just kinda freaks out. Just press `Ctrl+C` a couple times.
 
+### Running in Tournaments
+
+When running the bot in a tournament, make sure that you have the clean, optimized build.
+
+```sh
+mvn clean package
+mvn exec:java -Dexec.mainClass=ubc.cosc322.demo.RunGame
+```
+
+Additionally, make sure that you've set the memory constraints. If you're on Windows, you can do this by running `.\setEnv.ps1` in PowerShell (from this directory).
+
+
 ## Guidelines for Making Contributions
 
 (*This section is for group members.*)

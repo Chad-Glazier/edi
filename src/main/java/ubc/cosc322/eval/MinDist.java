@@ -5,8 +5,6 @@ import ubc.cosc322.state.QGraph;
 import ubc.cosc322.state.State;
 
 public class MinDist implements HeuristicMethod {
-	// TODO: see if memoization improves performance by any significant amount.
-
 	/**
 	 * Returns a double in the range of -1 to +1, where lower values represent
 	 * greater favorability for Black, and higher values represent greater

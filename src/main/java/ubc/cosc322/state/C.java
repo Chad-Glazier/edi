@@ -1,4 +1,4 @@
-package ubc.cosc322.misc;
+package ubc.cosc322.state;
 
 /**
  * "C" for constants. This class holds a set of public constants that might be

@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
 import ubc.cosc322.eval.HeuristicMethod;
-import ubc.cosc322.misc.C;
+import ubc.cosc322.state.C;
 import ubc.cosc322.state.State;
 import ubc.cosc322.state.StateGenerator;
 import ubc.cosc322.view.Ansi;
+import ubc.cosc322.view.Display;
 
 /**
  * <h3>Alpha-Beta Search</h3>
@@ -73,7 +74,7 @@ public class AlphaBeta
 	private static final int MAX_DEPTH = 100;
 
 	/** The table of history scores. */
-	private final HistoryTable history = new HistoryTable();
+	private HistoryTable history = new HistoryTable();
 
 	// Configuration options.
 	/** The initial board state. */
@@ -109,6 +110,7 @@ public class AlphaBeta
 
 	public void setBoard(State state) {
 		this.root = state.copy();
+		history = new HistoryTable();
 	}
 
 	//
@@ -127,12 +129,10 @@ public class AlphaBeta
 				} else {
 					bestMove = bestMoveAtDepth;
 					if (showOutput) {
-						System.out.printf(
-							Ansi.MOVE_CURSOR_TO_LINE_START + 
-							Ansi.FG_BRIGHT_BLACK +
-							"    Searching at depth %d..." +
-							Ansi.RESET, 
-							depth + 1
+						Display.printText(0, 
+							"Searching at depth " + 
+							Integer.toString(depth + 1) + 
+							"..."
 						);
 					}
 				}

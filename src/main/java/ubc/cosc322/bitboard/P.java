@@ -28,8 +28,6 @@ public class P {
 	/** Represents the "Southwest" direction. */
 	public static final byte SW = 7;
 
-
-
 	/**
 	 * A matrix that stores the bitboards that represent rays a queen can
 	 * move along based on (1) the starting position index and (2) the 

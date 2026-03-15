@@ -1,7 +1,7 @@
 package ubc.cosc322.view;
 
 import ubc.cosc322.bitboard.BitBoard;
-import ubc.cosc322.misc.C;
+import ubc.cosc322.state.C;
 import ubc.cosc322.state.State;
 
 public class Util {

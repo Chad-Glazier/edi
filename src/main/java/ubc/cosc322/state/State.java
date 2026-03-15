@@ -3,7 +3,6 @@ package ubc.cosc322.state;
 import java.util.Arrays;
 
 import ubc.cosc322.bitboard.BitBoard;
-import ubc.cosc322.misc.C;
 
 /**
  * Represents a board state using bitboards.

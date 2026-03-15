@@ -1,11 +1,25 @@
 package ubc.cosc322.view;
 
 import ubc.cosc322.bitboard.BitBoard;
-import ubc.cosc322.misc.C;
+import ubc.cosc322.eval.HeuristicMethod;
+import ubc.cosc322.eval.MinDist;
+import ubc.cosc322.state.C;
 import ubc.cosc322.state.Move;
 import ubc.cosc322.state.State;
 
 public class Display {
+	public static void printText(int line, String text) {
+		line += 15; // the height of the board.
+		text = "    " + Ansi.FG_BRIGHT_BLACK + text;
+
+		System.out.print("\u001b[" + Integer.toString(line) + "d");
+		System.out.print(Ansi.MOVE_CURSOR_TO_LINE_START);
+		System.out.print("\u001b[2K");
+		System.out.print(text);
+
+		System.out.print(Ansi.RESET);
+	}
+
     /**
      * Prints a board state to the console.
      */
@@ -60,28 +74,29 @@ public class Display {
 
             System.out.print(
 				Ansi.FG_BRIGHT_BLACK +
-				"    " + i + "  " +
+				"    " + i + " " +
 				Ansi.RESET
 			);
+			System.out.print(Ansi.BG_BLACK + " " + Ansi.RESET);
             for (int j = 0; j < 10; j++) {
                 String s = board[i][j];
                 switch (s) {
 				case "W":
 					System.out.print(
-						Ansi.BG_CYAN + 
-						Ansi.FG_BRIGHT_WHITE +
-						" " + 
-						Ansi.RESET + 
-						" "
+						Ansi.FG_CYAN +
+						Ansi.BG_BLACK +
+						"■" + 
+						" " +
+						Ansi.RESET
 					);
 					break;
 				case "B":
 					System.out.print(
-						Ansi.BG_RED + 
-						Ansi.FG_BLACK +
-						" " + 
-						Ansi.RESET + 
-						" "
+						Ansi.FG_RED +
+						Ansi.BG_BLACK +
+						"■" + 
+						" " +
+						Ansi.RESET
 					);
 					break;
 				case "X":
@@ -89,8 +104,8 @@ public class Display {
 						Ansi.BG_BLACK + 
 						Ansi.FG_BRIGHT_BLACK +
 						s + 
-						Ansi.RESET + 
-						" "
+						" " +
+						Ansi.RESET
 					);
 					break;
 				default:
@@ -98,8 +113,8 @@ public class Display {
 						Ansi.BG_BLACK + 
 						Ansi.FG_BRIGHT_BLACK +
 						"." + 
-						Ansi.RESET + 
-						" "
+						" " +
+						Ansi.RESET
 					);
                 }
             }
@@ -145,11 +160,48 @@ public class Display {
 					arrowToString(state.move)
 				);
 				break;
+			case 9:
+				System.out.print(
+					Ansi.FG_BRIGHT_BLACK +
+					"MinDist evaluation" +
+					Ansi.RESET
+				);
+				break;
+			case 7:
+				System.out.print(evaluation(state));
+				break;
 			}
             System.out.println();
         }
 		System.out.println(Ansi.RESET);
     }
+
+	private static String evaluation(State state) {
+		HeuristicMethod mindist = new MinDist();
+		double score = (mindist.evaluate(state) + 1) / 2;
+		int width = 35;
+		
+		int blackWidth = (int) (width * (1.0 - score));
+		int whiteWidth = width - blackWidth;
+
+		String out = "";
+		out += Ansi.RESET;
+
+		out += Ansi.BG_CYAN;
+		for (int i = 0; i < whiteWidth; i++) {
+			out += " ";
+		}
+
+		out += Ansi.RESET;
+		out += Ansi.BG_RED;
+		for (int i = 0; i < blackWidth; i++) {
+			out += " ";
+		}
+
+		out += Ansi.RESET;
+
+		return out;
+	}
 
 	private static String playerToString(byte player) {
 		String out = "";

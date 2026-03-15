@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import ubc.cosc322.eval.MinDist;
-import ubc.cosc322.misc.C;
+import ubc.cosc322.state.C;
 import ubc.cosc322.state.Move;
 import ubc.cosc322.state.State;
 import ubc.cosc322.view.Util;

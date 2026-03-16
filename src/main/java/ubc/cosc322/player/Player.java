@@ -33,7 +33,7 @@ public class Player extends GamePlayer {
 	// Fields that have to be initialized.
 	//
 	
-	private final String username;
+	private String username;
 	private final String password = "password";
 	private final VI VI;
 	/** The player who should make the first move. */
@@ -98,10 +98,6 @@ public class Player extends GamePlayer {
 			return true;
 		}
 
-		handleMessage(
-			"Client", 
-			"Resolving inconsistency."
-		);
 		state = received;
 		Display.printBoard(
 			new State(
@@ -112,7 +108,13 @@ public class Player extends GamePlayer {
 					: C.WHITE,
 				moveHistory.get(moveHistory.size() - 1)
 			), 
-			getBoardTitle()
+			getBoardTitle(),
+			ourColor == C.BLACK ? username : opponentUsername,
+			ourColor == C.WHITE ? username : opponentUsername
+		);
+		handleMessage(
+			"Client", 
+			"Resolving inconsistency."
 		);
 		return true;
 	}
@@ -125,7 +127,9 @@ public class Player extends GamePlayer {
 		// Handle the new board state given.
 		//
 
-		ok = handleBoardMessage(details);
+		if (details.get(AmazonsGameMessage.GAME_STATE) != null) {
+			ok = handleBoardMessage(details);
+		}
 
 		//
 		// Assign player colors/usernames.
@@ -134,10 +138,11 @@ public class Player extends GamePlayer {
 		String black = (String) details.get(AmazonsGameMessage.PLAYER_BLACK);
 		String white = (String) details.get(AmazonsGameMessage.PLAYER_WHITE);
 
-		if (white == username) {
+		username = getGameClient().getUserName();
+		if (white.equalsIgnoreCase(username)) {
 			ourColor = C.WHITE;
 			opponentUsername = black;
-		} else if (black == username) {
+		} else if (black.equalsIgnoreCase(username)) {
 			ourColor = C.BLACK;
 			opponentUsername = white;
 		} else {
@@ -147,6 +152,24 @@ public class Player extends GamePlayer {
 			);
 			return false;
 		}
+
+		//
+		// We print the starting board.
+		//
+
+		State fullState = new State(
+			state.occupancy, 
+			state.queens,
+			ourColor,
+			0
+		);
+		Display.printBoard(
+			fullState, getBoardTitle(), 
+			ourColor == C.BLACK ? username : opponentUsername,
+			ourColor == C.WHITE ? username : opponentUsername
+		);
+		handleMessage("Client", "Game start.");
+		Display.printText(0, "Waiting for " + opponentUsername + "...");
 
 		//
 		// If we don't move first, then we stop here.
@@ -160,12 +183,6 @@ public class Player extends GamePlayer {
 		// Otherwise, we start.
 		//
 
-		State fullState = new State(
-			state.occupancy, 
-			state.queens,
-			ourColor,
-			0
-		);
 		int ourMove = VI.consult(
 			fullState, 
 			ourColor, 
@@ -204,10 +221,6 @@ public class Player extends GamePlayer {
 		//
 
 		moveHistory.add(move);
-		handleMessage(
-			"Client",
-			"Move received. Board updated"
-		);
 		state = new MinimalState(state, move);
 		State fullState = new State(
 			state.occupancy,
@@ -215,10 +228,19 @@ public class Player extends GamePlayer {
 			ourColor,
 			move
 		);
-		Display.printBoard(fullState, getBoardTitle());
+		Display.printBoard(
+			fullState, getBoardTitle(), 
+			ourColor == C.BLACK ? username : opponentUsername,
+			ourColor == C.WHITE ? username : opponentUsername
+		);
+		handleMessage(
+			"Client",
+			"Move received. Board updated."
+		);
 
 		if (state.isTerminal(ourColor)) {
-			Display.printText(0, opponentUsername + " wins.");
+			Display.printText(0, opponentUsername + " wins.\n");
+			System.exit(0);
 			return true;
 		}
 
@@ -253,18 +275,31 @@ public class Player extends GamePlayer {
 				ourColor == C.WHITE ? C.BLACK : C.WHITE,
 				move
 			), 
-			getBoardTitle()
+			getBoardTitle(), 
+			ourColor == C.BLACK ? username : opponentUsername,
+			ourColor == C.WHITE ? username : opponentUsername
 		);
-
+		Display.printText(
+			0, 
+			"Waiting for " + opponentUsername + "..."
+		);
 		handleMessage(
 			"Client",
-			"Sending move to server..."
+			"Sending move to server."
 		);
 		getGameClient().sendMoveMessage(
 			Util.getStartPosition(move),
 			Util.getEndPosition(move),
 			Util.getArrowPosition(move)		
 		);
+
+		// 
+		// Check if we won.
+		//
+
+		if (state.isTerminal(ourColor == C.WHITE ? C.BLACK : C.WHITE)) {
+			Display.printText(0, username + " wins.");
+		}
 	}
 
 	private String getBoardTitle() {
@@ -292,6 +327,11 @@ public class Player extends GamePlayer {
 
 	@Override
 	public boolean handleMessage(String msgType, String msg) {
+		// the server spams this message for some reason, so we just ignore it.
+		if (msgType.equals("userCountChange")) {
+			return true;
+		}
+
 		systemMessages.push(msgType + (msg != null ? ": " + msg : ""));
 		Display.printSystemMessages(systemMessages);		
 
@@ -354,6 +394,6 @@ public class Player extends GamePlayer {
 
 	@Override
 	public String userName() {
-		return username;
+		return getGameClient().getUserName();
 	}	
 }

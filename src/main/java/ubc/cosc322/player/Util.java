@@ -150,8 +150,8 @@ public class Util {
 		int col = position % 10 + 1;
 
 		ArrayList<Integer> list = new ArrayList<Integer>(2);
-		list.set(0, row);
-		list.set(1, col);
+		list.add(row);
+		list.add(col);
 
 		return list;
 	}

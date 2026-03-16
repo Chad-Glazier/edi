@@ -14,6 +14,50 @@ import ubc.cosc322.state.State;
 
 public class Display {
 
+	public static String promptString(String prompt) {
+		clear();
+		printText(-13, prompt + "\n\n    > ");
+
+		@SuppressWarnings("resource")
+		Scanner scanner = new Scanner(System.in);
+
+		String input = scanner.nextLine().trim();
+
+		while (input.length() == 0) {
+			clear();
+			printText(-13, prompt + "\n(Input cannot be empty)\n\n    > ");
+
+			input = scanner.nextLine().trim();
+		}
+
+		return input;
+	}
+
+	public static int promptInt(String prompt) {
+		clear();
+		printText(-13, prompt + "\n\n    > ");
+
+		@SuppressWarnings("resource")
+		Scanner scanner = new Scanner(System.in);
+
+		String input = scanner.nextLine().trim();
+		int inputInt = Integer.MIN_VALUE;
+
+		while (inputInt == Integer.MIN_VALUE) {
+			try {
+				inputInt = Integer.parseInt(input);
+			} catch (NumberFormatException e) {
+				clear();
+				printText(
+					-13, prompt + "\n(Input must be an integer)\n\n    > "
+				);
+				input = scanner.nextLine().trim();
+			}			
+		}
+
+		return inputInt;
+	}
+
 	public static String prompt(String prompt, Map<String, String> options) {
 		clear();
 		printText(-13, prompt + "\n\n    > ");
@@ -57,10 +101,10 @@ public class Display {
 		String helpPrompt = 
 			"Unrecognized selection. Try one of the ones listed:\n";
 		for (String option : options) {
-			helpPrompt += "    ~ " + Ansi.FG_BRIGHT_CYAN + option + Ansi.RESET;
+			helpPrompt += "    ~ " + Ansi.FG_BRIGHT_CYAN + option + Ansi.FG_BRIGHT_BLACK;
 			helpPrompt += "\n";
 		}
-		helpPrompt += "\n    > ";
+		helpPrompt += "\n    > " + Ansi.RESET;
 
 		while (true) {
 			String input = scanner.nextLine().trim();
@@ -103,7 +147,7 @@ public class Display {
 		System.out.print(Ansi.FG_BRIGHT_BLACK);		
 		int i = 0; 
 		for (String message : messages) {
-			if (i > 5) {
+			if (i > 8) {
 				break;
 			}
 			Ansi.moveCursor(5 + i++, 80);
@@ -115,10 +159,12 @@ public class Display {
 		Ansi.restoreCursor();
 	} 
 
-    /**
+/**
      * Prints a board state to the console.
      */
-    public static void printBoard(State state, String label) {
+    public static void printBoard(
+		State state, String label, String blackName, String whiteName
+	) {
 		// We can get the turn count by getting the number of flags in the
 		// occupancy board and subtracting 8, for the queens (this gives us
 		// the number of arrows).
@@ -234,7 +280,12 @@ public class Display {
 					Ansi.ITALIC +
 					"active player     " +
 					Ansi.RESET + 
-					playerToString(state.activePlayer) +
+					playerToString(
+						state.activePlayer,
+						state.activePlayer == C.WHITE
+							? whiteName
+							: blackName
+					) +
 					Ansi.RESET
 				);
 				break;
@@ -270,6 +321,13 @@ public class Display {
 		System.out.println(Ansi.RESET);
     }
 
+    /**
+     * Prints a board state to the console.
+     */
+    public static void printBoard(State state, String label) {
+		printBoard(state, label, "Black", "White");
+    }
+
 	private static String evaluation(State state) {
 		HeuristicMethod mindist = new MinDist();
 		double score = (mindist.evaluate(state) + 1) / 2;
@@ -297,7 +355,7 @@ public class Display {
 		return out;
 	}
 
-	private static String playerToString(byte player) {
+	private static String playerToString(byte player, String name) {
 		String out = "";
 		out += Ansi.RESET;
 		
@@ -305,12 +363,12 @@ public class Display {
 			out += Ansi.BG_CYAN;
 			out += "  ";
 			out += Ansi.RESET;
-			out += " \"White\"";		
+			out += " " + name;		
 		} else {
 			out += Ansi.BG_RED;
 			out += "  ";
 			out += Ansi.RESET;
-			out += " \"Black\"";	
+			out += " " + name;	
 		}
 
 		out += Ansi.RESET;

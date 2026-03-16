@@ -17,7 +17,7 @@ public class EDI implements VI {
 
 		SearchMethod search = new AlphaBeta(state, heuristic, color);
 		search.setShowOutput(true);
-		search.setTimeLimit(timeLimit);
+		search.setTimeLimit(timeLimit - 1); // add a small margin.
 
 		return search.search();
 	}

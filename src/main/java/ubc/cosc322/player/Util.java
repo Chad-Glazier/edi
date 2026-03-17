@@ -71,12 +71,12 @@ public class Util {
 				switch (board.get(i * 11 + j)) {
 				case 0:
 					continue;
-				case 2:
-					queens[whiteIdx++] = position;
-					BitBoard.flag(occupancy, position);
-					break;
 				case 1:
 					queens[blackIdx++] = position;
+					BitBoard.flag(occupancy, position);
+					break;
+				case 2:
+					queens[whiteIdx++] = position;
 					BitBoard.flag(occupancy, position);
 					break;
 				case 3:

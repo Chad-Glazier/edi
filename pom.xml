@@ -1,77 +1,63 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
- 
-    <groupId>ubc.cosc322</groupId>
-    <artifactId>team-09</artifactId>
+
+    <groupId>ubc.team09</groupId>
+    <artifactId>edi</artifactId>
     <version>1.0</version>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
-    <name>COSC322-Team-09</name>
-    <description>
-		A simple Game of the Amazons AI for group 09 in COSC 322
-	</description>
-    <inceptionYear>2026</inceptionYear>
-	
-    <dependencies>
+    <modules>
+        <module>core</module>
+        <module>benchmarking</module>
+    </modules>
 
-        <dependency>	        
-	    	<groupId>ubc-yong-gao</groupId>
-            <artifactId>ygraph-ai-smartfox-client</artifactId>
-            <version>2.1</version>
-            <type>jar</type>
-        </dependency>
+	<properties>
+		<maven.compiler.release>21</maven.compiler.release>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter</artifactId>
-			<version>5.10.2</version>
-			<scope>test</scope>
-		</dependency>
+	<licenses>
+		<license>
+			<name>Anti 996 License</name>
+			<url>https://raw.githubusercontent.com/kattgu7/Anti-996-License/refs/heads/master/LICENSE</url>
+		</license>
+	</licenses>
 
-    </dependencies>
+    <url>https://github.com/Chad-Glazier/edi</url>
 
-	<build>
-		<plugins>
-
-			<plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.2.5</version>
-				<configuration>
-					<excludedGroups>SearchTest</excludedGroups>
-				</configuration>
-			</plugin>		
-
-		</plugins>
-	</build>
-
-    <repositories>
-        <repository>
-            <id>ubc-yong-gao</id>
-            <name>ubc-yong-gao</name>
-        	<url>https://cmps-people.ok.ubc.ca/yongg/computing_resources/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-    
-    <url>https:people.ok.uc.ca/yongg</url>
     <developers>
         <developer>
             <id>chad</id>
             <name>Chad Glazier</name>
             <email>chadglazier@outlook.com</email>
         </developer>
-        <developer>
-            <id>yg</id>
-            <name>Yong Gao</name>
-            <email>yong.gao@ubc.ca</email>
-        </developer> 
+		<developer>
+			<id>hao</id>
+			<name>Guohao Ma</name>
+		</developer>
+		<developer>
+			<id>zhishang</id>
+			<name>Zhishang Ma</name>
+		</developer>
+		<developer>
+			<id>aaryan</id>
+			<name>Aaryan Oberoi</name>
+		</developer>
     </developers>
 
-    <properties>
-		<maven.compiler.release>8</maven.compiler.release>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+	<contributors>
+		<!-- 
+			My professor, Dr. Yong Gao, built the client that communicates
+			with the game server (which itself wraps the SmartFox game client.)
+			This code is a dependency
+		-->
+		<contributor>
+            <name>Yong Gao</name>
+            <email>yong.gao@ubc.ca</email>
+		</contributor>
+	</contributors>
 </project>

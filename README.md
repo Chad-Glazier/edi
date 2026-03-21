@@ -23,7 +23,9 @@ mvn clean package
 mvn exec:java -Dexec.mainClass=ubc.cosc322.demo.RunGame
 ```
 
-Additionally, make sure that you've set the memory constraints. If you're on Windows, you can do this by running `.\setEnv.ps1` in PowerShell (from this directory).
+Additionally, make sure that you've set the memory constraints. 
+
+If you're on Windows, you can run everything by executing `.\run.ps1` in PowerShell (from this directory). This script will re-build the program, run the unit tests, and then start it with the increased memory limit.
 
 ## Guidelines for Making Contributions
 

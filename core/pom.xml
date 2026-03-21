@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+		<groupId>ubc.team09</groupId>
+		<artifactId>edi</artifactId>
+		<version>1.0</version>		
+	</parent>
+
+    <artifactId>edi-core</artifactId>
+
+    <name>EDI</name>
+    <description>
+		An alpha-beta engine to play the Game of Amazons.
+	</description>
+    <inceptionYear>2026</inceptionYear>
+	
+    <dependencies>
+
+		<!-- Used to communicate with a tournament game server. -->
+        <dependency>	        
+	    	<groupId>ubc-yong-gao</groupId>
+            <artifactId>ygraph-ai-smartfox-client</artifactId>
+            <version>2.1</version>
+            <type>jar</type>
+        </dependency>
+
+		<!-- Used for unit tests. -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<version>5.10.2</version>
+			<scope>test</scope>
+		</dependency>
+
+    </dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.2.5</version>
+				<configuration>
+					<excludedGroups>SearchTest</excludedGroups>
+				</configuration>
+			</plugin>		
+		</plugins>
+	</build>
+
+    <repositories>
+        <repository>
+            <id>ubc-yong-gao</id>
+            <name>ubc-yong-gao</name>
+        	<url>https://cmps-people.ok.ubc.ca/yongg/computing_resources/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+</project>

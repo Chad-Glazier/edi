@@ -1,6 +1,3 @@
-/*
-Copyright © 2026 Chad Glazier <chadglazier@outlook.com>
-*/
 package cmd
 
 import (
@@ -17,18 +14,18 @@ import (
 var bitboardsCmd = &cobra.Command{
 	Use:   "bitboards <output_dir>",
 	Short: "Generates the bitboards for efficient Amazons calculations",
-	Args: cobra.MinimumNArgs(1),
+	Args:  cobra.MinimumNArgs(1),
 	Long: `Generates a file in the specified directory named "P.java" (for
 "precomputed") which has hard-coded Java matrices storing 
 bitboards useful in various amazons movement/distance 
 calculations.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		outputDir := args[0];
+		outputDir := args[0]
 
 		_, err := os.Stat(outputDir)
 		if os.IsNotExist(err) {
 			fmt.Printf(
-				"Specified output directory \"%s\" does not exist.", 
+				"Specified output directory \"%s\" does not exist.",
 				outputDir,
 			)
 			return
@@ -39,8 +36,8 @@ calculations.`,
 
 		outputPath := filepath.Join(outputDir, "P.java")
 		w, err := os.OpenFile(
-			outputPath, 
-			os.O_CREATE | os.O_WRONLY | os.O_TRUNC, 
+			outputPath,
+			os.O_CREATE|os.O_WRONLY|os.O_TRUNC,
 			0644,
 		)
 		if err != nil {
@@ -57,18 +54,18 @@ func init() {
 }
 
 func writeMoves(w io.Writer) {
-	w.Write([]byte (header))
-	defer w.Write([]byte (footer))
+	w.Write([]byte(header))
+	defer w.Write([]byte(footer))
 
 	writeRayBoards(w)
 	writeInclusiveRayBoards(w)
 	writeSquareBoards(w)
-	
+
 	// Currently, there are too many in-between boards to fit in the JVM's
 	// hard-set limit for static methods. To use these boards, we need to put
 	// them into an encoded binary file and then load them explicitly in the
 	// Java class.
-	// TODO: Maybe create a static method for the Java class, "initialize," 
+	// TODO: Maybe create a static method for the Java class, "initialize,"
 	// which does this.
 	// writeInBetweenBoards(w)
 }
@@ -76,7 +73,7 @@ func writeMoves(w io.Writer) {
 var header = `//
 // This is a generated file. See "scripts/README.md" for more information.
 //
-package ubc.cosc322.bitboard;
+package com.github.chadglazier.bitboard;
 
 /**
  * This class stores precomputed (abbreviated to "P" for convenience) 
@@ -108,7 +105,6 @@ public class P {
 var footer = `
 }
 `
-
 
 func writeRayBoards(w io.Writer) {
 	w.Write([]byte(`
@@ -196,7 +192,7 @@ func writeInclusiveRayBoards(w io.Writer) {
 			fmt.Fprintf(w, "\t\t},\n")
 		}
 	}
-		
+
 	fmt.Fprintf(w, "\t\t{\n")
 	for range 8 {
 		fmt.Fprintf(w, "\t\t\t")
@@ -204,7 +200,7 @@ func writeInclusiveRayBoards(w io.Writer) {
 		fmt.Fprintf(w, ",\n")
 	}
 	fmt.Fprintf(w, "\t\t},\n")
-	
+
 	fmt.Fprintf(w, "\t};\n")
 }
 

@@ -1,3 +1,7 @@
+# Export the memory configuration.
 $env:MAVEN_OPTS="-Xmx4g -Xms1g";
-mvn clean package;
-mvn exec:java "-Dexec.mainClass=ubc.cosc322.Main";
+
+# Build `core` and run the main method.
+mvn -pl core clean `
+	package "-Dmaven.test.skip=true" `
+	exec:java "-Dexec.mainClass=ubc.team09.Main";

@@ -14,14 +14,17 @@ public class HistoryTable {
 	//
 	// This table requires roughly 7.8 MB of raw data, plus any overhead that
 	// the JVM tacks on.
-	private final int[][][][] historyScores = new int[2][100][100][100];
+	private final int[][][][] scores = new int[2][100][100][100];
 	private static final int MAX_HISTORY = 2 << 13;
 
-	public HistoryTable() {
-	}
+	public HistoryTable() {}
 
 	public int score(int move) {
-		return historyScores[Move.player(move)][Move.start(move)][Move.end(move)][Move.arrow(move)];
+		return scores
+			[Move.player(move)]
+			[Move.start(move)]
+			[Move.end(move)]
+			[Move.arrow(move)];
 	}
 
 	/**
@@ -37,7 +40,7 @@ public class HistoryTable {
 		// Below is the history score increment from Shaeffer's 2006 paper.
 		//
 
-		// historyScores
+		// scores
 		// [Move.player(move)]
 		// [Move.start(move)]
 		// [Move.end(move)]
@@ -47,12 +50,25 @@ public class HistoryTable {
 		// Below is the History Gravity update, from this page:
 		// https://www.chessprogramming.org/History_Heuristic
 		//
+		// The History Gravity formula has the benefit of removing the need for
+		// any kind of explicit decay update between searches.
+		//
 
-		int bonus = depth * depth;
-		int initial = historyScores[Move.player(move)][Move.start(move)][Move.end(move)][Move.arrow(move)];
+		int bonus = Integer.max(
+			-MAX_HISTORY, 
+			Integer.min(depth * depth, MAX_HISTORY)
+		);
+		int initial = scores
+			[Move.player(move)]
+			[Move.start(move)]
+			[Move.end(move)]
+			[Move.arrow(move)];
 
-		historyScores[Move.player(move)][Move.start(move)][Move.end(move)][Move.arrow(move)] += bonus
-				- initial * bonus / MAX_HISTORY;
+		scores
+			[Move.player(move)]
+			[Move.start(move)]
+			[Move.end(move)]
+			[Move.arrow(move)] += bonus - initial * bonus / MAX_HISTORY;
 	}
 
 	/**

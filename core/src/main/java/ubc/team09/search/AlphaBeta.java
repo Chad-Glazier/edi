@@ -75,12 +75,12 @@ import ubc.team09.view.Display;
 public class AlphaBeta
 		extends TimeConstrained
 		implements SearchMethod {
-	private static final int MAX_DEPTH = 100;
-
-	/** The table of history scores. */
-	private HistoryTable history = new HistoryTable();
 
 	// Configuration options.
+	/** The maximum depth to search to. */
+	private int maxDepth = 92;
+	/** The table of history scores. */
+	private HistoryTable history = new HistoryTable();
 	/** The initial board state. */
 	private State root;
 	/** The player who we want to win. */
@@ -91,9 +91,10 @@ public class AlphaBeta
 	private boolean showOutput = false;
 
 	public AlphaBeta(
-			State initialState,
-			HeuristicMethod heuristic,
-			byte maximizingPlayer) {
+		State initialState,
+		HeuristicMethod heuristic,
+		byte maximizingPlayer
+	) {
 		this.root = initialState.copy();
 		this.player = maximizingPlayer;
 		this.heuristic = heuristic;
@@ -113,7 +114,14 @@ public class AlphaBeta
 
 	public void setBoard(State state) {
 		this.root = state.copy();
-		history = new HistoryTable();
+	}
+
+	public void resetHistory() {
+		this.history = new HistoryTable();
+	}
+
+	public void setMaxDepth(int maxDepth) {
+		this.maxDepth = maxDepth;
 	}
 
 	//
@@ -125,7 +133,7 @@ public class AlphaBeta
 		int bestMove = 0;
 
 		try {
-			for (int depth = 1; depth < MAX_DEPTH; depth++) {
+			for (int depth = 1; depth <= maxDepth; depth++) {
 				int bestMoveAtDepth = depthLimitedSearch(depth);
 				if (bestMoveAtDepth == 0) {
 					break;
@@ -180,8 +188,8 @@ public class AlphaBeta
 		// Find the best move.
 		//
 
-		double alpha = Double.NEGATIVE_INFINITY;
-		double beta = Double.POSITIVE_INFINITY;
+		int alpha = Integer.MIN_VALUE;
+		int beta = Integer.MAX_VALUE;
 
 		int color = this.player == C.WHITE ? +1 : -1;
 
@@ -189,8 +197,9 @@ public class AlphaBeta
 
 		for (State child : children) {
 
-			double score = -alphaBeta(
-					child, -beta, -alpha, depth - 1, -color);
+			int score = -alphaBeta(
+				child, -beta, -alpha, depth - 1, -color
+			);
 
 			if (score > alpha) {
 				alpha = score;
@@ -212,12 +221,13 @@ public class AlphaBeta
 	 * @return
 	 * @throws TimeoutException
 	 */
-	private double alphaBeta(
-			State state,
-			double alpha,
-			double beta,
-			int depth,
-			int color) throws TimeoutException {
+	private int alphaBeta(
+		State state,
+		int alpha,
+		int beta,
+		int depth,
+		int color
+	) throws TimeoutException {
 
 		//
 		// Check the time limit; if time limit is expired, we throw an
@@ -264,11 +274,12 @@ public class AlphaBeta
 		//
 
 		int bestMove = 0;
-		double score = Double.NEGATIVE_INFINITY;
+		int score = Integer.MIN_VALUE;
 		for (State child : children) {
 
-			double result = -alphaBeta(
-					child, -beta, -alpha, depth - 1, -color);
+			int result = - alphaBeta(
+				child, -beta, -alpha, depth - 1, -color
+			);
 			if (result > score) {
 				score = result;
 			}
@@ -281,7 +292,7 @@ public class AlphaBeta
 				break;
 			}
 
-			alpha = Math.max(alpha, score);
+			alpha = Integer.max(alpha, score);
 		}
 
 		//

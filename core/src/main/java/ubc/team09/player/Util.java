@@ -1,6 +1,7 @@
 package ubc.team09.player;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
 
 import ubc.team09.bitboard.BitBoard;
@@ -12,6 +13,38 @@ import ygraph.ai.smartfox.games.amazons.AmazonsGameMessage;
 
 public class Util {
 	/**
+	 * Generates a random Amazons boardstate.
+	 */
+	public static State randomBoard(double arrowDensity) {
+
+		long[] occupancy = BitBoard.create();
+
+		for (byte i = 0; i < 100; i++) {
+			if (Math.random() < arrowDensity) {
+				BitBoard.flag(occupancy, i);
+			}
+		}
+
+		HashSet<Byte> queens = new HashSet<>();
+		while (queens.size() < 8) {
+			queens.add((byte) (Math.random() * 100));
+		}
+		int i = 0;
+		byte[] queensArr = new byte[8];
+		for (byte queen : queens) {
+			queensArr[i++] = queen;
+			BitBoard.flag(occupancy, queen);
+		}
+
+		return new State(
+			occupancy,
+			queensArr,
+			C.WHITE,
+			0
+		);
+	}
+
+	/**
 	 * Generates the starting Amazons board state.
 	 */
 	public static State initialBoard() {
@@ -19,16 +52,16 @@ public class Util {
 		byte[] queens = new byte[8];
 
 		// White queens
-		queens[0] = 60;
-		queens[1] = 93;
-		queens[2] = 96;
-		queens[3] = 69;
+		queens[4] = 60;
+		queens[5] = 93;
+		queens[6] = 96;
+		queens[7] = 69;
 
 		// Black queens
-		queens[4] = 30;
-		queens[5] = 03;
-		queens[6] = 06;
-		queens[7] = 39;
+		queens[0] = 30;
+		queens[1] = 03;
+		queens[2] = 06;
+		queens[3] = 39;
 
 		// Flag each queen's position.
 		long[] occupancy = BitBoard.create();

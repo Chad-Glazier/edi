@@ -31,15 +31,40 @@
 
 package org.sample;
 
-import org.openjdk.jmh.annotations.Benchmark;
+import java.util.concurrent.TimeUnit;
 
-import ubc.team09.bitboard.BitBoard;
+import org.openjdk.jmh.annotations.*;
 
-public class MyBenchmark {
+import ubc.team09.eval.HeuristicMethod;
+import ubc.team09.eval.MinDist;
+import ubc.team09.player.Util;
+import ubc.team09.state.State;
+
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
+@Warmup(time = 200, timeUnit = TimeUnit.MILLISECONDS)
+@Measurement(time = 200, timeUnit = TimeUnit.MILLISECONDS)
+public class HeuristicEvaluations {
+
+	private static final State initial = Util.initialBoard();
+	private static final State sparse = Util.randomBoard(0.10);
+	private static final State dense = Util.randomBoard(0.40);
+
+	private static final HeuristicMethod mindist = new MinDist();
 
 	@Benchmark
-	public void testMethod() {
-		BitBoard.create();
+	public void MinDistInitial() {
+		mindist.evaluate(initial);
+	}
+
+	@Benchmark
+	public void MinDistSparse() {
+		mindist.evaluate(sparse);
+	}
+
+	@Benchmark
+	public void MinDistDense() {
+		mindist.evaluate(dense);
 	}
 
 }

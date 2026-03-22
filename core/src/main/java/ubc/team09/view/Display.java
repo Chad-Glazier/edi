@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Scanner;
 
 import ubc.team09.bitboard.BitBoard;
-import ubc.team09.eval.HeuristicMethod;
 import ubc.team09.eval.MinDist;
 import ubc.team09.state.C;
 import ubc.team09.state.Move;
@@ -160,7 +159,7 @@ public class Display {
 		// We can get the turn count by getting the number of flags in the
 		// occupancy board and subtracting 8, for the queens (this gives us
 		// the number of arrows).
-		int turn = BitBoard.count(BitBoard.copy(state.occupancy)) - 8;
+		int turn = BitBoard.count(state.occupancy) - 8;
 
 		// Clear the console.
 		clear();
@@ -307,12 +306,11 @@ public class Display {
 	}
 
 	private static String evaluation(State state) {
-		HeuristicMethod mindist = new MinDist();
-		double score = (mindist.evaluate(state) + 1) / 2;
+		MinDist mindist = new MinDist();
+		
 		int width = 35;
-
-		int blackWidth = (int) (width * (1.0 - score));
-		int whiteWidth = width - blackWidth;
+		int whiteWidth = (int) (width * mindist.evaluateAndNormalize(state));
+		int blackWidth = width - whiteWidth;
 
 		String out = "";
 		out += Ansi.RESET;

@@ -129,31 +129,36 @@ public class AlphaBeta
 	//
 
 	public int search() {
+
 		startTimer();
-		int bestMove = 0;
+
+		State bestChild = root;
 
 		try {
 			for (int depth = 1; depth <= maxDepth; depth++) {
-				int bestMoveAtDepth = depthLimitedSearch(depth);
-				if (bestMoveAtDepth == 0) {
+
+				State bestChildAtDepth = depthLimitedSearch(depth);
+				
+				if (bestChildAtDepth == null) {
 					break;
 				} else {
-					bestMove = bestMoveAtDepth;
+					bestChild = bestChildAtDepth;
 					if (showOutput) {
-						Display.printText(0,
-								"Searching at depth " +
-										Integer.toString(depth + 1) +
-										"...");
+						Display.printText(
+							0,
+							"Searching at depth " +
+							Integer.toString(depth + 1) +
+							"..."
+						);
 					}
 				}
 			}
-		} catch (TimeoutException e) {
-		}
+		} catch (TimeoutException e) {}
 
-		return bestMove;
+		return bestChild.move;
 	}
 
-	private int depthLimitedSearch(int depth) throws TimeoutException {
+	private State depthLimitedSearch(int depth) throws TimeoutException {
 
 		//
 		// Note: The heuristic evaluation will return lesser values if a state
@@ -175,7 +180,7 @@ public class AlphaBeta
 		//
 
 		if (children.isEmpty()) {
-			return 0;
+			return null;
 		}
 
 		//
@@ -193,21 +198,21 @@ public class AlphaBeta
 
 		int color = this.player == C.WHITE ? +1 : -1;
 
-		int bestMove = 0;
+		State bestChild = null;
 
 		for (State child : children) {
 
-			int score = -alphaBeta(
+			int score = - alphaBeta(
 				child, -beta, -alpha, depth - 1, -color
 			);
 
 			if (score > alpha) {
 				alpha = score;
-				bestMove = child.move;
+				bestChild = child;
 			}
 		}
 
-		return bestMove;
+		return bestChild;		
 	}
 
 	/**

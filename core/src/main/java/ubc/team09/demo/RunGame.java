@@ -1,6 +1,7 @@
 package ubc.team09.demo;
 
 import ubc.team09.eval.MinDist;
+import ubc.team09.eval.X;
 import ubc.team09.player.Util;
 import ubc.team09.search.AlphaBeta;
 import ubc.team09.state.C;
@@ -12,12 +13,12 @@ public class RunGame {
 	public static void main() {
 
 		State board = Util.initialBoard();
-		Display.printBoard(board, "A-B vs Parallel A-B");
+		Display.printBoard(board, "MinDist vs X");
 
 		AlphaBeta edi = new AlphaBeta(board, new MinDist(), C.WHITE);
 		edi.setTimeLimit(30);
 		edi.setShowOutput(true);
-		AlphaBeta legion = new AlphaBeta(board, new MinDist(), C.BLACK);
+		AlphaBeta legion = new AlphaBeta(board, new X(), C.BLACK);
 		legion.setTimeLimit(30);
 		legion.setShowOutput(true);
 

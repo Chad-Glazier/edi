@@ -10,5 +10,5 @@ public interface HeuristicMethod {
 	 * 
 	 * @param state The board state to evaluate.
 	 */
-	public int evaluate(State state);
+	public double evaluate(State state);
 }

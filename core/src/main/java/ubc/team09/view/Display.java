@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 import ubc.team09.bitboard.BitBoard;
+import ubc.team09.eval.HeuristicMethod;
 import ubc.team09.eval.MinDist;
 import ubc.team09.state.C;
 import ubc.team09.state.Move;
@@ -306,11 +307,12 @@ public class Display {
 	}
 
 	private static String evaluation(State state) {
-		MinDist mindist = new MinDist();
-		
+		HeuristicMethod mindist = new MinDist();
+		double score = (mindist.evaluate(state) + 1) / 2;
 		int width = 35;
-		int whiteWidth = (int) (width * mindist.evaluateAndNormalize(state));
-		int blackWidth = width - whiteWidth;
+
+		int blackWidth = (int) (width * (1.0 - score));
+		int whiteWidth = width - blackWidth;
 
 		String out = "";
 		out += Ansi.RESET;

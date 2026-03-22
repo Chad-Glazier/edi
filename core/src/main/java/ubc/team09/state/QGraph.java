@@ -15,6 +15,8 @@ import ubc.team09.bitboard.P;
  * @see {@link KGraph}
  */
 public class QGraph {
+	public static final byte UNREACHABLE = 100;
+
 	public static long[] neighbors(byte position, long[] occupancy) {
 
 		// We divide the 8 directions into two groups:
@@ -153,11 +155,16 @@ public class QGraph {
 	 * @param occupancy         A bitboard with each occupied square flagged.
 	 */
 	public static long[] neighbors(
-			long[] originalPositions, long[] occupancy) {
+		long[] originalPositions, long[] occupancy
+	) {
 		long[] positions = BitBoard.copy(originalPositions);
 		long[] domain = BitBoard.create();
 
-		for (byte position = BitBoard.poll(positions); position != -1; position = BitBoard.poll(positions)) {
+		for (
+			byte position = BitBoard.poll(positions); 
+			position != -1; 
+			position = BitBoard.poll(positions)
+		) {
 			long[] adjacent = neighbors(position, occupancy);
 
 			domain[0] |= adjacent[0];
@@ -165,5 +172,43 @@ public class QGraph {
 		}
 
 		return domain;
+	}
+
+	/**
+	 * Given an origin, returns the distance from that point to each other
+	 * point on the board. If the point is unreachable, then it is given a
+	 * distance of <code>100</code>.
+	 */
+	public static byte[] distance(byte origin, long[] occupancy) {
+		
+		byte[] distances = new byte[100];
+		for (int i = 0; i < 100; i++) {
+			distances[i] = UNREACHABLE;
+		}
+
+		long[] visited = BitBoard.create();
+		long[] frontier = BitBoard.create();
+		BitBoard.flag(frontier, origin);
+		BitBoard.flag(visited, origin);
+		distances[origin] = 0;
+
+		for (byte d = 1; !BitBoard.isEmpty(frontier); d++) {
+
+			long[] tmp = neighbors(frontier, occupancy);
+			frontier[0] = tmp[0] & ~visited[0];
+			frontier[1] = tmp[1] & ~visited[1];
+
+			// update distances
+			long[] newFrontier = BitBoard.copy(frontier);
+			while (!BitBoard.isEmpty(newFrontier)) {
+				distances[BitBoard.poll(newFrontier)] = d;
+			}
+
+			// update visited
+			visited[0] |= frontier[0];
+			visited[1] |= frontier[1];
+		}
+
+		return distances;
 	}
 }

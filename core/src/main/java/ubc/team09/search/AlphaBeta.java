@@ -193,8 +193,8 @@ public class AlphaBeta
 		// Find the best move.
 		//
 
-		int alpha = Integer.MIN_VALUE;
-		int beta = Integer.MAX_VALUE;
+		double alpha = Double.NEGATIVE_INFINITY;
+		double beta = Double.POSITIVE_INFINITY;
 
 		int color = this.player == C.WHITE ? +1 : -1;
 
@@ -202,7 +202,7 @@ public class AlphaBeta
 
 		for (State child : children) {
 
-			int score = - alphaBeta(
+			double score = - alphaBeta(
 				child, -beta, -alpha, depth - 1, -color
 			);
 
@@ -226,10 +226,10 @@ public class AlphaBeta
 	 * @return
 	 * @throws TimeoutException
 	 */
-	private int alphaBeta(
+	private double alphaBeta(
 		State state,
-		int alpha,
-		int beta,
+		double alpha,
+		double beta,
 		int depth,
 		int color
 	) throws TimeoutException {
@@ -279,10 +279,10 @@ public class AlphaBeta
 		//
 
 		int bestMove = 0;
-		int score = Integer.MIN_VALUE;
+		double score = Double.NEGATIVE_INFINITY;
 		for (State child : children) {
 
-			int result = - alphaBeta(
+			double result = - alphaBeta(
 				child, -beta, -alpha, depth - 1, -color
 			);
 			if (result > score) {
@@ -297,7 +297,7 @@ public class AlphaBeta
 				break;
 			}
 
-			alpha = Integer.max(alpha, score);
+			alpha = Math.max(alpha, score);
 		}
 
 		//

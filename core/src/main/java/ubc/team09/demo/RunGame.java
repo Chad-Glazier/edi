@@ -3,7 +3,6 @@ package ubc.team09.demo;
 import ubc.team09.eval.MinDist;
 import ubc.team09.player.Util;
 import ubc.team09.search.AlphaBeta;
-import ubc.team09.search.ParallelAlphaBeta;
 import ubc.team09.state.C;
 import ubc.team09.state.Move;
 import ubc.team09.state.State;
@@ -18,7 +17,7 @@ public class RunGame {
 		AlphaBeta edi = new AlphaBeta(board, new MinDist(), C.WHITE);
 		edi.setTimeLimit(30);
 		edi.setShowOutput(true);
-		ParallelAlphaBeta legion = new ParallelAlphaBeta(board, new MinDist(), C.BLACK);
+		AlphaBeta legion = new AlphaBeta(board, new MinDist(), C.BLACK);
 		legion.setTimeLimit(30);
 		legion.setShowOutput(true);
 

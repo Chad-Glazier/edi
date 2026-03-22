@@ -35,24 +35,36 @@ import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.*;
 
+import ubc.team09.eval.HeuristicMethod;
 import ubc.team09.eval.MinDist;
 import ubc.team09.player.Util;
-import ubc.team09.search.AlphaBeta;
-import ubc.team09.state.C;
 import ubc.team09.state.State;
 
-@BenchmarkMode(Mode.SingleShotTime)
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
-public class MyBenchmark {
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
+@Warmup(time = 200, timeUnit = TimeUnit.MILLISECONDS)
+@Measurement(time = 200, timeUnit = TimeUnit.MILLISECONDS)
+public class HeuristicEvaluations {
+
+	private static final State initial = Util.initialBoard();
+	private static final State sparse = Util.randomBoard(0.10);
+	private static final State dense = Util.randomBoard(0.40);
+
+	private static final HeuristicMethod mindist = new MinDist();
 
 	@Benchmark
-	public void depth4WithoutMemory() {
-
+	public void MinDistInitial() {
+		mindist.evaluate(initial);
 	}
-
 
 	@Benchmark
-	public void depth4WithMemory() {
-		
+	public void MinDistSparse() {
+		mindist.evaluate(sparse);
 	}
+
+	@Benchmark
+	public void MinDistDense() {
+		mindist.evaluate(dense);
+	}
+
 }

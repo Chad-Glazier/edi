@@ -76,7 +76,6 @@ public class AlphaBeta
 		extends TimeConstrained
 		implements SearchMethod {
 
-
 	// Configuration options.
 	/** The maximum depth to search to. */
 	private int maxDepth = 92;

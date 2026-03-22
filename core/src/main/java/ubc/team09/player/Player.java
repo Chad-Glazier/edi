@@ -79,8 +79,9 @@ public class Player extends GamePlayer {
 		MinimalState received = Util.parseState(details);
 		if (received == null) {
 			handleMessage(
-					"Client",
-					"Incoherent board received; Ignoring.");
+				"Client",
+				"Incoherent board received; Ignoring."
+			);
 			return false;
 		}
 
@@ -91,26 +92,30 @@ public class Player extends GamePlayer {
 
 		if (received.isConsistentWith(state)) {
 			handleMessage(
-					"Client",
-					"Consistent board received.");
+				"Client",
+				"Consistent board received."
+			);
 			return true;
 		}
 
 		state = received;
 		Display.printBoard(
-				new State(
-						state.occupancy,
-						state.queens,
-						Move.player(moveHistory.get(moveHistory.size() - 1)) == C.WHITE
-								? C.BLACK
-								: C.WHITE,
-						moveHistory.get(moveHistory.size() - 1)),
-				getBoardTitle(),
-				ourColor == C.BLACK ? username : opponentUsername,
-				ourColor == C.WHITE ? username : opponentUsername);
+			new State(
+				state.occupancy,
+				state.queens,
+				Move.player(moveHistory.get(moveHistory.size() - 1)) == C.WHITE
+					? C.BLACK
+					: C.WHITE,
+				moveHistory.get(moveHistory.size() - 1)
+			),
+			getBoardTitle(),
+			ourColor == C.BLACK ? username : opponentUsername,
+			ourColor == C.WHITE ? username : opponentUsername
+		);
 		handleMessage(
 				"Client",
-				"Resolving inconsistency.");
+				"Resolving inconsistency."
+		);
 		return true;
 	}
 
@@ -152,14 +157,16 @@ public class Player extends GamePlayer {
 		//
 
 		State fullState = new State(
-				state.occupancy,
-				state.queens,
-				ourColor,
-				0);
+			state.occupancy,
+			state.queens,
+			ourColor,
+			0
+		);
 		Display.printBoard(
-				fullState, getBoardTitle(),
-				ourColor == C.BLACK ? username : opponentUsername,
-				ourColor == C.WHITE ? username : opponentUsername);
+			fullState, getBoardTitle(),
+			ourColor == C.BLACK ? username : opponentUsername,
+			ourColor == C.WHITE ? username : opponentUsername
+		);
 		handleMessage("Client", "Game start.");
 		Display.printText(0, "Waiting for " + opponentUsername + "...");
 
@@ -176,9 +183,10 @@ public class Player extends GamePlayer {
 		//
 
 		int ourMove = VI.consult(
-				fullState,
-				ourColor,
-				timeLimit);
+			fullState,
+			ourColor,
+			timeLimit
+		);
 
 		//
 		// We update our local board to reflect our new move and send the
@@ -200,8 +208,9 @@ public class Player extends GamePlayer {
 		int move = Util.parseMove(state, details);
 		if (!Move.isLegal(state, move)) {
 			handleMessage(
-					"Client",
-					"Incoherent move received; Ignoring.");
+				"Client",
+				"Incoherent move received; Ignoring."
+			);
 			return false;
 		}
 
@@ -213,17 +222,20 @@ public class Player extends GamePlayer {
 		moveHistory.add(move);
 		state = new MinimalState(state, move);
 		State fullState = new State(
-				state.occupancy,
-				state.queens,
-				ourColor,
-				move);
+			state.occupancy,
+			state.queens,
+			ourColor,
+			move
+		);
 		Display.printBoard(
-				fullState, getBoardTitle(),
-				ourColor == C.BLACK ? username : opponentUsername,
-				ourColor == C.WHITE ? username : opponentUsername);
+			fullState, getBoardTitle(),
+			ourColor == C.BLACK ? username : opponentUsername,
+			ourColor == C.WHITE ? username : opponentUsername
+		);
 		handleMessage(
-				"Client",
-				"Move received. Board updated.");
+			"Client",
+			"Move received. Board updated."
+		);
 
 		if (state.isTerminal(ourColor)) {
 			Display.printText(0, opponentUsername + " wins.\n");
@@ -237,9 +249,10 @@ public class Player extends GamePlayer {
 		//
 
 		int ourMove = VI.consult(
-				fullState,
-				ourColor,
-				timeLimit);
+			fullState,
+			ourColor,
+			timeLimit
+		);
 
 		sendMove(ourMove);
 
@@ -255,24 +268,29 @@ public class Player extends GamePlayer {
 		moveHistory.add(move);
 		state = new MinimalState(state, move);
 		Display.printBoard(
-				new State(
-						state.occupancy,
-						state.queens,
-						ourColor == C.WHITE ? C.BLACK : C.WHITE,
-						move),
-				getBoardTitle(),
-				ourColor == C.BLACK ? username : opponentUsername,
-				ourColor == C.WHITE ? username : opponentUsername);
+			new State(
+				state.occupancy,
+				state.queens,
+				ourColor == C.WHITE ? C.BLACK : C.WHITE,
+				move
+			),
+			getBoardTitle(),
+			ourColor == C.BLACK ? username : opponentUsername,
+			ourColor == C.WHITE ? username : opponentUsername
+		);
 		Display.printText(
-				0,
-				"Waiting for " + opponentUsername + "...");
+			0,
+			"Waiting for " + opponentUsername + "..."
+		);
 		handleMessage(
-				"Client",
-				"Sending move to server.");
+			"Client",
+			"Sending move to server."
+		);
 		getGameClient().sendMoveMessage(
-				Util.getStartPosition(move),
-				Util.getEndPosition(move),
-				Util.getArrowPosition(move));
+			Util.getStartPosition(move),
+			Util.getEndPosition(move),
+			Util.getArrowPosition(move)
+		);
 
 		//
 		// Check if we won.
@@ -323,15 +341,15 @@ public class Player extends GamePlayer {
 	public boolean handleGameMessage(
 			String msgType, Map<String, Object> details) {
 		switch (msgType) {
-			case GameMessage.GAME_STATE_BOARD:
-				return handleBoardMessage(details);
-			case GameMessage.GAME_ACTION_START:
-				return handleStartMessage(details);
-			case GameMessage.GAME_ACTION_MOVE:
-				return handleMoveMessage(details);
-			default:
-				handleMessage("Unhandled", msgType);
-				return true;
+		case GameMessage.GAME_STATE_BOARD:
+			return handleBoardMessage(details);
+		case GameMessage.GAME_ACTION_START:
+			return handleStartMessage(details);
+		case GameMessage.GAME_ACTION_MOVE:
+			return handleMoveMessage(details);
+		default:
+			handleMessage("Unhandled", msgType);
+			return true;
 		}
 	}
 
@@ -343,16 +361,19 @@ public class Player extends GamePlayer {
 		List<String> roomNames = new LinkedList<String>();
 		for (Room room : rooms) {
 			roomNames.add(
-					room.getName() +
-							Ansi.FG_BRIGHT_BLACK +
-							" (" + Integer.toString(
-									room.getUserCount() - room.getSpectatorCount())
-							+
-							"/" + Integer.toString(
-									room.getMaxUsers() - room.getMaxSpectators())
-							+
-							")" +
-							Ansi.RESET);
+				room.getName() +
+				Ansi.FG_BRIGHT_BLACK +
+				" (" + 
+				Integer.toString(
+					room.getUserCount() - room.getSpectatorCount()
+				) +
+				"/" + 
+				Integer.toString(
+					room.getMaxUsers() - room.getMaxSpectators()
+				) +
+				")" +
+				Ansi.RESET
+			);
 		}
 
 		System.out.println(roomNames);

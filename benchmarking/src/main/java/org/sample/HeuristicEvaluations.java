@@ -37,13 +37,14 @@ import org.openjdk.jmh.annotations.*;
 
 import ubc.team09.eval.HeuristicMethod;
 import ubc.team09.eval.MinDist;
+import ubc.team09.eval.X;
 import ubc.team09.player.Util;
 import ubc.team09.state.State;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @Warmup(time = 200, timeUnit = TimeUnit.MILLISECONDS)
-@Measurement(time = 200, timeUnit = TimeUnit.MILLISECONDS)
+@Measurement(time = 400, timeUnit = TimeUnit.MILLISECONDS)
 public class HeuristicEvaluations {
 
 	private static final State initial = Util.initialBoard();
@@ -51,6 +52,7 @@ public class HeuristicEvaluations {
 	private static final State dense = Util.randomBoard(0.40);
 
 	private static final HeuristicMethod mindist = new MinDist();
+	private static final HeuristicMethod x = new X();
 
 	@Benchmark
 	public void MinDistInitial() {
@@ -66,5 +68,4 @@ public class HeuristicEvaluations {
 	public void MinDistDense() {
 		mindist.evaluate(dense);
 	}
-
 }

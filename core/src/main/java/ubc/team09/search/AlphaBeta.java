@@ -129,31 +129,36 @@ public class AlphaBeta
 	//
 
 	public int search() {
+
 		startTimer();
-		int bestMove = 0;
+
+		State bestChild = root;
 
 		try {
 			for (int depth = 1; depth <= maxDepth; depth++) {
-				int bestMoveAtDepth = depthLimitedSearch(depth);
-				if (bestMoveAtDepth == 0) {
+
+				State bestChildAtDepth = depthLimitedSearch(depth);
+				
+				if (bestChildAtDepth == null) {
 					break;
 				} else {
-					bestMove = bestMoveAtDepth;
+					bestChild = bestChildAtDepth;
 					if (showOutput) {
-						Display.printText(0,
-								"Searching at depth " +
-										Integer.toString(depth + 1) +
-										"...");
+						Display.printText(
+							0,
+							"Searching at depth " +
+							Integer.toString(depth + 1) +
+							"..."
+						);
 					}
 				}
 			}
-		} catch (TimeoutException e) {
-		}
+		} catch (TimeoutException e) {}
 
-		return bestMove;
+		return bestChild.move;
 	}
 
-	private int depthLimitedSearch(int depth) throws TimeoutException {
+	private State depthLimitedSearch(int depth) throws TimeoutException {
 
 		//
 		// Note: The heuristic evaluation will return lesser values if a state
@@ -175,7 +180,7 @@ public class AlphaBeta
 		//
 
 		if (children.isEmpty()) {
-			return 0;
+			return null;
 		}
 
 		//
@@ -188,26 +193,26 @@ public class AlphaBeta
 		// Find the best move.
 		//
 
-		int alpha = Integer.MIN_VALUE;
-		int beta = Integer.MAX_VALUE;
+		double alpha = Double.NEGATIVE_INFINITY;
+		double beta = Double.POSITIVE_INFINITY;
 
 		int color = this.player == C.WHITE ? +1 : -1;
 
-		int bestMove = 0;
+		State bestChild = null;
 
 		for (State child : children) {
 
-			int score = -alphaBeta(
+			double score = - alphaBeta(
 				child, -beta, -alpha, depth - 1, -color
 			);
 
 			if (score > alpha) {
 				alpha = score;
-				bestMove = child.move;
+				bestChild = child;
 			}
 		}
 
-		return bestMove;
+		return bestChild;		
 	}
 
 	/**
@@ -221,10 +226,10 @@ public class AlphaBeta
 	 * @return
 	 * @throws TimeoutException
 	 */
-	private int alphaBeta(
+	private double alphaBeta(
 		State state,
-		int alpha,
-		int beta,
+		double alpha,
+		double beta,
 		int depth,
 		int color
 	) throws TimeoutException {
@@ -274,10 +279,10 @@ public class AlphaBeta
 		//
 
 		int bestMove = 0;
-		int score = Integer.MIN_VALUE;
+		double score = Double.NEGATIVE_INFINITY;
 		for (State child : children) {
 
-			int result = - alphaBeta(
+			double result = - alphaBeta(
 				child, -beta, -alpha, depth - 1, -color
 			);
 			if (result > score) {
@@ -292,7 +297,7 @@ public class AlphaBeta
 				break;
 			}
 
-			alpha = Integer.max(alpha, score);
+			alpha = Math.max(alpha, score);
 		}
 
 		//

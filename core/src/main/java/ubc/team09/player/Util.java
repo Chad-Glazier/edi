@@ -52,16 +52,16 @@ public class Util {
 		byte[] queens = new byte[8];
 
 		// White queens
-		queens[4] = 60;
-		queens[5] = 93;
-		queens[6] = 96;
-		queens[7] = 69;
+		queens[0] = 60;
+		queens[1] = 93;
+		queens[2] = 96;
+		queens[3] = 69;
 
 		// Black queens
-		queens[0] = 30;
-		queens[1] = 03;
-		queens[2] = 06;
-		queens[3] = 39;
+		queens[4] = 30;
+		queens[5] = 03;
+		queens[6] = 06;
+		queens[7] = 39;
 
 		// Flag each queen's position.
 		long[] occupancy = BitBoard.create();

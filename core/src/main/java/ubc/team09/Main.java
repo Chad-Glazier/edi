@@ -1,8 +1,6 @@
 package ubc.team09;
 
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 import ubc.team09.player.EDI;
 import ubc.team09.player.Player;
@@ -50,8 +48,9 @@ public class Main {
 		} catch (Exception e) {
 			Display.clear();
 			Display.printText(0,
-					"Error connecting to server." +
-							"\nEnsure you're on the right network.");
+				"Error connecting to server." +
+				"\nEnsure you're on the right network."
+			);
 		}
 	}
 }

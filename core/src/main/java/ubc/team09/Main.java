@@ -38,25 +38,12 @@ public class Main {
 			starting = C.BLACK;
 		}
 
-		Map<String, String> players = new HashMap<>();
-		players.put(
-				"EDI",
-				"primarily uses an optimized alpha-beta search.");
-		String playerName = Display.prompt("Choose a VI to consult.", players);
-
-		GamePlayer player = null;
-		switch (playerName) {
-			case "EDI":
-				player = new Player(
-						username,
-						new EDI(),
-						starting,
-						timeLimit);
-				break;
-			default:
-				Display.printText(0, "Error: No bot chosen.");
-				return;
-		}
+		GamePlayer player = new Player(
+			username,
+			new EDI(),
+			starting,
+			timeLimit
+		);
 
 		try {
 			player.connect();

@@ -57,6 +57,7 @@ func writeMoves(w io.Writer) {
 	w.Write([]byte(header))
 	defer w.Write([]byte(footer))
 
+	writeKingBoards(w)
 	writeRayBoards(w)
 	writeInclusiveRayBoards(w)
 	writeSquareBoards(w)
@@ -231,6 +232,33 @@ func writeInBetweenBoards(w io.Writer) {
 				}
 			}
 			fmt.Fprintf(w, "\t\t},\n")
+		}
+	}
+
+	fmt.Fprintf(w, "\t};\n")
+}
+
+func writeKingBoards(w io.Writer) {
+	w.Write([]byte(`
+	/**
+	 * A matrix that stores the squares that are adjacent to the indexed
+	 * position, meaning that a chess King could move from the position to
+	 * any of the flagged positions.
+     * <br /><br />
+	 * For example, if you want all of the squares adjacent to the position
+	 * (1, 1), you would use:
+	 *
+	 * <pre>{@code
+	 * long[] adjacentSquares = P.kingAttack[11];
+	 * }</pre>
+	 */
+	public static final long[][] kingAttack = {` + "\n"))
+
+	for row := range 10 {
+		for col := range 10 {
+			fmt.Fprintf(w, "\t\t")
+			bitboard.Write(w, bitboard.Adjacent(row, col))
+			fmt.Fprintf(w, ",\n")
 		}
 	}
 

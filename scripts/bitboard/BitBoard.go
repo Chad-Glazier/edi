@@ -127,3 +127,42 @@ func Square(row, col int) BitBoard {
 
 	return board
 }
+
+
+func Adjacent(row, col int) BitBoard {
+	board := BitBoard{}
+
+	if row != 9 {
+		Flag(&board, row + 1, col)
+	
+		if col != 9 {
+			Flag(&board, row + 1, col + 1)
+		}
+
+		if col != 0 {
+			Flag(&board, row + 1, col - 1)
+		}
+	}
+
+	if row != 0 {
+		Flag(&board, row - 1, col)
+	
+		if col != 9 {
+			Flag(&board, row - 1, col + 1)
+		}
+
+		if col != 0 {
+			Flag(&board, row - 1, col - 1)
+		}
+	}
+
+	if col != 9 {
+		Flag(&board, row, col + 1)
+	}
+
+	if col != 0 {
+		Flag(&board, row, col - 1)
+	}
+
+	return board
+}

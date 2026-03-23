@@ -2,7 +2,6 @@ package ubc.team09;
 
 import java.util.LinkedList;
 
-import ubc.team09.player.EDI;
 import ubc.team09.player.Player;
 import ubc.team09.state.C;
 import ubc.team09.view.Display;
@@ -37,7 +36,6 @@ public class Main {
 
 		GamePlayer player = new Player(
 			username,
-			new EDI(),
 			starting,
 			timeLimit
 		);

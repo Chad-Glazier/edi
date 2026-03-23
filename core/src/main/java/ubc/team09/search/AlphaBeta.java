@@ -84,7 +84,7 @@ public class AlphaBeta
 	/** The initial board state. */
 	private State root;
 	/** The player who we want to win. */
-	private final byte player;
+	private byte player;
 	/** The heuristic used to evaluate game states. */
 	private HeuristicMethod heuristic;
 	/** Indicates whether or not we want to see output to the console. */
@@ -116,8 +116,12 @@ public class AlphaBeta
 		this.root = state.copy();
 	}
 
-	public void resetHistory() {
-		this.history = new HistoryTable();
+	public HistoryTable history() {
+		return this.history;
+	}
+
+	public void setColor(byte color) {
+		this.player = color;
 	}
 
 	public void setMaxDepth(int maxDepth) {

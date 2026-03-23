@@ -22,9 +22,7 @@ public interface VI {
 	 * @see {@link ubc.cosc322.state.Move} to use the move value.
 	 * 
 	 * @param board The current board state.
-	 * @param color The color of the player that the VI is representing.
-	 *              <code>0</code> for White, and <code>1</code> for Black.
 	 * @return An integer encoding of the move.
 	 */
-	public int consult(State board, byte color, int timeLimit);
+	public int consult(State board);
 }

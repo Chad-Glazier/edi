@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import ubc.team09.eval.MinDist;
+import ubc.team09.eval.QMinDist;
 import ubc.team09.player.Util;
 import ubc.team09.state.C;
 import ubc.team09.state.Move;
@@ -17,9 +17,9 @@ public class AlphaBetaTest {
 	public void TestValidity() {
 		State board = Util.initialBoard();
 
-		AlphaBeta edi = new AlphaBeta(board, new MinDist(), C.WHITE);
+		AlphaBeta edi = new AlphaBeta(board, new QMinDist(), C.WHITE);
 		edi.setTimeLimit(10);
-		AlphaBeta legion = new AlphaBeta(board, new MinDist(), C.BLACK);
+		AlphaBeta legion = new AlphaBeta(board, new QMinDist(), C.BLACK);
 		legion.setTimeLimit(10);
 
 		int turns = 10;
@@ -44,7 +44,7 @@ public class AlphaBetaTest {
 
 		SearchMethod alphaBeta = new AlphaBeta(
 				Util.initialBoard(),
-				new MinDist(),
+				new QMinDist(),
 				C.WHITE);
 
 		for (int i = 0; i < 5; i++) {

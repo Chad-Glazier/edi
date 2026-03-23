@@ -3,6 +3,7 @@ package ubc.team09.search;
 import ubc.team09.state.State;
 
 public interface SearchMethod {
+	
 	public void setBoard(State board);
 
 	public void setTimeLimit(int seconds);

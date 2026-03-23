@@ -1,16 +1,10 @@
 package ubc.team09.eval;
 
 import ubc.team09.bitboard.BitBoard;
-import ubc.team09.state.KGraph;
+import ubc.team09.state.QGraph;
 import ubc.team09.state.State;
 
-/**
- * This evaluation is identical to {@link QMinDist}, except that this one claims
- * territory for each color if they would need fewer <em>King</em> moves to
- * reach it, rather than the traditional distance calculation using queen
- * moves.
- */
-public class KMinDist implements HeuristicMethod {
+public class QMinDist implements HeuristicMethod {
 	public double evaluate(State state) {
 
 		// Store the territory belonging to each color.
@@ -55,11 +49,11 @@ public class KMinDist implements HeuristicMethod {
 
 			long[] tmp;
 
-			tmp = KGraph.neighbors(whiteFrontier, state.occupancy);
+			tmp = QGraph.neighbors(whiteFrontier, state.occupancy);
 			whiteFrontier[0] = tmp[0] & ~visited[0];
 			whiteFrontier[1] = tmp[1] & ~visited[1];
 
-			tmp = KGraph.neighbors(blackFrontier, state.occupancy);
+			tmp = QGraph.neighbors(blackFrontier, state.occupancy);
 			blackFrontier[0] = tmp[0] & ~visited[0];
 			blackFrontier[1] = tmp[1] & ~visited[1];
 

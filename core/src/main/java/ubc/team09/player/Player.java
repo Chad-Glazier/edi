@@ -36,7 +36,7 @@ public class Player extends GamePlayer {
 
 	private String username;
 	private final String password = "password";
-	private final VI VI;
+	private VI VI;
 	/** The player who should make the first move. */
 	private final byte startingColor;
 	/** The board state. */
@@ -59,10 +59,9 @@ public class Player extends GamePlayer {
 	 * @param startingColor Indicates which color will move first (in case,
 	 *                      for some reason, Black is supposed to move first).
 	 */
-	public Player(String username, VI VI, byte startingColor, int timeLimit) {
+	public Player(String username, byte startingColor, int timeLimit) {
 
 		this.username = username;
-		this.VI = VI;
 		this.startingColor = startingColor;
 		this.timeLimit = timeLimit;
 
@@ -159,7 +158,7 @@ public class Player extends GamePlayer {
 		State fullState = new State(
 			state.occupancy,
 			state.queens,
-			ourColor,
+			startingColor,
 			0
 		);
 		Display.printBoard(
@@ -169,6 +168,16 @@ public class Player extends GamePlayer {
 		);
 		handleMessage("Client", "Game start.");
 		Display.printText(0, "Waiting for " + opponentUsername + "...");
+
+		//
+		// We initialize the VI.
+		//
+
+		VI = new EDI(
+			fullState, 
+			ourColor,
+			timeLimit - 1
+		);
 
 		//
 		// If we don't move first, then we stop here.
@@ -182,11 +191,7 @@ public class Player extends GamePlayer {
 		// Otherwise, we start.
 		//
 
-		int ourMove = VI.consult(
-			fullState,
-			ourColor,
-			timeLimit
-		);
+		int ourMove = VI.consult(fullState);
 
 		//
 		// We update our local board to reflect our new move and send the
@@ -248,11 +253,7 @@ public class Player extends GamePlayer {
 		// response.
 		//
 
-		int ourMove = VI.consult(
-			fullState,
-			ourColor,
-			timeLimit
-		);
+		int ourMove = VI.consult(fullState);
 
 		sendMove(ourMove);
 

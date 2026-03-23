@@ -1,26 +1,29 @@
 package ubc.team09.player;
 
-import ubc.team09.eval.HeuristicMethod;
-import ubc.team09.eval.MinDist;
+import ubc.team09.eval.KMinDist;
 import ubc.team09.search.AlphaBeta;
-import ubc.team09.search.SearchMethod;
 import ubc.team09.state.State;
 
 public class EDI implements VI {
 
-	public EDI() {
+	private final AlphaBeta ab;
+	private final KMinDist kmindist = new KMinDist();
+
+	public EDI(
+		State state,
+		byte color,
+		int timeLimit
+	) {
+		ab = new AlphaBeta(state, kmindist, color);
+		ab.setTimeLimit(timeLimit);
+		ab.setShowOutput(true);
 	}
 
 	@Override
-	public int consult(State state, byte color, int timeLimit) {
+	public int consult(State state) {
 
-		HeuristicMethod heuristic = new MinDist();
+		ab.setBoard(state);
 
-		SearchMethod search = new AlphaBeta(state, heuristic, color);
-		search.setShowOutput(true);
-		search.setTimeLimit(timeLimit - 1); // add a small margin.
-
-		return search.search();
+		return ab.search();
 	}
-
 }

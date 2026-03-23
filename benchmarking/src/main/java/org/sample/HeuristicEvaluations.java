@@ -33,11 +33,17 @@ package org.sample;
 
 import java.util.concurrent.TimeUnit;
 
-import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Warmup;
 
 import ubc.team09.eval.HeuristicMethod;
 import ubc.team09.eval.KMinDist;
 import ubc.team09.eval.MinDist;
+import ubc.team09.eval.QMinDist;
 import ubc.team09.player.Util;
 import ubc.team09.state.State;
 
@@ -51,22 +57,28 @@ public class HeuristicEvaluations {
 	private static final State sparse = Util.randomBoard(0.10);
 	private static final State dense = Util.randomBoard(0.40);
 
-	private static final HeuristicMethod mindist = new MinDist();
+	private static final HeuristicMethod qmindist = new QMinDist();
 	private static final HeuristicMethod kmindist = new KMinDist();
+	private static final HeuristicMethod mindistInitial = 
+		MinDist.weightedSum(initial);
+	private static final HeuristicMethod mindistSparse = 
+		MinDist.weightedSum(sparse);	
+	private static final HeuristicMethod mindistDense = 
+		MinDist.weightedSum(dense);
 
 	@Benchmark
-	public void MinDistInitial() {
-		mindist.evaluate(initial);
+	public void QMinDistInitial() {
+		qmindist.evaluate(initial);
 	}
 
 	@Benchmark
-	public void MinDistSparse() {
-		mindist.evaluate(sparse);
+	public void QMinDistSparse() {
+		qmindist.evaluate(sparse);
 	}
 
 	@Benchmark
-	public void MinDistDense() {
-		mindist.evaluate(dense);
+	public void QMinDistDense() {
+		qmindist.evaluate(dense);
 	}
 
 	@Benchmark
@@ -82,5 +94,20 @@ public class HeuristicEvaluations {
 	@Benchmark
 	public void KMinDistDense() {
 		kmindist.evaluate(dense);
+	}
+
+	@Benchmark
+	public void MinDistInitial() {
+		mindistInitial.evaluate(initial);
+	}
+
+	@Benchmark
+	public void MinDistSparse() {
+		mindistSparse.evaluate(sparse);
+	}
+
+	@Benchmark
+	public void MinDistDense() {
+		mindistDense.evaluate(dense);
 	}
 }

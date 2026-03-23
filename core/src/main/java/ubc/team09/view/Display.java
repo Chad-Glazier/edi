@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 import ubc.team09.bitboard.BitBoard;
 import ubc.team09.eval.HeuristicMethod;
-import ubc.team09.eval.MinDist;
+import ubc.team09.eval.QMinDist;
 import ubc.team09.state.C;
 import ubc.team09.state.Move;
 import ubc.team09.state.State;
@@ -287,7 +287,7 @@ public class Display {
 				case 9:
 					System.out.print(
 							Ansi.FG_BRIGHT_BLACK +
-									"MinDist evaluation" +
+									"QMinDist evaluation" +
 									Ansi.RESET);
 					break;
 				case 7:
@@ -307,7 +307,7 @@ public class Display {
 	}
 
 	private static String evaluation(State state) {
-		HeuristicMethod mindist = new MinDist();
+		HeuristicMethod mindist = new QMinDist();
 		double score = (mindist.evaluate(state) + 1) / 2;
 		int width = 35;
 

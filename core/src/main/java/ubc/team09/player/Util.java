@@ -52,16 +52,16 @@ public class Util {
 		byte[] queens = new byte[8];
 
 		// White queens
-		queens[0] = 60;
-		queens[1] = 93;
-		queens[2] = 96;
-		queens[3] = 69;
+		queens[0] = 30;
+		queens[1] = 03;
+		queens[2] = 06;
+		queens[3] = 39;
 
 		// Black queens
-		queens[4] = 30;
-		queens[5] = 03;
-		queens[6] = 06;
-		queens[7] = 39;
+		queens[4] = 60;
+		queens[5] = 93;
+		queens[6] = 96;
+		queens[7] = 69;
 
 		// Flag each queen's position.
 		long[] occupancy = BitBoard.create();
@@ -70,10 +70,11 @@ public class Util {
 		}
 
 		return new State(
-				occupancy,
-				queens,
-				C.WHITE,
-				0);
+			occupancy,
+			queens,
+			C.WHITE,
+			0
+		);
 	}
 
 	/**
@@ -101,21 +102,21 @@ public class Util {
 			for (int j = 1; j < 11; j++) {
 				byte position = (byte) (10 * (i - 1) + j - 1);
 				switch (board.get(i * 11 + j)) {
-					case 0:
-						continue;
-					case 1:
-						queens[blackIdx++] = position;
-						BitBoard.flag(occupancy, position);
-						break;
-					case 2:
-						queens[whiteIdx++] = position;
-						BitBoard.flag(occupancy, position);
-						break;
-					case 3:
-						BitBoard.flag(occupancy, position);
-						break;
-					default:
-						return null;
+				case 0:
+					continue;
+				case 1:
+					queens[blackIdx++] = position;
+					BitBoard.flag(occupancy, position);
+					break;
+				case 2:
+					queens[whiteIdx++] = position;
+					BitBoard.flag(occupancy, position);
+					break;
+				case 3:
+					BitBoard.flag(occupancy, position);
+					break;
+				default:
+					return null;
 				}
 			}
 		}

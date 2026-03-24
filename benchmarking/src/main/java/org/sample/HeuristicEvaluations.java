@@ -44,6 +44,7 @@ import org.openjdk.jmh.infra.Blackhole;
 import ubc.team09.eval.HeuristicMethod;
 import ubc.team09.eval.KMinDist;
 import ubc.team09.eval.QMinDist;
+import ubc.team09.eval.X;
 import ubc.team09.player.Util;
 import ubc.team09.state.State;
 
@@ -59,6 +60,7 @@ public class HeuristicEvaluations {
 
 	private static final HeuristicMethod qmindist = new QMinDist();
 	private static final HeuristicMethod kmindist = new KMinDist();
+	private static final HeuristicMethod x = new X();
 
 	@Benchmark
 	public void QMinDistInitial(Blackhole bh) {
@@ -88,5 +90,20 @@ public class HeuristicEvaluations {
 	@Benchmark
 	public void KMinDistDense(Blackhole bh) {
 		bh.consume(kmindist.evaluate(dense));
+	}
+
+	@Benchmark
+	public void XInitial(Blackhole bh) {
+		bh.consume(x.evaluate(initial));
+	}
+
+	@Benchmark
+	public void XSparse(Blackhole bh) {
+		bh.consume(x.evaluate(sparse));
+	}
+
+	@Benchmark
+	public void XDense(Blackhole bh) {
+		bh.consume(x.evaluate(dense));
 	}
 }

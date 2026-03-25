@@ -12,6 +12,7 @@ import ubc.team09.state.State;
 import ygraph.ai.smartfox.games.amazons.AmazonsGameMessage;
 
 public class Util {
+
 	/**
 	 * Generates a random Amazons boardstate.
 	 */

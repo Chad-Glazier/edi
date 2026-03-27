@@ -9,6 +9,9 @@ import ubc.team09.view.Display;
 
 import ygraph.ai.smartfox.games.GamePlayer;
 
+/**
+ * The main entrypoint for the program.
+ */
 public class Main {
 
 	public static void main(String[] args) throws Exception {

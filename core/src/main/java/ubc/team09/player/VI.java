@@ -12,8 +12,8 @@ import ubc.team09.state.State;
  * term from
  * <a href="https://masseffect.fandom.com/wiki/Virtual_Intelligence">a
  * videogame</a>)
- * purely because the term has become increasingly ambiguous following the 
- * incessant marketing by AI companies.
+ * purely because the term "AI" has become increasingly ambiguous following the
+ * obnoxious marketing from tech companies.
  */
 public interface VI {
 	/**

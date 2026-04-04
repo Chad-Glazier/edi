@@ -6,6 +6,10 @@ This project is meant to implement a simple AI to play the [Game of the Amazons]
 - Zhishang Ma
 - Aaryan Oberoi
 
+The written report for EDI can be found [here](./EDI_Report.pdf).
+
+The `javadoc`-generated documentation for this implementation can be found [here](https://chad-glazier.github.io/edi/).
+
 ## Running the Program
 
 At the top level, you can see three scripts:

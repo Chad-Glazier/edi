@@ -1,3 +1,4 @@
+
 package ubc.team09.bitboard;
 
 /**

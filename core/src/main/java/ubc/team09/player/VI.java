@@ -12,8 +12,8 @@ import ubc.team09.state.State;
  * term from
  * <a href="https://masseffect.fandom.com/wiki/Virtual_Intelligence">a
  * videogame</a>)
- * purely because when you google "AI," the first thing that comes up is OpenAI
- * and that rubs me the wrong way.
+ * purely because the term has become increasingly ambiguous following the 
+ * incessant marketing by AI companies.
  */
 public interface VI {
 	/**

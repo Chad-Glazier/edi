@@ -17,7 +17,7 @@ import (
 // QMinDist to evaluate leaf nodes.
 type Arrow struct{}
 
-func NewArrow() VI {
+func NewArrow() VI[[]mm.AlphaBetaAnalytics] {
 	return &Arrow{}
 }
 

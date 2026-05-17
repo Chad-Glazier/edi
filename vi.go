@@ -3,8 +3,13 @@ package edi
 import (
 	"time"
 
+	"github.com/Chad-Glazier/edi/search/mm"
 	"github.com/Chad-Glazier/edi/state"
 )
+
+type Analytics interface {
+	[]mm.AlphaBetaAnalytics | RandomAnalytics
+}
 
 // We use VI, short for "virtual intelligence," to refer to a program that can
 // recommend a move from a given board state within a certain amount of time.
@@ -14,7 +19,10 @@ import (
 // The term VI is borrowed from a videogame:
 // https://masseffect.fandom.com/wiki/Virtual_Intelligence. Traditionally we
 // would call such a program "AI," but that term has been diluted by dorks.
-type VI interface {
+type VI[AnalyticsType Analytics] interface {
 	Consult(board state.Board, timeLimit time.Duration) *state.Move
+	ConsultWithAnalytics(
+		board state.Board, timeLimit time.Duration,
+	) (*state.Move, AnalyticsType)
 	Id() string
 }

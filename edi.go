@@ -15,7 +15,7 @@ type EDI struct {
 	history *mm.HistoryTable
 }
 
-func NewEDI() VI {
+func NewEDI() VI[[]mm.AlphaBetaAnalytics] {
 	return &EDI{}
 }
 
@@ -37,7 +37,7 @@ func (edi *EDI) Consult(
 
 func (edi *EDI) ConsultWithAnalytics(
 	board state.Board, timeLimit time.Duration,
-) (*state.Move, []mm.HistoricAlphaBetaAnalytics) {
+) (*state.Move, []mm.AlphaBetaAnalytics) {
 
 	if edi.history == nil {
 		edi.history = &mm.HistoryTable{}

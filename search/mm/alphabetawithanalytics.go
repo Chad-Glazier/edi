@@ -8,25 +8,6 @@ import (
 	"github.com/Chad-Glazier/edi/state"
 )
 
-// Analytics collected from a depth-limited search.
-type AlphaBetaAnalytics struct {
-	// The depth limit of the search.
-	Depth int
-	// The number of leaf nodes that were evaluated.
-	LeafNodes uint64
-	// The number of interior nodes that were expanded.
-	InteriorNodes uint64
-	// The time it took to complete the search at this depth.
-	Duration time.Duration
-	// The number of cutoffs made at each depth. For example, the number of
-	// cutoffs at depth 4 can be found by indexing Cutoffs[4].
-	Cutoffs []uint64
-	// The turn that the search begins from. This is important because later
-	// turns have more arrows, which significantly reduces the branching
-	// factor.
-	Turn uint8
-}
-
 type alphaBetaWithAnalytics struct {
 	heuristic eval.EvalFunc
 	analytics AlphaBetaAnalytics
@@ -71,6 +52,11 @@ func AlphaBetaWithAnalytics(
 			if bestChildAtDepth == nil {
 				break
 			}
+
+			s.analytics.Ebf = effectiveBranchingFactor(
+				s.analytics.InteriorNodes + s.analytics.LeafNodes, 
+				depth,
+			)
 
 			bestMove = &bestChildAtDepth.Move
 			analytics = append(analytics, s.analytics)

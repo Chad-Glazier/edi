@@ -19,7 +19,6 @@ func NewRandom() VI {
 func (r *Random) Consult(
 	board state.Board, timeLimit time.Duration,
 ) *state.Move {
-
 	children := board.Successors()
 
 	if len(children) == 0 {
@@ -28,6 +27,20 @@ func (r *Random) Consult(
 	return &children[rand.IntN(len(children))].Move
 }
 
+func (r *Random) ConsultWithAnalytics(
+	board state.Board, timeLimit time.Duration,
+) *state.Move {
+	return r.Consult(board, timeLimit)
+}
+
+func (r *Random) GetAnalytics() any {
+	return nil
+}
+
+func (r *Random) GetAllAnalytics() any {
+	return nil
+}
+
 func (r *Random) Id() string {
-	return "random"
+	return "Random"
 }

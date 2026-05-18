@@ -8,11 +8,14 @@ import (
 	"github.com/Chad-Glazier/edi/state"
 )
 
+type EDIAnalytics []mm.AlphaBetaAnalytics
+
 // EDI is the flagship VI for this project. At the time of writing she uses
 // alpha-beta search with the History Heuristic for move ordering and the
 // KMinDist function for leaf node evaluation.
 type EDI struct {
 	history *mm.HistoryTable
+	analytics []EDIAnalytics
 }
 
 func NewEDI() VI {
@@ -37,20 +40,31 @@ func (edi *EDI) Consult(
 
 func (edi *EDI) ConsultWithAnalytics(
 	board state.Board, timeLimit time.Duration,
-) (*state.Move, []mm.AlphaBetaAnalytics) {
+) *state.Move {
 
 	if edi.history == nil {
 		edi.history = &mm.HistoryTable{}
 	}
 
-	return mm.HistoricAlphaBetaWithAnalytics(
+	move, analytics := mm.HistoricAlphaBetaWithAnalytics(
 		board,
 		timeLimit,
 		eval.KMinDist,
 		edi.history,
 	)
+
+	edi.analytics = append(edi.analytics, analytics)
+	return move
+}
+
+func (edi *EDI) GetAnalytics() any {
+	return edi.analytics[len(edi.analytics)-1]
+}
+
+func (edi *EDI) GetAllAnalytics() any {
+	return edi.analytics
 }
 
 func (edi *EDI) Id() string {
-	return "edi"
+	return "EDI"
 }

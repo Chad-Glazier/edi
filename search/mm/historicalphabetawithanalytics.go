@@ -58,7 +58,7 @@ func HistoricAlphaBetaWithAnalytics(
 			}
 
 			s.analytics.Ebf = effectiveBranchingFactor(
-				s.analytics.InteriorNodes + s.analytics.LeafNodes, 
+				s.analytics.InteriorNodes+s.analytics.LeafNodes,
 				depth,
 			)
 

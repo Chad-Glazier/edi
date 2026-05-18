@@ -15,7 +15,7 @@ type EDI struct {
 	history *mm.HistoryTable
 }
 
-func NewEDI() VI[[]mm.AlphaBetaAnalytics] {
+func NewEDI() VI {
 	return &EDI{}
 }
 

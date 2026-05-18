@@ -12,7 +12,7 @@ type Random struct{}
 
 type RandomAnalytics struct{}
 
-func NewRandom() VI[RandomAnalytics] {
+func NewRandom() VI {
 	return &Random{}
 }
 
@@ -26,18 +26,6 @@ func (r *Random) Consult(
 		return nil
 	}
 	return &children[rand.IntN(len(children))].Move
-}
-
-func (r *Random) ConsultWithAnalytics(
-	board state.Board, timeLimit time.Duration,
-) (*state.Move, RandomAnalytics) {
-
-	children := board.Successors()
-
-	if len(children) == 0 {
-		return nil, RandomAnalytics{}
-	}
-	return &children[rand.IntN(len(children))].Move, RandomAnalytics{}
 }
 
 func (r *Random) Id() string {

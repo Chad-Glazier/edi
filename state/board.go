@@ -53,3 +53,23 @@ func (b *Board) Status(pos bb.Position) PositionStatus {
 
 	return ARROW
 }
+
+// Returns a pointer to the queens belonging to the active player. That is,
+// the array of queens that can move from this position.
+func (b *Board) ActiveQueens() *[4]bb.Position {
+	if b.Player == WHITE {
+		return &b.White
+	} else {
+		return &b.Black
+	}
+}
+
+// Returns true if and only if the board state is terminal.
+func (b *Board) IsTerminal() bool {
+	for _, queen := range b.ActiveQueens() {
+		if KNeighbors(b.Occupancy, queen).Count() > 0 {
+			return false
+		}
+	}
+	return true
+}

@@ -6,7 +6,7 @@ import (
 	"github.com/Chad-Glazier/edi/state"
 )
 
-const MAX_HISTORY int32 = 2 << 13
+const maxHistory int32 = 2 << 13
 
 // A history table is used to track which moves have produced cutoffs in the
 // past and increments their score accordingly. When searching the game tree,
@@ -33,10 +33,10 @@ func (history *HistoryTable) GetScore(state *state.Board) int32 {
 func (history *HistoryTable) IncreaseScore(state *state.Board, depth int) {
 	score := history.score(state)
 
-	bonus := min(int32(depth*depth), MAX_HISTORY)
+	bonus := min(int32(depth*depth), maxHistory)
 	initial := *score
 
-	*score = bonus - initial*bonus/MAX_HISTORY
+	*score = bonus - initial*bonus/maxHistory
 }
 
 type stateSorter struct {

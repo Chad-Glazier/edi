@@ -14,7 +14,7 @@ type EDIAnalytics []mm.AlphaBetaAnalytics
 // alpha-beta search with the History Heuristic for move ordering and the
 // KMinDist function for leaf node evaluation.
 type EDI struct {
-	history *mm.HistoryTable
+	history   *mm.HistoryTable
 	analytics []EDIAnalytics
 }
 

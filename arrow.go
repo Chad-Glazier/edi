@@ -17,7 +17,7 @@ type ArrowAnalytics []mm.AlphaBetaAnalytics
 // same evaluation function used for leaf nodes). This implementation
 // is non-selective. That is, it's just normal alpha-beta search which uses
 // QMinDist to evaluate leaf nodes.
-type Arrow struct{
+type Arrow struct {
 	analytics []ArrowAnalytics
 }
 

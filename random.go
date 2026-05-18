@@ -10,8 +10,6 @@ import (
 // This VI picks moves completely at random.
 type Random struct{}
 
-type RandomAnalytics struct{}
-
 func NewRandom() VI {
 	return &Random{}
 }

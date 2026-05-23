@@ -58,6 +58,9 @@ func (edi *EDI) ConsultWithAnalytics(
 }
 
 func (edi *EDI) GetAnalytics() any {
+	if len(edi.analytics) == 0 {
+		return EDIAnalytics{}
+	}
 	return edi.analytics[len(edi.analytics)-1]
 }
 

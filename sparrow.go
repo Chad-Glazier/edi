@@ -38,6 +38,9 @@ func (sparrow *Sparrow) ConsultWithAnalytics(
 }
 
 func (sparrow *Sparrow) GetAnalytics() any {
+	if len(sparrow.analytics) == 0 {
+		return SparrowAnalytics{}
+	}
 	return sparrow.analytics[len(sparrow.analytics)-1]
 }
 

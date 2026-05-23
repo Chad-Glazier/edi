@@ -43,6 +43,9 @@ func (arrow *Arrow) ConsultWithAnalytics(
 }
 
 func (arrow *Arrow) GetAnalytics() any {
+	if len(arrow.analytics) == 0 {
+		return ArrowAnalytics{}
+	}
 	return arrow.analytics[len(arrow.analytics)-1]
 }
 

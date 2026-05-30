@@ -2,20 +2,15 @@ package state
 
 import "github.com/Chad-Glazier/edi/bb"
 
-// This constant dictates the initial capacity of the slice that holds child
-// states. In most Amazons board states, there are 1000 or fewer moves, but in
-// the early game it can be between 2000-3000. In the early turns, reallocating
-// the successor slice can be expensive but over-allocating it in the mid- to
-// late-game seems to incur a much more significant cost. The ideal capacity
-// is clearly variable, so we should consider computing it by some heuristic
-// before the search. For now, though, we just set it to a number that seems
-// good after some trial-and-error with the benchmarks.
-const SUCCESSOR_INITIAL_CAPACITY = 200
+const maxSuccessors = 3000
 
-// Returns an unordered slice of all possible subsequent board states.
-func (board *Board) Successors() []Board {
+type SuccessorsArray [maxSuccessors]Board
 
-	successors := make([]Board, 0, SUCCESSOR_INITIAL_CAPACITY)
+// Computes the successors of a state and stores them in the specified array.
+// The number of computed successors is returned.
+func (board *Board) Successors(dest *SuccessorsArray) int {
+
+	i := 0
 
 	if board.Player == WHITE {
 		for queenIdx, from := range board.White {
@@ -33,7 +28,7 @@ func (board *Board) Successors() []Board {
 
 					board.Occupancy.Flag(arrow)
 
-					successors = append(successors, Board{
+					dest[i] = Board{
 						Occupancy: board.Occupancy,
 						White:     board.White,
 						Black:     board.Black,
@@ -43,7 +38,8 @@ func (board *Board) Successors() []Board {
 							To:    to,
 							Arrow: arrow,
 						},
-					})
+					}
+					i++
 
 					board.Occupancy.Unflag(arrow)
 				}
@@ -70,7 +66,7 @@ func (board *Board) Successors() []Board {
 
 					board.Occupancy.Flag(arrow)
 
-					successors = append(successors, Board{
+					dest[i] = Board{
 						Occupancy: board.Occupancy,
 						White:     board.White,
 						Black:     board.Black,
@@ -80,7 +76,8 @@ func (board *Board) Successors() []Board {
 							To:    to,
 							Arrow: arrow,
 						},
-					})
+					}
+					i++
 
 					board.Occupancy.Unflag(arrow)
 				}
@@ -93,5 +90,5 @@ func (board *Board) Successors() []Board {
 		}
 	}
 
-	return successors
+	return i
 }

@@ -56,8 +56,10 @@ func (s *alphaBetaState) depthLimitedSearch(
 	board *state.Board, depth int,
 ) *state.Board {
 
-	children := board.Successors()
-	if len(children) == 0 {
+	children := state.SuccessorsArray{}
+	childCount := board.Successors(&children)
+
+	if childCount == 0 {
 		return nil
 	}
 
@@ -72,13 +74,13 @@ func (s *alphaBetaState) depthLimitedSearch(
 	beta := math.Inf(+1)
 	var bestChild *state.Board
 
-	for _, child := range children {
+	for i := range childCount {
 
-		score := -s.alphaBeta(&child, -beta, -alpha, depth-1, -color)
+		score := -s.alphaBeta(&children[i], -beta, -alpha, depth-1, -color)
 
 		if score > alpha {
 			alpha = score
-			bestChild = &child
+			bestChild = &children[i]
 		}
 
 	}
@@ -100,14 +102,16 @@ func (s *alphaBetaState) alphaBeta(
 		return color * s.heuristic(board)
 	}
 
-	children := board.Successors()
-	if len(children) == 0 {
+	children := state.SuccessorsArray{}
+	childCount := board.Successors(&children)
+
+	if childCount == 0 {
 		return color * s.heuristic(board)
 	}
 
 	score := math.Inf(-1)
-	for _, child := range children {
-		result := -s.alphaBeta(&child, -beta, -alpha, depth-1, -color)
+	for i := range childCount {
+		result := -s.alphaBeta(&children[i], -beta, -alpha, depth-1, -color)
 		if result > score {
 			score = result
 		}

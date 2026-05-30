@@ -11,10 +11,12 @@ import (
 func RandomBoard(turns int) Board {
 	board := InitialState()
 
+	successors := SuccessorsArray{}
+
 	// Run randomized moves.
 	for range turns {
-		children := board.Successors()
-		board = children[rand.Intn(len(children))]
+		n := board.Successors(&successors)
+		board = successors[rand.Intn(n)]
 	}
 
 	return board

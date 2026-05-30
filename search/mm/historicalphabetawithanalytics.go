@@ -82,12 +82,14 @@ func (s *historicAlphaBetaWithAnalytics) depthLimitedSearch(
 	board *state.Board, depth int,
 ) *state.Board {
 
-	children := board.Successors()
-	if len(children) == 0 {
+	children := state.SuccessorsArray{}
+	childCount := board.Successors(&children)
+
+	if childCount == 0 {
 		return nil
 	}
 
-	s.history.Sort(children)
+	s.history.Sort(&children, childCount)
 
 	var color float64
 	if board.Player == state.WHITE {
@@ -99,14 +101,14 @@ func (s *historicAlphaBetaWithAnalytics) depthLimitedSearch(
 	alpha := math.Inf(-1)
 	beta := math.Inf(+1)
 	var bestChild *state.Board
+	
+	for i := range childCount {
 
-	for _, child := range children {
-
-		score := -s.alphaBeta(&child, -beta, -alpha, depth-1, -color)
+		score := -s.alphaBeta(&children[i], -beta, -alpha, depth-1, -color)
 
 		if score > alpha {
 			alpha = score
-			bestChild = &child
+			bestChild = &children[i]
 		}
 
 	}
@@ -125,25 +127,26 @@ func (s *historicAlphaBetaWithAnalytics) alphaBeta(
 	// update the history table.
 
 	if depth == 0 {
-		s.analytics.LeafNodes++
 		return color * s.heuristic(board)
 	}
 
-	children := board.Successors()
-	if len(children) == 0 {
-		s.analytics.LeafNodes++
+	children := state.SuccessorsArray{}
+	childCount := board.Successors(&children)
+
+	if childCount == 0 {
 		return color * s.heuristic(board)
 	}
 
-	s.history.Sort(children)
+	s.history.Sort(&children, childCount)
+
 	score := math.Inf(-1)
-	for _, child := range children {
-		result := -s.alphaBeta(&child, -beta, -alpha, depth-1, -color)
+	for i := range childCount {
+		result := -s.alphaBeta(&children[i], -beta, -alpha, depth-1, -color)
 		if result > score {
 			score = result
 		}
 		if score >= beta {
-			s.history.IncreaseScore(&child, depth)
+			s.history.IncreaseScore(&children[i], depth)
 			s.analytics.Cutoffs[depth]++
 			break
 		}

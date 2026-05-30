@@ -41,8 +41,8 @@ func (history *HistoryTable) IncreaseScore(state *state.Board, depth int) {
 
 type stateSorter struct {
 	stateCount int
-	states  *state.SuccessorsArray
-	history *HistoryTable
+	states     *state.SuccessorsArray
+	history    *HistoryTable
 }
 
 func (s *stateSorter) Len() int {
@@ -61,8 +61,8 @@ func (s *stateSorter) Swap(i, j int) {
 // scores.
 func (history *HistoryTable) Sort(successors *state.SuccessorsArray, n int) {
 	sort.Sort(&stateSorter{
-		states:  successors,
-		history: history,
+		states:     successors,
+		history:    history,
 		stateCount: n,
 	})
 }

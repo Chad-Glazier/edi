@@ -2,6 +2,7 @@ package state
 
 import "github.com/Chad-Glazier/edi/bb"
 
+// Represents the starting position for an Amazons game.
 func InitialState() Board {
 	board := Board{
 		Player: WHITE,

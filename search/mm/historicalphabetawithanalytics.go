@@ -101,7 +101,7 @@ func (s *historicAlphaBetaWithAnalytics) depthLimitedSearch(
 	alpha := math.Inf(-1)
 	beta := math.Inf(+1)
 	var bestChild *state.Board
-	
+
 	for i := range childCount {
 
 		score := -s.alphaBeta(&children[i], -beta, -alpha, depth-1, -color)

@@ -34,8 +34,6 @@ func KFrontier(occupancy bb.BitBoard, territory bb.BitBoard) bb.BitBoard {
 // queens).
 func QNeighbors(occupancy bb.BitBoard, position bb.Position) bb.BitBoard {
 
-	occupancy.Unflag(position)
-
 	neighbors := bb.BitBoard{}
 
 	// Iterate over the forward directions.

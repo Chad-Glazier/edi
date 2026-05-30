@@ -15,7 +15,7 @@ type historicAlphaBetaState struct {
 
 // Creates a new search function using the Minimax algorithm with alpha-beta
 // pruning and the history heuristic for move ordering. The history table will
-// be updated.
+// be mutated.
 func HistoricAlphaBeta(
 	board state.Board,
 	timeLimit time.Duration,

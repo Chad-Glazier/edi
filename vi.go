@@ -9,7 +9,7 @@ import (
 // We use VI, short for "virtual intelligence," to refer to a program that can
 // recommend a move from a given board state within a certain amount of time.
 // In contrast with a search function, which is defined to be stateless, a VI
-// may "remember" certain things such as transposition tables between searches.
+// may "remember" certain things between searches.
 //
 // The term VI is borrowed from a videogame:
 // https://masseffect.fandom.com/wiki/Virtual_Intelligence. Traditionally we

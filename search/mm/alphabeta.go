@@ -1,9 +1,13 @@
+/*
+This package implements minimax-based game tree search algorithms.
+*/
 package mm
 
 import (
 	"math"
 	"time"
 
+	"github.com/Chad-Glazier/edi/bb"
 	"github.com/Chad-Glazier/edi/eval"
 	"github.com/Chad-Glazier/edi/state"
 )
@@ -21,7 +25,7 @@ func AlphaBeta(
 	heuristic eval.EvalFunc,
 ) *state.Move {
 
-	maxDepth := 100 - board.Occupancy.Count()
+	maxDepth := 100 - bb.Count(board.Occupancy)
 	complete := make(chan bool)
 	var bestMove *state.Move
 
@@ -32,7 +36,7 @@ func AlphaBeta(
 	go func() {
 		for depth := 1; depth <= maxDepth; depth++ {
 
-			bestChildAtDepth := s.depthLimitedSearch(&board, depth)
+			bestChildAtDepth := s.depthLimitedSearch(board, depth)
 			if bestChildAtDepth == nil {
 				break
 			}
@@ -53,13 +57,13 @@ func AlphaBeta(
 // Conducts a depth-limited search from the specified state and returns the
 // immediate child which has the best minimax score.
 func (s *alphaBetaState) depthLimitedSearch(
-	board *state.Board, depth int,
+	board state.Board, depth int,
 ) *state.Board {
 
-	children := state.SuccessorsArray{}
-	childCount := board.Successors(&children)
+	successors := state.SuccessorSlice{}
+	board.Successors(&successors)
 
-	if childCount == 0 {
+	if successors.Len == 0 {
 		return nil
 	}
 
@@ -74,13 +78,18 @@ func (s *alphaBetaState) depthLimitedSearch(
 	beta := math.Inf(+1)
 	var bestChild *state.Board
 
-	for i := range childCount {
+	for i := range successors.Len {
 
-		score := -s.alphaBeta(&children[i], -beta, -alpha, depth-1, -color)
+		score := -s.alphaBeta(
+			successors.Arr[i],
+			-beta, -alpha,
+			depth-1,
+			-color,
+		)
 
 		if score > alpha {
 			alpha = score
-			bestChild = &children[i]
+			bestChild = &successors.Arr[i]
 		}
 
 	}
@@ -90,7 +99,7 @@ func (s *alphaBetaState) depthLimitedSearch(
 
 // Conducts a recursive search to find the minimax score of a state.
 func (s *alphaBetaState) alphaBeta(
-	board *state.Board,
+	board state.Board,
 	alpha, beta float64,
 	depth int, color float64,
 ) float64 {
@@ -102,16 +111,21 @@ func (s *alphaBetaState) alphaBeta(
 		return color * s.heuristic(board)
 	}
 
-	children := state.SuccessorsArray{}
-	childCount := board.Successors(&children)
+	successors := state.SuccessorSlice{}
+	board.Successors(&successors)
 
-	if childCount == 0 {
+	if successors.Len == 0 {
 		return color * s.heuristic(board)
 	}
 
 	score := math.Inf(-1)
-	for i := range childCount {
-		result := -s.alphaBeta(&children[i], -beta, -alpha, depth-1, -color)
+	for i := range successors.Len {
+		result := -s.alphaBeta(
+			successors.Arr[i],
+			-beta, -alpha,
+			depth-1,
+			-color,
+		)
 		if result > score {
 			score = result
 		}

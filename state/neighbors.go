@@ -7,7 +7,7 @@ import "github.com/Chad-Glazier/edi/bb"
 // from p to q (accounting for squares that are already occupied by arrows or
 // queens).
 func KNeighbors(occupancy bb.BitBoard, position bb.Position) bb.BitBoard {
-	return bb.KAdj[position].AndNot(occupancy)
+	return bb.AndNot(bb.KAdj[position], occupancy)
 }
 
 // Returns the frontier of a given territory. A territory is a set of positions
@@ -20,12 +20,11 @@ func KFrontier(occupancy bb.BitBoard, territory bb.BitBoard) bb.BitBoard {
 
 	frontier := bb.BitBoard{}
 
-	iter := territory
-	for pos := iter.Next(); pos != bb.NULL_POS; pos = iter.Next() {
-		frontier.AssignOr(KNeighbors(occupancy, pos))
+	for i, pos := bb.Next(territory); pos != bb.NULL_POS; i, pos = bb.Next(i) {
+		frontier = bb.Or(frontier, KNeighbors(occupancy, pos))
 	}
 
-	return frontier.AndNot(territory)
+	return bb.AndNot(frontier, territory)
 }
 
 // Returns a bitboard where each neighbor of a given position is flagged, where
@@ -40,30 +39,36 @@ func QNeighbors(occupancy bb.BitBoard, position bb.Position) bb.BitBoard {
 	for dir := bb.W; dir < bb.E; dir++ {
 
 		ray := bb.RayExc[position][dir]
-		blockers := ray.And(occupancy)
+		blockers := bb.And(ray, occupancy)
 
-		nearestBlocker := blockers.Msb() // the direction is forward
+		nearestBlocker := bb.Msb(blockers) // the direction is forward
 		if nearestBlocker == bb.NULL_POS {
-			neighbors.AssignOr(ray)
+			neighbors = bb.Or(neighbors, ray)
 			continue
 		}
 
-		neighbors.AssignOr(ray.Xor(bb.RayInc[nearestBlocker][dir]))
+		neighbors = bb.Or(
+			neighbors,
+			bb.Xor(ray, bb.RayInc[nearestBlocker][dir]),
+		)
 	}
 
 	// Iterate over the backward directions.
 	for dir := bb.E; dir <= bb.SW; dir++ {
 
 		ray := bb.RayExc[position][dir]
-		blockers := ray.And(occupancy)
+		blockers := bb.And(ray, occupancy)
 
-		nearestBlocker := blockers.Lsb() // the direction is backward
+		nearestBlocker := bb.Lsb(blockers) // the direction is backward
 		if nearestBlocker == bb.NULL_POS {
-			neighbors.AssignOr(ray)
+			neighbors = bb.Or(neighbors, ray)
 			continue
 		}
 
-		neighbors.AssignOr(ray.Xor(bb.RayInc[nearestBlocker][dir]))
+		neighbors = bb.Or(
+			neighbors,
+			bb.Xor(ray, bb.RayInc[nearestBlocker][dir]),
+		)
 	}
 
 	return neighbors
@@ -79,10 +84,9 @@ func QFrontier(occupancy bb.BitBoard, territory bb.BitBoard) bb.BitBoard {
 
 	frontier := bb.BitBoard{}
 
-	iter := territory
-	for pos := iter.Next(); pos != bb.NULL_POS; pos = iter.Next() {
-		frontier.AssignOr(QNeighbors(occupancy, pos))
+	for i, pos := bb.Next(territory); pos != bb.NULL_POS; i, pos = bb.Next(i) {
+		frontier = bb.Or(frontier, QNeighbors(occupancy, pos))
 	}
 
-	return frontier.AndNot(territory)
+	return bb.AndNot(frontier, territory)
 }

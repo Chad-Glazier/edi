@@ -50,35 +50,35 @@ func kAdjacent(row, col int) BitBoard {
 	bb := BitBoard{}
 
 	if row != 9 {
-		bb.Flag(Pos(row+1, col))
+		bb = Flag(bb, Pos(row+1, col))
 
 		if col != 9 {
-			bb.Flag(Pos(row+1, col+1))
+			bb = Flag(bb, Pos(row+1, col+1))
 		}
 
 		if col != 0 {
-			bb.Flag(Pos(row+1, col-1))
+			bb = Flag(bb, Pos(row+1, col-1))
 		}
 	}
 
 	if row != 0 {
-		bb.Flag(Pos(row-1, col))
+		bb = Flag(bb, Pos(row-1, col))
 
 		if col != 9 {
-			bb.Flag(Pos(row-1, col+1))
+			bb = Flag(bb, Pos(row-1, col+1))
 		}
 
 		if col != 0 {
-			bb.Flag(Pos(row-1, col-1))
+			bb = Flag(bb, Pos(row-1, col-1))
 		}
 	}
 
 	if col != 9 {
-		bb.Flag(Pos(row, col+1))
+		bb = Flag(bb, Pos(row, col+1))
 	}
 
 	if col != 0 {
-		bb.Flag(Pos(row, col-1))
+		bb = Flag(bb, Pos(row, col-1))
 	}
 
 	return bb
@@ -120,7 +120,7 @@ func exclusiveRay(row, col, direction int) BitBoard {
 			break
 		}
 
-		bb.Flag(Pos(row, col))
+		bb = Flag(bb, Pos(row, col))
 	}
 
 	return bb
@@ -128,6 +128,6 @@ func exclusiveRay(row, col, direction int) BitBoard {
 
 func inclusiveRay(row, col, direction int) BitBoard {
 	bb := exclusiveRay(row, col, direction)
-	bb.Flag(Pos(row, col))
+	bb = Flag(bb, Pos(row, col))
 	return bb
 }

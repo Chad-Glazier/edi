@@ -17,13 +17,13 @@ func NewRandom() VI {
 func (r *Random) Consult(
 	board state.Board, timeLimit time.Duration,
 ) *state.Move {
-	children := state.SuccessorsArray{}
-	childCount := board.Successors(&children)
+	successors := state.SuccessorSlice{}
+	board.Successors(&successors)
 
-	if childCount == 0 {
+	if successors.Len == 0 {
 		return nil
 	}
-	return &children[rand.IntN(childCount)].Move
+	return &successors.Arr[rand.IntN(int(successors.Len))].Move
 }
 
 func (r *Random) ConsultWithAnalytics(

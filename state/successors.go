@@ -4,91 +4,67 @@ import "github.com/Chad-Glazier/edi/bb"
 
 const maxSuccessors = 3000
 
-type SuccessorsArray [maxSuccessors]Board
+type SuccessorSlice struct {
+	Arr [maxSuccessors]Board
+	Len uint16
+}
 
 // Computes the successors of a state and stores them in the specified array.
 // The number of computed successors is returned.
-func (board *Board) Successors(dest *SuccessorsArray) int {
+func (board Board) Successors(dest *SuccessorSlice) {
 
-	i := 0
+	var (
+		i uint16
+
+		queens     *[4]bb.Position
+		nextPlayer PlayerColor
+	)
 
 	if board.Player == WHITE {
-		for queenIdx, from := range board.White {
-
-			i2 := QNeighbors(board.Occupancy, from)
-			for to := i2.Next(); to != bb.NULL_POS; to = i2.Next() {
-
-				board.White[queenIdx] = to
-
-				board.Occupancy.Unflag(from)
-				board.Occupancy.Flag(to)
-
-				i3 := QNeighbors(board.Occupancy, to)
-				for arrow := i3.Next(); arrow != bb.NULL_POS; arrow = i3.Next() {
-
-					board.Occupancy.Flag(arrow)
-
-					dest[i] = Board{
-						Occupancy: board.Occupancy,
-						White:     board.White,
-						Black:     board.Black,
-						Player:    BLACK,
-						Move: Move{
-							From:  from,
-							To:    to,
-							Arrow: arrow,
-						},
-					}
-					i++
-
-					board.Occupancy.Unflag(arrow)
-				}
-
-				board.White[queenIdx] = from
-
-				board.Occupancy.Flag(from)
-				board.Occupancy.Unflag(to)
-			}
-		}
+		queens = &board.White
+		nextPlayer = BLACK
 	} else {
-		for queenIdx, from := range board.Black {
+		queens = &board.Black
+		nextPlayer = WHITE
+	}
 
-			i2 := QNeighbors(board.Occupancy, from)
-			for to := i2.Next(); to != bb.NULL_POS; to = i2.Next() {
+	for queenIdx, from := range queens {
 
-				board.Black[queenIdx] = to
+		i2 := QNeighbors(board.Occupancy, from)
+		for i2, to := bb.Next(i2); to != bb.NULL_POS; i2, to = bb.Next(i2) {
 
-				board.Occupancy.Unflag(from)
-				board.Occupancy.Flag(to)
+			queens[queenIdx] = to
 
-				i3 := QNeighbors(board.Occupancy, to)
-				for arrow := i3.Next(); arrow != bb.NULL_POS; arrow = i3.Next() {
+			board.Occupancy = bb.Unflag(board.Occupancy, from)
+			board.Occupancy = bb.Flag(board.Occupancy, to)
 
-					board.Occupancy.Flag(arrow)
+			i3 := QNeighbors(board.Occupancy, to)
+			for i3, arrow := bb.Next(i3); arrow != bb.NULL_POS; i3, arrow = bb.Next(i3) {
 
-					dest[i] = Board{
-						Occupancy: board.Occupancy,
-						White:     board.White,
-						Black:     board.Black,
-						Player:    WHITE,
-						Move: Move{
-							From:  from,
-							To:    to,
-							Arrow: arrow,
-						},
-					}
-					i++
+				board.Occupancy = bb.Flag(board.Occupancy, arrow)
 
-					board.Occupancy.Unflag(arrow)
+				dest.Arr[i] = Board{
+					Occupancy: board.Occupancy,
+					White:     board.White,
+					Black:     board.Black,
+					Player:    nextPlayer,
+					Move: Move{
+						From:  from,
+						To:    to,
+						Arrow: arrow,
+					},
 				}
+				i++
 
-				board.Black[queenIdx] = from
-
-				board.Occupancy.Flag(from)
-				board.Occupancy.Unflag(to)
+				board.Occupancy = bb.Unflag(board.Occupancy, arrow)
 			}
+
+			queens[queenIdx] = from
+
+			board.Occupancy = bb.Flag(board.Occupancy, from)
+			board.Occupancy = bb.Unflag(board.Occupancy, to)
 		}
 	}
 
-	return i
+	dest.Len = i
 }

@@ -40,29 +40,27 @@ func (history *HistoryTable) IncreaseScore(state *state.Board, depth int) {
 }
 
 type stateSorter struct {
-	stateCount int
-	states     *state.SuccessorsArray
-	history    *HistoryTable
+	states  *state.SuccessorSlice
+	history *HistoryTable
 }
 
 func (s *stateSorter) Len() int {
-	return s.stateCount
+	return int(s.states.Len)
 }
 
 func (s *stateSorter) Less(i, j int) bool {
-	return *s.history.score(&s.states[i]) > *s.history.score(&s.states[j])
+	return *s.history.score(&s.states.Arr[i]) > *s.history.score(&s.states.Arr[j])
 }
 
 func (s *stateSorter) Swap(i, j int) {
-	s.states[i], s.states[j] = s.states[j], s.states[i]
+	s.states.Arr[i], s.states.Arr[j] = s.states.Arr[j], s.states.Arr[i]
 }
 
 // Sorts a slice of states in-place, in descending order by their history
 // scores.
-func (history *HistoryTable) Sort(successors *state.SuccessorsArray, n int) {
+func (history *HistoryTable) Sort(successors *state.SuccessorSlice) {
 	sort.Sort(&stateSorter{
-		states:     successors,
-		history:    history,
-		stateCount: n,
+		states:  successors,
+		history: history,
 	})
 }

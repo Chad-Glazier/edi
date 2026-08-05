@@ -1,6 +1,14 @@
+/*
+This package is used to represent an Amazons board state and provide the means
+to construct a game tree.
+*/
 package state
 
-import "github.com/Chad-Glazier/edi/bb"
+import (
+	"math/rand"
+
+	"github.com/Chad-Glazier/edi/bb"
+)
 
 // Represents a player color.
 type PlayerColor byte
@@ -38,7 +46,7 @@ const (
 // status of the position is on the board. This function is not optimal and is
 // only provided for convenience.
 func (b *Board) Status(pos bb.Position) PositionStatus {
-	if !b.Occupancy.Flagged(pos) {
+	if !bb.IsFlagged(b.Occupancy, pos) {
 		return VACANT
 	}
 
@@ -67,9 +75,45 @@ func (b *Board) ActiveQueens() *[4]bb.Position {
 // Returns true if and only if the board state is terminal.
 func (b *Board) IsTerminal() bool {
 	for _, queen := range b.ActiveQueens() {
-		if KNeighbors(b.Occupancy, queen).Count() > 0 {
+		if bb.Count(KNeighbors(b.Occupancy, queen)) > 0 {
 			return false
 		}
 	}
 	return true
+}
+
+// Returns a random board state after some number of turns by simulating a game
+// where each player randomly picks moves. Note that the number of turns is the
+// same as the number of arrows, and getting the zeroth turn will always yield
+// the initial board state.
+func RandomBoard(turns int) Board {
+	board := InitialState()
+
+	successors := SuccessorSlice{}
+
+	// Run randomized moves.
+	for range turns {
+		board.Successors(&successors)
+		board = successors.Arr[rand.Intn(int(successors.Len))]
+	}
+
+	return board
+}
+
+// Represents the starting position for an Amazons game.
+func InitialState() Board {
+	board := Board{
+		Player: WHITE,
+		White:  [4]bb.Position{30, 03, 06, 39},
+		Black:  [4]bb.Position{60, 93, 96, 69},
+	}
+
+	for _, pos := range board.White {
+		board.Occupancy = bb.Flag(board.Occupancy, pos)
+	}
+	for _, pos := range board.Black {
+		board.Occupancy = bb.Flag(board.Occupancy, pos)
+	}
+
+	return board
 }

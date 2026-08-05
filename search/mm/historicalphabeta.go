@@ -4,6 +4,7 @@ import (
 	"math"
 	"time"
 
+	"github.com/Chad-Glazier/edi/bb"
 	"github.com/Chad-Glazier/edi/eval"
 	"github.com/Chad-Glazier/edi/state"
 )
@@ -23,7 +24,7 @@ func HistoricAlphaBeta(
 	history *HistoryTable,
 ) *state.Move {
 
-	maxDepth := 100 - board.Occupancy.Count()
+	maxDepth := 100 - bb.Count(board.Occupancy)
 	complete := make(chan bool)
 	var bestMove *state.Move
 
@@ -34,7 +35,7 @@ func HistoricAlphaBeta(
 
 	go func() {
 		for depth := 1; depth <= maxDepth; depth++ {
-			bestChildAtDepth := s.depthLimitedSearch(&board, depth)
+			bestChildAtDepth := s.depthLimitedSearch(board, depth)
 
 			if bestChildAtDepth == nil {
 				break
@@ -56,17 +57,17 @@ func HistoricAlphaBeta(
 // Conducts a depth-limited search from the specified state and returns the
 // immediate child which has the best minimax score.
 func (s *historicAlphaBetaState) depthLimitedSearch(
-	board *state.Board, depth int,
+	board state.Board, depth int,
 ) *state.Board {
 
-	children := state.SuccessorsArray{}
-	childCount := board.Successors(&children)
+	successors := state.SuccessorSlice{}
+	board.Successors(&successors)
 
-	if childCount == 0 {
+	if successors.Len == 0 {
 		return nil
 	}
 
-	s.history.Sort(&children, childCount)
+	s.history.Sort(&successors)
 
 	var color float64
 	if board.Player == state.WHITE {
@@ -77,25 +78,30 @@ func (s *historicAlphaBetaState) depthLimitedSearch(
 
 	alpha := math.Inf(-1)
 	beta := math.Inf(+1)
-	var bestChild *state.Board
+	var bestChild state.Board
 
-	for i := range childCount {
+	for i := range successors.Len {
 
-		score := -s.alphaBeta(&children[i], -beta, -alpha, depth-1, -color)
+		score := -s.alphaBeta(
+			successors.Arr[i],
+			-beta, -alpha,
+			depth-1,
+			-color,
+		)
 
 		if score > alpha {
 			alpha = score
-			bestChild = &children[i]
+			bestChild = successors.Arr[i]
 		}
 
 	}
 
-	return bestChild
+	return &bestChild
 }
 
 // Conducts a recursive search to find the minimax score of a state.
 func (s *historicAlphaBetaState) alphaBeta(
-	board *state.Board,
+	board state.Board,
 	alpha, beta float64,
 	depth int, color float64,
 ) float64 {
@@ -107,23 +113,28 @@ func (s *historicAlphaBetaState) alphaBeta(
 		return color * s.heuristic(board)
 	}
 
-	children := state.SuccessorsArray{}
-	childCount := board.Successors(&children)
+	successors := state.SuccessorSlice{}
+	board.Successors(&successors)
 
-	if childCount == 0 {
+	if successors.Len == 0 {
 		return color * s.heuristic(board)
 	}
 
-	s.history.Sort(&children, childCount)
+	s.history.Sort(&successors)
 
 	score := math.Inf(-1)
-	for i := range childCount {
-		result := -s.alphaBeta(&children[i], -beta, -alpha, depth-1, -color)
+	for i := range successors.Len {
+		result := -s.alphaBeta(
+			successors.Arr[i],
+			-beta, -alpha,
+			depth-1,
+			-color,
+		)
 		if result > score {
 			score = result
 		}
 		if score >= beta {
-			s.history.IncreaseScore(&children[i], depth)
+			s.history.IncreaseScore(&successors.Arr[i], depth)
 			break
 		}
 		alpha = max(alpha, score)

@@ -4,6 +4,7 @@ import (
 	"math"
 	"time"
 
+	"github.com/Chad-Glazier/edi/bb"
 	"github.com/Chad-Glazier/edi/eval"
 	"github.com/Chad-Glazier/edi/state"
 )
@@ -28,8 +29,8 @@ func HistoricAlphaBetaWithAnalytics(
 	history *HistoryTable,
 ) (*state.Move, []AlphaBetaAnalytics) {
 
-	turn := uint8(board.Occupancy.Count() - 8)
-	maxDepth := 100 - board.Occupancy.Count()
+	turn := uint8(bb.Count(board.Occupancy) - 8)
+	maxDepth := 100 - bb.Count(board.Occupancy)
 	complete := make(chan bool)
 
 	s := &historicAlphaBetaWithAnalytics{
@@ -82,14 +83,14 @@ func (s *historicAlphaBetaWithAnalytics) depthLimitedSearch(
 	board *state.Board, depth int,
 ) *state.Board {
 
-	children := state.SuccessorsArray{}
-	childCount := board.Successors(&children)
+	successors := state.SuccessorSlice{}
+	board.Successors(&successors)
 
-	if childCount == 0 {
+	if successors.Len == 0 {
 		return nil
 	}
 
-	s.history.Sort(&children, childCount)
+	s.history.Sort(&successors)
 
 	var color float64
 	if board.Player == state.WHITE {
@@ -100,25 +101,25 @@ func (s *historicAlphaBetaWithAnalytics) depthLimitedSearch(
 
 	alpha := math.Inf(-1)
 	beta := math.Inf(+1)
-	var bestChild *state.Board
+	var bestChild state.Board
 
-	for i := range childCount {
+	for i := range successors.Len {
 
-		score := -s.alphaBeta(&children[i], -beta, -alpha, depth-1, -color)
+		score := -s.alphaBeta(successors.Arr[i], -beta, -alpha, depth-1, -color)
 
 		if score > alpha {
 			alpha = score
-			bestChild = &children[i]
+			bestChild = successors.Arr[i]
 		}
 
 	}
 
-	return bestChild
+	return &bestChild
 }
 
 // Conducts a recursive search to find the minimax score of a state.
 func (s *historicAlphaBetaWithAnalytics) alphaBeta(
-	board *state.Board,
+	board state.Board,
 	alpha, beta float64,
 	depth int, color float64,
 ) float64 {
@@ -130,23 +131,28 @@ func (s *historicAlphaBetaWithAnalytics) alphaBeta(
 		return color * s.heuristic(board)
 	}
 
-	children := state.SuccessorsArray{}
-	childCount := board.Successors(&children)
+	successors := state.SuccessorSlice{}
+	board.Successors(&successors)
 
-	if childCount == 0 {
+	if successors.Len == 0 {
 		return color * s.heuristic(board)
 	}
 
-	s.history.Sort(&children, childCount)
+	s.history.Sort(&successors)
 
 	score := math.Inf(-1)
-	for i := range childCount {
-		result := -s.alphaBeta(&children[i], -beta, -alpha, depth-1, -color)
+	for i := range successors.Len {
+		result := -s.alphaBeta(
+			successors.Arr[i],
+			-beta, -alpha,
+			depth-1,
+			-color,
+		)
 		if result > score {
 			score = result
 		}
 		if score >= beta {
-			s.history.IncreaseScore(&children[i], depth)
+			s.history.IncreaseScore(&successors.Arr[i], depth)
 			s.analytics.Cutoffs[depth]++
 			break
 		}

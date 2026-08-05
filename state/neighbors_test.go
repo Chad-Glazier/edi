@@ -17,7 +17,7 @@ func randomBoard(density float64) (
 	for pos := range bb.Position(100) {
 		if rand.Float64() < density {
 			flagged[pos] = true
-			b.Flag(pos)
+			bb.Flag(b, pos)
 			flagCount++
 		} else {
 			flagged[pos] = false
@@ -51,8 +51,8 @@ func expectedKNeighbors(occ bb.BitBoard, pos bb.Position) bb.BitBoard {
 				continue
 			}
 			p := bb.Pos(nx, ny)
-			if !occ.Flagged(p) {
-				result.Flag(p)
+			if !bb.IsFlagged(occ, p) {
+				result = bb.Flag(result, p)
 			}
 		}
 	}
@@ -73,10 +73,10 @@ func expectedQNeighbors(occ bb.BitBoard, pos bb.Position) bb.BitBoard {
 		ni, nj := i+d[0], j+d[1]
 		for inBounds(ni, nj) {
 			p := bb.Pos(ni, nj)
-			if occ.Flagged(p) {
+			if bb.IsFlagged(occ, p) {
 				break
 			}
-			result.Flag(p)
+			result = bb.Flag(result, p)
 			ni += d[0]
 			nj += d[1]
 		}
@@ -93,12 +93,11 @@ func expectedFrontier(
 
 	result := bb.BitBoard{}
 
-	iter := territory
-	for pos := iter.Next(); pos != bb.NULL_POS; pos = iter.Next() {
+	for i, pos := bb.Next(territory); pos != bb.NULL_POS; i, pos = bb.Next(i) {
 		neighbors := neighborFn(occ, pos)
-		for n := neighbors.Next(); n != bb.NULL_POS; n = neighbors.Next() {
-			if !territory.Flagged(n) {
-				result.Flag(n)
+		for i, n := bb.Next(neighbors); n != bb.NULL_POS; i, n = bb.Next(i) {
+			if !bb.IsFlagged(territory, n) {
+				result = bb.Flag(result, n)
 			}
 		}
 	}
@@ -118,12 +117,12 @@ func TestKNeighbors(t *testing.T) {
 			got := KNeighbors(occ, pos)
 			expected := expectedKNeighbors(occ, pos)
 
-			if got.Count() != expected.Count() {
+			if bb.Count(got) != bb.Count(expected) {
 				t.Fatalf("KNeighbors size mismatch at %d", pos)
 			}
 
-			for p := expected.Next(); p != bb.NULL_POS; p = expected.Next() {
-				if !got.Flagged(p) {
+			for i, p := bb.Next(expected); p != bb.NULL_POS; i, p = bb.Next(i) {
+				if !bb.IsFlagged(got, p) {
 					t.Errorf("KNeighbors missing %d from %d", p, pos)
 				}
 			}
@@ -139,13 +138,12 @@ func TestQNeighbors(t *testing.T) {
 			got := QNeighbors(occ, pos)
 			expected := expectedQNeighbors(occ, pos)
 
-			if got.Count() != expected.Count() {
+			if bb.Count(got) != bb.Count(expected) {
 				t.Fatalf("QNeighbors size mismatch at %d", pos)
 			}
 
-			iter := expected
-			for p := iter.Next(); p != bb.NULL_POS; p = iter.Next() {
-				if !got.Flagged(p) {
+			for i, p := bb.Next(expected); p != bb.NULL_POS; i, p = bb.Next(i) {
+				if !bb.IsFlagged(got, p) {
 					t.Errorf("QNeighbors missing %d from %d", p, pos)
 				}
 			}
@@ -161,13 +159,12 @@ func TestKFrontier(t *testing.T) {
 		got := KFrontier(occ, territory)
 		expected := expectedFrontier(occ, territory, expectedKNeighbors)
 
-		if got.Count() != expected.Count() {
+		if bb.Count(got) != bb.Count(expected) {
 			t.Fatalf("KFrontier size mismatch")
 		}
 
-		iter := expected
-		for p := iter.Next(); p != bb.NULL_POS; p = iter.Next() {
-			if !got.Flagged(p) {
+		for i, p := bb.Next(expected); p != bb.NULL_POS; i, p = bb.Next(i) {
+			if !bb.IsFlagged(got, p) {
 				t.Errorf("KFrontier missing %d", p)
 			}
 		}
@@ -182,13 +179,12 @@ func TestQFrontier(t *testing.T) {
 		got := QFrontier(occ, territory)
 		expected := expectedFrontier(occ, territory, expectedQNeighbors)
 
-		if got.Count() != expected.Count() {
+		if bb.Count(got) != bb.Count(expected) {
 			t.Fatalf("QFrontier size mismatch")
 		}
 
-		iter := expected
-		for p := iter.Next(); p != bb.NULL_POS; p = iter.Next() {
-			if !got.Flagged(p) {
+		for i, p := bb.Next(expected); p != bb.NULL_POS; i, p = bb.Next(i) {
+			if !bb.IsFlagged(got, p) {
 				t.Errorf("QFrontier missing %d", p)
 			}
 		}

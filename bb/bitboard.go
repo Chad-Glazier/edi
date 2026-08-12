@@ -1,11 +1,14 @@
-//go:build !amd64 || !goexperiment.simd
-
 /*
 This package implements a 10x10 bitboard for Amazons.
 */
 package bb
 
-import "math/bits"
+import (
+	"fmt"
+	"io"
+	"math/bits"
+	"strings"
+)
 
 // Represents a board where each position index (0-99, since Amazons is played
 // on a 10x10 board) is either 0 or 1, which we refer to as "unflagged" and
@@ -141,4 +144,54 @@ func Not(bb BitBoard) BitBoard {
 		lo: ^bb.lo,
 		hi: ^bb.hi,
 	}
+}
+
+// Visualizes a bitboard, writing it to the given output.
+func Print(w io.Writer, bb BitBoard) {
+
+	const (
+		LINE_HORIZONTAL     = "\u2500" // ─
+		LINE_VERTICAL       = "\u2502" // │
+		CORNER_TOP_LEFT     = "\u250C" // ┌
+		CORNER_TOP_RIGHT    = "\u2510" // ┐
+		CORNER_BOTTOM_LEFT  = "\u2514" // └
+		CORNER_BOTTOM_RIGHT = "\u2518" // ┘
+		FLAGGED_SQUARE      = "\u2715" // ✕
+		VACANT_SQUARE       = "\u00B7" // ·
+	)
+
+	lines := []string{
+		"    0 1 2 3 4 5 6 7 8 9 ",
+		"  " +
+			CORNER_TOP_LEFT +
+			strings.Repeat(LINE_HORIZONTAL, 21) +
+			CORNER_TOP_RIGHT,
+	}
+
+	for row := range 10 {
+		var line strings.Builder
+		fmt.Fprintf(&line, "%d %s", row, LINE_VERTICAL)
+		for col := range 10 {
+			var s string
+			line.WriteString(" ")
+			if IsFlagged(bb, Pos(row, col)) {
+				line.WriteString(FLAGGED_SQUARE)
+			} else {
+				line.WriteString(VACANT_SQUARE)
+			}
+			line.WriteString(s)
+		}
+		line.WriteString(" " + LINE_VERTICAL)
+		lines = append(lines, line.String())
+	}
+	
+	lines = append(lines,
+		"  "+
+			CORNER_BOTTOM_LEFT+
+			strings.Repeat(LINE_HORIZONTAL, 21)+
+			CORNER_BOTTOM_RIGHT,
+	)
+
+	fmt.Fprint(w, strings.Join(lines, "\n"))
+
 }

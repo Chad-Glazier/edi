@@ -39,7 +39,7 @@ func HistoricAlphaBeta(
 	}
 
 	go func() {
-		<- time.After(timeLimit)
+		<-time.After(timeLimit)
 		ctx.outOfTime = true
 	}()
 
@@ -128,7 +128,6 @@ func (ctx *historicAbContext) alphaBeta(
 	depth int,
 	color float64,
 ) (float64, error) {
-
 	if ctx.outOfTime {
 		return 0.0, ErrOutOfTime
 	}
@@ -212,16 +211,24 @@ func (h *HistoryTable) Update(board state.Board, depth int) {
 
 // Sorts a slice of states in-place, in descending order by their history
 // scores.
-func (history *HistoryTable) Sort(successors *state.SuccessorSlice) {
+func (h *HistoryTable) Sort(successors *state.SuccessorSlice) {
+
+	// Testing has shown that it's faster to grab all of the history scores
+	// up-front than to repeatedly consult the table.
+	historyScores := [3000]int32{}
+	for i := range successors.Length {
+		historyScores[i] = h.Get(successors.Array[i])
+	}
+
 	sort.Sort(&stateSorter{
-		states:  successors,
-		history: history,
+		states:        successors,
+		historyScores: &historyScores,
 	})
 }
 
 type stateSorter struct {
-	states  *state.SuccessorSlice
-	history *HistoryTable
+	states        *state.SuccessorSlice
+	historyScores *[3000]int32
 }
 
 func (s *stateSorter) Len() int {
@@ -229,9 +236,10 @@ func (s *stateSorter) Len() int {
 }
 
 func (s *stateSorter) Less(i, j int) bool {
-	return s.history.Get(s.states.Array[i]) > s.history.Get(s.states.Array[j])
+	return s.historyScores[i] > s.historyScores[j]
 }
 
 func (s *stateSorter) Swap(i, j int) {
 	s.states.Array[i], s.states.Array[j] = s.states.Array[j], s.states.Array[i]
+	s.historyScores[i], s.historyScores[j] = s.historyScores[j], s.historyScores[i]
 }

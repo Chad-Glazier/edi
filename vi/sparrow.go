@@ -8,46 +8,41 @@ import (
 	"github.com/Chad-Glazier/edi/state"
 )
 
-type SparrowAnalytics []mm.AlphaBetaAnalytics
-
 // Sparrow uses a simple alpha-beta search with the k-mindist evaluation
 // function and no move ordering.
 type Sparrow struct {
-	analytics []SparrowAnalytics
+	analytics []map[string]float64
 }
 
 func NewSparrow() VI {
-	return &Sparrow{}
+	return &Arrow{}
 }
 
-func (arrow *Sparrow) Consult(
-	board state.Board, timeLimit time.Duration,
-) *state.Move {
-	return mm.AlphaBeta(board, timeLimit, eval.KMinDist)
-}
-
-func (sparrow *Sparrow) ConsultWithAnalytics(
-	board state.Board, timeLimit time.Duration,
-) *state.Move {
-	move, analytics := mm.AlphaBetaWithAnalytics(
-		board, timeLimit, eval.KMinDist,
-	)
-
-	sparrow.analytics = append(sparrow.analytics, analytics)
-	return move
-}
-
-func (sparrow *Sparrow) GetAnalytics() any {
-	if len(sparrow.analytics) == 0 {
-		return SparrowAnalytics{}
-	}
-	return sparrow.analytics[len(sparrow.analytics)-1]
-}
-
-func (sparrow *Sparrow) GetAllAnalytics() any {
-	return sparrow.analytics
-}
-
-func (sparrow *Sparrow) Id() string {
+func (arrow *Sparrow) Id() string {
 	return "Sparrow"
+}
+
+func (s *Sparrow) Consult(
+	board state.Board, 
+	timeLimit time.Duration,
+) (state.Move, error) {
+
+	move, analytics, err := mm.AlphaBeta(board, timeLimit, eval.KMinDist)
+	if err != nil {
+		return state.Move{}, ErrNoMoves
+	}
+	s.analytics = append(s.analytics, analytics[len(analytics)-1].Map())
+
+	return move, nil
+}
+
+func (s *Sparrow) Analytics() map[string]float64 {
+	if len(s.analytics) == 0 {
+		return nil
+	}
+	return s.analytics[len(s.analytics)-1]
+}
+
+func (s *Sparrow) AllAnalytics() []map[string]float64 {
+	return s.analytics
 }

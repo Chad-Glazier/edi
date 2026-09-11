@@ -24,29 +24,6 @@ type alphaBetaContext struct {
 	deadline  time.Time
 }
 
-type AlphaBetaAnalytics struct {
-	// The depth limit of the search.
-	Depth int
-	// The number of leaf nodes that were evaluated.
-	LeafNodes uint64
-	// The number of interior nodes that were expanded.
-	InteriorNodes uint64
-	// The time it took to complete the search at this depth.
-	Duration time.Duration
-	// The number of cutoffs made at each depth.
-	Cutoffs []uint64
-	// The turn that the search begins from. This is important because later
-	// turns have more arrows, which significantly reduces the branching
-	// factor.
-	Turn uint8
-}
-
-// Returns the effective branching factor for the search.
-func (a AlphaBetaAnalytics) Ebf() float64 {
-	nodes := a.InteriorNodes + a.LeafNodes
-	return ebf(nodes, a.Depth)
-}
-
 // Conducts a simple alpha-beta search.
 //
 // The returned search analytics slice contains analytics for each

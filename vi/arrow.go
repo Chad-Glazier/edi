@@ -8,8 +8,6 @@ import (
 	"github.com/Chad-Glazier/edi/state"
 )
 
-type ArrowAnalytics []mm.AlphaBetaAnalytics
-
 // Arrow is a program that was created by Martin Müller and Theodore Tegos,
 // described in their paper "Experiments in Computer Amazons." They describe
 // two versions of Arrow, one which is non-selective (no move ordering) and
@@ -18,41 +16,38 @@ type ArrowAnalytics []mm.AlphaBetaAnalytics
 // is non-selective. That is, it's just normal alpha-beta search which uses
 // QMinDist to evaluate leaf nodes.
 type Arrow struct {
-	analytics []ArrowAnalytics
+	analytics []map[string]float64
 }
 
 func NewArrow() VI {
 	return &Arrow{}
 }
 
-func (arrow *Arrow) Consult(
-	board state.Board, timeLimit time.Duration,
-) *state.Move {
-	return mm.AlphaBeta(board, timeLimit, eval.QMinDist)
-}
-
-func (arrow *Arrow) ConsultWithAnalytics(
-	board state.Board, timeLimit time.Duration,
-) *state.Move {
-	move, analytics := mm.AlphaBetaWithAnalytics(
-		board, timeLimit, eval.QMinDist,
-	)
-
-	arrow.analytics = append(arrow.analytics, analytics)
-	return move
-}
-
-func (arrow *Arrow) GetAnalytics() any {
-	if len(arrow.analytics) == 0 {
-		return ArrowAnalytics{}
-	}
-	return arrow.analytics[len(arrow.analytics)-1]
-}
-
-func (arrow *Arrow) GetAllAnalytics() any {
-	return arrow.analytics
-}
-
 func (arrow *Arrow) Id() string {
 	return "Arrow"
+}
+
+func (a *Arrow) Consult(
+	board state.Board, 
+	timeLimit time.Duration,
+) (state.Move, error) {
+
+	move, analytics, err := mm.AlphaBeta(board, timeLimit, eval.QMinDist)
+	if err != nil {
+		return state.Move{}, ErrNoMoves
+	}
+	a.analytics = append(a.analytics, analytics[len(analytics)-1].Map())
+
+	return move, nil
+}
+
+func (a *Arrow) Analytics() map[string]float64 {
+	if len(a.analytics) == 0 {
+		return nil
+	}
+	return a.analytics[len(a.analytics)-1]
+}
+
+func (a *Arrow) AllAnalytics() []map[string]float64 {
+	return a.analytics
 }

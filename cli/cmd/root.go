@@ -13,7 +13,7 @@ var rootCmd = &cobra.Command{
 	Use:   "edi",
 	Short: "EDI is a project to investigate the programs that play Amazons",
 	Long: `EDI is a project meant to explore and analyze the programs that play 
-the Game of Amazons. This tool is a CLI interface for EDI, which you 
+the Game of Amazons. This tool is a CLI interface for EDI which you 
 can use to run games between programs and collect data about their 
 performance.`,
 }

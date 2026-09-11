@@ -16,25 +16,25 @@ import (
 )
 
 const (
-	LINE_HORIZONTAL     = "\u2500" // ─
-	LINE_VERTICAL       = "\u2502" // │
-	CORNER_TOP_LEFT     = "\u250C" // ┌
-	CORNER_TOP_RIGHT    = "\u2510" // ┐
-	CORNER_BOTTOM_LEFT  = "\u2514" // └
-	CORNER_BOTTOM_RIGHT = "\u2518" // ┘
-	T_VERTICAL_RIGHT    = "\u251C" // ├
-	T_VERTICAL_LEFT     = "\u2524" // ┤
-	T_HORIZONTAL_DOWN   = "\u252C" // ┬
-	T_HORIZONTAL_UP     = "\u2534" // ┴
-	CROSS               = "\u253C" // ┼
-	DIAG_UPPER_RIGHT    = "\u2571" // ╱
-	DIAG_LOWER_LEFT     = "\u2571" // ╱
-	DIAG_UPPER_LEFT     = "\u2572" // ╲
-	DIAG_LOWER_RIGHT    = "\u2572" // ╲
-	WHITE_QUEEN_SQUARE  = "\u25A0" // ■
-	BLACK_QUEEN_SQUARE  = "\u25A0" // ■
-	ARROW_SQUARE        = "\u2715" // ✕
-	VACANT_SQUARE       = "\u00B7" // ·
+	lineHorizontal    = "\u2500" // ─
+	lineVertical      = "\u2502" // │
+	cornerTopLeft     = "\u250C" // ┌
+	cornerTopRight    = "\u2510" // ┐
+	cornerBottomLeft  = "\u2514" // └
+	cornerBottomRight = "\u2518" // ┘
+	tVerticalRight    = "\u251C" // ├
+	tVerticalLeft     = "\u2524" // ┤
+	tHorizontalDown   = "\u252C" // ┬
+	tHorizontalUp     = "\u2534" // ┴
+	cross             = "\u253C" // ┼
+	diagUpperRight    = "\u2571" // ╱
+	diagLowerLeft     = "\u2571" // ╱
+	diagUpperLeft     = "\u2572" // ╲
+	diagLowerRight    = "\u2572" // ╲
+	whiteQueenSquare  = "\u25A0" // ■
+	blackQueenSquare  = "\u25A0" // ■
+	arrowSquare       = "\u2715" // ✕
+	vacantSquare      = "\u00B7" // ·
 )
 
 //
@@ -73,37 +73,38 @@ func (b BoardModel) View() string {
 	lines := []string{
 		"    0 1 2 3 4 5 6 7 8 9 ",
 		"  " +
-			CORNER_TOP_LEFT +
-			Repeat(21, LINE_HORIZONTAL) +
-			CORNER_TOP_RIGHT,
+			cornerTopLeft +
+			Repeat(21, lineHorizontal) +
+			cornerTopRight,
 	}
 
 	for row := range 10 {
 		var line strings.Builder
-		fmt.Fprintf(&line, "%d %s", row, LINE_VERTICAL)
+		fmt.Fprintf(&line, "%d %s", row, lineVertical)
 		for col := range 10 {
 			var s string
 			switch b.State.Status(bb.Pos(row, col)) {
 			case state.StatusVacant:
-				s = FgBrightBlack(VACANT_SQUARE)
+				s = FgBrightBlack(vacantSquare)
 			case state.StatusWhiteQueen:
-				s = FgBrightCyan(WHITE_QUEEN_SQUARE)
+				s = FgBrightCyan(whiteQueenSquare)
 			case state.StatusBlackQueen:
-				s = FgBrightRed(BLACK_QUEEN_SQUARE)
+				s = FgBrightRed(blackQueenSquare)
 			case state.StatusArrow:
-				s = FgBrightBlack(ARROW_SQUARE)
+				s = FgBrightBlack(arrowSquare)
 			}
 			line.WriteString(" ")
 			line.WriteString(s)
 		}
-		line.WriteString(" " + LINE_VERTICAL)
+		line.WriteString(" " + lineVertical)
 		lines = append(lines, line.String())
 	}
+
 	lines = append(lines,
 		"  "+
-			CORNER_BOTTOM_LEFT+
-			Repeat(21, LINE_HORIZONTAL)+
-			CORNER_BOTTOM_RIGHT,
+			cornerBottomLeft+
+			Repeat(21, lineHorizontal)+
+			cornerBottomRight,
 	)
 
 	return b.Style.Render(strings.Join(lines, "\n"))

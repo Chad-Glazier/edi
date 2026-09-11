@@ -26,16 +26,16 @@ func (a AlphaBetaAnalytics) Ebf() float64 {
 }
 
 func (a AlphaBetaAnalytics) Map() map[string]float64 {
-	
+
 	m := make(map[string]float64, 6)
-	
+
 	m["depth"] = float64(a.Depth)
 	m["leaf nodes"] = float64(a.LeafNodes)
 	m["interior nodes"] = float64(a.InteriorNodes)
 	m["duration (ms)"] = float64(a.Duration.Milliseconds())
 	m["ebf"] = a.Ebf()
 	m["turn"] = float64(a.Turn)
-	
+
 	return m
 }
 

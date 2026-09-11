@@ -183,7 +183,6 @@ func (board Board) Successors(dst *SuccessorSlice) {
 const maxSuccessors = 3000
 
 type SuccessorSlice struct {
-	Array [maxSuccessors]Board
+	Array  [maxSuccessors]Board
 	Length int
 }
-

@@ -11,10 +11,10 @@ import (
 
 type historicAbContext struct {
 	alphaBetaContext
-	history   *HistoryTable
+	history *HistoryTable
 }
 
-// Conducts an alpha-beta search that uses the history heuristic to order 
+// Conducts an alpha-beta search that uses the history heuristic to order
 // moves.
 //
 // The returned search analytics slice contains analytics for each
@@ -35,11 +35,11 @@ func HistoricAlphaBeta(
 	ctx := historicAbContext{
 		heuristic: heuristic,
 		deadline:  time.Now().Add(timeLimit),
-		history: history,
+		history:   history,
 	}
 
 	var (
-		turn      = uint8(bb.Count(board.Occupancy) - 8)
+		turn      = uint8(bb.Count(board.Occupancy)-8) + 1
 		maxDepth  = 100 - bb.Count(board.Occupancy)
 		bestMove  state.Move
 		analytics = make([]AlphaBetaAnalytics, 1, maxDepth)
@@ -61,7 +61,7 @@ func HistoricAlphaBeta(
 			break
 		}
 		ctx.analytics.Duration = time.Since(start)
-		
+
 		analytics = append(analytics, ctx.analytics)
 		bestMove = bestChildAtDepth.Move
 	}

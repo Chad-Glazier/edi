@@ -26,26 +26,25 @@ var (
 type VI interface {
 
 	// Determines the best move and returns it within the given time limit.
-	// 
+	//
 	// If an error is returned, it will be [ErrNoMoves].
 	Consult(board state.Board, timeLimit time.Duration) (state.Move, error)
-	
-	// Returns the analytics from the most recent call to [Consult]. The 
+
+	// Returns the analytics from the most recent call to [Consult]. The
 	// specific fields depends on the VI model. E.g., a VI using alpha-beta
 	// might describe its effective branching factor and the number of cutoffs,
-	// while a Monte Carlo model would have entirely different metrics. If 
-	// [Consult] has not yet been successfully called, this function will 
+	// while a Monte Carlo model would have entirely different metrics. If
+	// [Consult] has not yet been successfully called, this function will
 	// return nil.
 	Analytics() map[string]float64
-	
+
 	// Returns all analytics from past calls to ConsultWithAnalytics, ordered
 	// so that the last element is from the most recent call. This value will
 	// be a slice of the same type that GetAnalytics() returns.
 	AllAnalytics() []map[string]float64
-	
+
 	// Returns a string that represents the VI's model.
 	Id() string
-
 }
 
 func DumpAnalyticsCsv(vi VI, w io.Writer) error {

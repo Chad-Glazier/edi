@@ -46,7 +46,7 @@ func AlphaBeta(
 	}
 
 	var (
-		turn      = uint8(bb.Count(board.Occupancy) - 8)
+		turn      = uint8(bb.Count(board.Occupancy)-8) + 1
 		maxDepth  = 100 - bb.Count(board.Occupancy)
 		bestMove  state.Move
 		analytics = make([]AlphaBetaAnalytics, 1, maxDepth)
@@ -68,7 +68,7 @@ func AlphaBeta(
 			break
 		}
 		ctx.analytics.Duration = time.Since(start)
-		
+
 		analytics = append(analytics, ctx.analytics)
 		bestMove = bestChildAtDepth.Move
 	}
@@ -177,7 +177,7 @@ func (ctx *alphaBetaContext) alphaBeta(
 // Helper functions
 //
 
-const callsPerCheck = 1 << 10
+const callsPerCheck = 1 << 16
 
 var callsSinceLastCheck = 0
 

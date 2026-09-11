@@ -60,9 +60,9 @@ const (
 	strikethrough      = "\u001B[9m"
 	strikethroughReset = "\u001b[29m"
 
-	eraseScreen            = "\u001B[2J"
-	resetCursor            = "\u001B[H"
-	moveCursorToLineStart  = "\u001B[1G"
+	eraseScreen           = "\u001B[2J"
+	resetCursor           = "\u001B[H"
+	moveCursorToLineStart = "\u001B[1G"
 
 	reset          = "\u001B[0m"
 	resetFg        = "\u001B[39m"

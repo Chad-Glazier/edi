@@ -37,4 +37,3 @@ func (r *Random) Analytics() map[string]float64 {
 func (r *Random) AllAnalytics() []map[string]float64 {
 	return nil
 }
-

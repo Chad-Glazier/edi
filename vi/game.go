@@ -1,13 +1,9 @@
-/*
-This package contains the setup to simulate games between different programs.
-*/
-package sim
+package vi
 
 import (
 	"time"
 
 	"github.com/Chad-Glazier/edi/state"
-	"github.com/Chad-Glazier/edi/vi"
 )
 
 // Makes two VIs play against each other, updating the board state through the
@@ -16,7 +12,7 @@ import (
 // next move. That is, if White is the active player when the channel closes,
 // that means that White had no moves left and Black is the winner.
 func Game(
-	white, black vi.VI,
+	white, black VI,
 	turnTimer time.Duration,
 ) <-chan state.Board {
 

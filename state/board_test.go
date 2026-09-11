@@ -64,4 +64,3 @@ func BenchmarkSuccessorsTurn45(b *testing.B) {
 		board.Successors(&successors)
 	}
 }
-

@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/Chad-Glazier/edi/cli/cmd/flags"
-	"github.com/Chad-Glazier/edi/cli/sim"
 	"github.com/Chad-Glazier/edi/cli/ui"
 	"github.com/Chad-Glazier/edi/state"
 	"github.com/Chad-Glazier/edi/vi"
@@ -153,7 +152,7 @@ func (m gameModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	if m.ReadyToStartGame() {
-		m.game = sim.Game(m.white, m.black, m.turnTimer)
+		m.game = vi.Game(m.white, m.black, m.turnTimer)
 		return m, awaitGameUpdate(&m)
 	}
 
@@ -173,8 +172,8 @@ func (m gameModel) View() tea.View {
 		caption += " vs "
 		caption += ui.FgBrightRed(m.white.Id())
 
-		wAnalytics := ui.AnalyticsView(m.white)
-		bAnalytics := ui.AnalyticsView(m.black)
+		wAnalytics := ui.AnalyticsView(m.white, state.White)
+		bAnalytics := ui.AnalyticsView(m.black, state.Black)
 
 		v := ui.GameLayoutWithAnalytics(
 			m.width, m.height,
@@ -183,7 +182,9 @@ func (m gameModel) View() tea.View {
 			caption,
 			lipgloss.JoinHorizontal(
 				lipgloss.Center,
+				"   ",
 				wAnalytics,
+				"   ",
 				bAnalytics,
 			),
 		)

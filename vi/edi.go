@@ -25,7 +25,7 @@ func (e *EDI) Id() string {
 }
 
 func (e *EDI) Consult(
-	board state.Board, 
+	board state.Board,
 	timeLimit time.Duration,
 ) (state.Move, error) {
 

@@ -7,7 +7,7 @@ import (
 
 // Partitions territory between Black and White based on who can reach a given
 // square faster if their queens moved the way that chess kings do, then
-// calculates a score based on the sizes of the territories in proportion to 
+// calculates a score based on the sizes of the territories in proportion to
 // the total number of accessible squares.
 func KMinDist(board state.Board) float64 {
 
@@ -71,7 +71,7 @@ func KMinDist(board state.Board) float64 {
 
 // Partitions territory between Black and White based on who can reach a given
 // square faster if their queens moved the way that chess queens do, then
-// calculates a score based on the sizes of the territories in proportion to 
+// calculates a score based on the sizes of the territories in proportion to
 // the total number of accessible squares.
 func QMinDist(board state.Board) float64 {
 

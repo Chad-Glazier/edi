@@ -28,7 +28,7 @@ func (arrow *Arrow) Id() string {
 }
 
 func (a *Arrow) Consult(
-	board state.Board, 
+	board state.Board,
 	timeLimit time.Duration,
 ) (state.Move, error) {
 

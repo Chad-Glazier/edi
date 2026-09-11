@@ -23,7 +23,7 @@ func (arrow *Sparrow) Id() string {
 }
 
 func (s *Sparrow) Consult(
-	board state.Board, 
+	board state.Board,
 	timeLimit time.Duration,
 ) (state.Move, error) {
 

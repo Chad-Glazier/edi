@@ -98,7 +98,7 @@ func (ctx *historicAbContext) depthLimitedSearch(
 			successors.Array[i],
 			-β, -α,
 			depth-1,
-			-color(board),
+			color(board),
 		)
 		if err != nil {
 			return state.Board{}, ErrOutOfTime
@@ -142,7 +142,7 @@ func (ctx *historicAbContext) alphaBeta(
 		return color * ctx.heuristic(board), nil
 	}
 
-	score := math.Inf(-1)
+	value := math.Inf(-1)
 	for i := range successors.Length {
 
 		result, err := ctx.alphaBeta(
@@ -155,21 +155,18 @@ func (ctx *historicAbContext) alphaBeta(
 			return 0.0, err
 		}
 
-		if -result > score {
-			score = result
-		}
+		value = max(value, -result)
+		α = max(α, value)
 
-		if score >= β {
+		if α >= β {
 			ctx.analytics.Cutoffs[depth]++
 			ctx.history.Update(board, depth)
 			break
 		}
-
-		α = max(α, score)
 	}
 
 	ctx.analytics.InteriorNodes++
-	return score, nil
+	return value, nil
 }
 
 // A history table is used to track which moves have produced cutoffs in the
@@ -217,6 +214,10 @@ func (h *HistoryTable) Sort(states *state.SuccessorSlice) {
 }
 
 func quicksort(h *HistoryTable, states *state.SuccessorSlice, lo, hi int) {
+	if lo >= hi || lo < 0 {
+		return
+	}
+
 	p := partition(h, states, lo, hi)
 
 	quicksort(h, states, lo, p-1)
@@ -228,7 +229,7 @@ func partition(h *HistoryTable, states *state.SuccessorSlice, lo, hi int) int {
 	i := lo
 
 	for j := lo; j < hi; j++ {
-		if h.Get(states.Array[j]) <= pivot {
+		if h.Get(states.Array[j]) >= pivot {
 			states.Array[i], states.Array[j] = states.Array[j], states.Array[i]
 			i++
 		}

@@ -104,7 +104,7 @@ func (ctx *alphaBetaContext) depthLimitedSearch(
 			successors.Array[i],
 			-β, -α,
 			depth-1,
-			-color(board),
+			color(board),
 		)
 		if err != nil {
 			return state.Board{}, ErrOutOfTime
@@ -147,7 +147,7 @@ func (ctx *alphaBetaContext) alphaBeta(
 		return color * ctx.heuristic(board), nil
 	}
 
-	score := math.Inf(-1)
+	value := math.Inf(-1)
 	for i := range successors.Length {
 
 		result, err := ctx.alphaBeta(
@@ -160,20 +160,17 @@ func (ctx *alphaBetaContext) alphaBeta(
 			return 0.0, err
 		}
 
-		if -result > score {
-			score = result
-		}
+		value = max(value, -result)
+		α = max(α, value)
 
-		if score >= β {
+		if α >= β {
 			ctx.analytics.Cutoffs[depth]++
 			break
 		}
-
-		α = max(α, score)
 	}
 
 	ctx.analytics.InteriorNodes++
-	return score, nil
+	return value, nil
 }
 
 //

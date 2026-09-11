@@ -153,7 +153,7 @@ func (m gameModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	if m.ReadyToStartGame() {
-		m.game = sim.GameWithAnalytics(m.white, m.black, m.turnTimer)
+		m.game = sim.Game(m.white, m.black, m.turnTimer)
 		return m, awaitGameUpdate(&m)
 	}
 
@@ -173,14 +173,9 @@ func (m gameModel) View() tea.View {
 		caption += " vs "
 		caption += ui.FgBrightRed(m.white.Id())
 
-		wAnalytics, err := ui.AnalyticsView(m.white)
-		if err != nil {
-			wAnalytics = "no analytics for white"
-		}
-		bAnalytics, err := ui.AnalyticsView(m.black)
-		if err != nil {
-			bAnalytics = "no analytics for black"
-		}
+		wAnalytics := ui.AnalyticsView(m.white)
+		bAnalytics := ui.AnalyticsView(m.black)
+
 		v := ui.GameLayoutWithAnalytics(
 			m.width, m.height,
 			m.systemResources,

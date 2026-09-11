@@ -33,9 +33,9 @@ func Game(
 			var move state.Move
 
 			if board.Player == state.White {
-				move = *white.Consult(board, turnTimer)
+				move, _ = white.Consult(board, turnTimer)
 			} else {
-				move = *black.Consult(board, turnTimer)
+				move, _ = black.Consult(board, turnTimer)
 			}
 
 			newBoard, err := state.Apply(board, move)

@@ -177,7 +177,7 @@ func (ctx *alphaBetaContext) alphaBeta(
 // Helper functions
 //
 
-const callsPerCheck = 1 << 16
+const callsPerCheck = 1 << 10
 
 var callsSinceLastCheck = 0
 

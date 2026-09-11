@@ -24,7 +24,7 @@ func AnalyzeCommand() *cobra.Command {
 
 			ui.ClearScreen()
 
-			_, err := tea.NewProgram(NewGameModel(vi, turnTimer)).Run()
+			_, err := tea.NewProgram(NewGameModel(vi, turnTimer, output)).Run()
 			if err != nil {
 				log.Fatal(err.Error())
 			}
@@ -38,7 +38,7 @@ func AnalyzeCommand() *cobra.Command {
 	cmd.Flags().VarP(
 		&vi, "vi", "v", flags.VI_USAGE)
 	cmd.Flags().StringVarP(
-		&output, "output", "o", "analytics.csv", "the name of the file to write analytics to",
+		&output, "output", "o", "", "the name of the file to write analytics to",
 	)
 
 	return cmd

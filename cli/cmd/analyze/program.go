@@ -1,6 +1,8 @@
 package analyze
 
 import (
+	"os"
+	"strings"
 	"time"
 
 	"github.com/Chad-Glazier/edi/cli/cmd/flags"
@@ -20,11 +22,12 @@ type gameModel struct {
 	height int
 	width  int
 
-	white     vi.VI
-	black     vi.VI
-	turnTimer time.Duration
-	game      <-chan state.Board
-	winner    *state.PlayerColor
+	white          vi.VI
+	black          vi.VI
+	turnTimer      time.Duration
+	game           <-chan state.Board
+	winner         *state.PlayerColor
+	outputFilename string
 
 	viSelector      ui.VISelector
 	board           ui.BoardModel
@@ -32,13 +35,18 @@ type gameModel struct {
 	systemResources ui.SystemResources
 }
 
-func NewGameModel(vi flags.VI, turnTimer time.Duration) gameModel {
+func NewGameModel(
+	vi flags.VI,
+	turnTimer time.Duration,
+	outputFilename string,
+) gameModel {
 	m := gameModel{
 		turnTimer:       turnTimer,
 		viSelector:      ui.NewVISelector(ui.NEUTRAL),
 		timeSelector:    ui.NewTimeSelector(),
 		board:           ui.NewBoardModel(),
 		systemResources: ui.NewSystemResources(),
+		outputFilename:  outputFilename,
 	}
 
 	if vi.New != nil {
@@ -56,8 +64,7 @@ func NewGameModel(vi flags.VI, turnTimer time.Duration) gameModel {
 // example, whether the user is currently selecting the timer, or the game is
 // running, etc. Such states are determined by checking whether the
 // preconditions for the state are satisfied and ensuring that the
-// postconditions are not. That is, we ensure that everything is necessary for
-// the state to be started, and the state is not yet "finished."
+// postconditions are not.
 //
 
 func (m *gameModel) ChoosingTimer() bool {
@@ -95,6 +102,51 @@ func (m *gameModel) ShowingEndScreen() bool {
 	postconditions := false
 
 	return preconditions && !postconditions
+}
+
+// Returns true if and only if the file was successfully written.
+func (m *gameModel) WriteAnalyticsFile() bool {
+	if m.outputFilename == "" {
+		return false
+	}
+
+	var (
+		parts         = strings.Split(m.outputFilename, ".")
+		whiteFilename string
+		blackFilename string
+	)
+
+	switch len(parts) {
+	case 0:
+		return false
+	case 1:
+		whiteFilename = parts[0] + "_white.csv"
+		blackFilename = parts[0] + "_black.csv"
+	default:
+		wPart := parts[len(parts)-2] + "_white"
+		bPart := parts[len(parts)-2] + "_black"
+
+		parts[len(parts)-2] = wPart
+		whiteFilename = strings.Join(parts, ".")
+		parts[len(parts)-2] = bPart
+		blackFilename = strings.Join(parts, ".")
+	}
+
+	wOut, err := os.Create(whiteFilename)
+	if err != nil {
+		return false
+	}
+	defer wOut.Close()
+
+	bOut, err := os.Create(blackFilename)
+	if err != nil {
+		return false
+	}
+	defer bOut.Close()
+
+	vi.DumpAnalyticsCsv(m.white, wOut)
+	vi.DumpAnalyticsCsv(m.black, bOut)
+	return true
 }
 
 //
@@ -202,11 +254,26 @@ func (m gameModel) View() tea.View {
 			caption += " wins against "
 			caption += ui.FgBrightCyan(m.white.Id())
 		}
-		v := ui.GameLayout(
+
+		if ok := m.WriteAnalyticsFile(); ok {
+			caption += "\noutput written to file"
+		}
+
+		wAnalytics := ui.AnalyticsView(m.white, state.White)
+		bAnalytics := ui.AnalyticsView(m.black, state.Black)
+
+		v := ui.GameLayoutWithAnalytics(
 			m.width, m.height,
 			m.systemResources,
 			m.board,
 			caption,
+			lipgloss.JoinHorizontal(
+				lipgloss.Center,
+				"   ",
+				wAnalytics,
+				"   ",
+				bAnalytics,
+			),
 		)
 		v.AltScreen = false
 		return v

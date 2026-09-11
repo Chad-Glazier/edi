@@ -1,7 +1,6 @@
 # EDI
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/Chad-Glazier/edi.svg)](https://pkg.go.dev/github.com/Chad-Glazier/edi)
-[![Go Report Card](https://goreportcard.com/badge/github.com/Chad-Glazier/edi)](https://goreportcard.com/report/github.com/Chad-Glazier/edi)
 
 >The main website for the EDI project can be visited [here](https://ediproject.org). 
 

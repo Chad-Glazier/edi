@@ -6,7 +6,7 @@ import (
 	"github.com/Chad-Glazier/edi/vi"
 )
 
-const VI_USAGE = "a VI player: edi, arrow, or random"
+const VI_USAGE = "a VI player: edi, arrow, sparrow or random"
 
 type VI struct {
 	Name string

@@ -20,10 +20,8 @@ func AnalyticsView(v vi.VI, colour state.PlayerColor) string {
 	analytics := v.Analytics()
 
 	orderedKeys := make([]string, 0)
-	maxWidth := 0
 	for key := range analytics {
 		orderedKeys = append(orderedKeys, key)
-		maxWidth = max(maxWidth, len([]rune(key)))
 	}
 	sort.Strings(orderedKeys)
 

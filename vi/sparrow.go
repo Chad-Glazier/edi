@@ -15,7 +15,7 @@ type Sparrow struct {
 }
 
 func NewSparrow() VI {
-	return &Arrow{}
+	return &Sparrow{}
 }
 
 func (arrow *Sparrow) Id() string {

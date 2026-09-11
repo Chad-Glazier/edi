@@ -9,7 +9,7 @@ import (
 )
 
 //
-// Defining the list items.
+// Defining the list items
 //
 
 type timeItem struct {
@@ -56,7 +56,7 @@ var timeOptions = []list.Item{
 }
 
 //
-// Defining the model state.
+// Model state
 //
 
 type TimeSelector struct {
@@ -66,7 +66,7 @@ type TimeSelector struct {
 }
 
 func NewTimeSelector() TimeSelector {
-	m := TimeSelector{}
+	var m TimeSelector
 	m.list = list.New(timeOptions, list.NewDefaultDelegate(), 0, 0)
 
 	// Styles
@@ -91,7 +91,7 @@ func NewTimeSelector() TimeSelector {
 }
 
 //
-// Bubbletea methods.
+// Bubbletea methods
 //
 
 func (m TimeSelector) Init() tea.Cmd {

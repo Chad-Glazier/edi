@@ -27,8 +27,11 @@ func GameLayout(
 	))
 }
 
+// Groups game UI elements into a single view, including the given analytics
+// element. The analytics element must be rendered beforehand and passed as a
+// string here.
 func GameLayoutWithAnalytics(
-	width, height int, // The dimensions of the model.
+	width, height int,
 	systemResources SystemResources,
 	board BoardModel,
 	boardCaption string,

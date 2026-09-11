@@ -2,25 +2,53 @@ package ui
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"charm.land/bubbles/v2/progress"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
+	"github.com/shirou/gopsutil/v4/cpu"
+	"github.com/shirou/gopsutil/v4/process"
 )
 
+type resources struct {
+	memory        uint64
+	memoryPercent float32
+	cpuPercent    float64
+}
+
+// Gets information about the system resources being used by the process.
+func getResources() resources {
+
+	r := resources{}
+
+	c, _ := cpu.Percent(0, false)
+
+	proc, _ := process.NewProcess(int32(os.Getpid()))
+	r.cpuPercent = c[0]
+	r.memoryPercent, _ = proc.MemoryPercent()
+	m, _ := proc.MemoryInfo()
+	r.memory = m.RSS
+
+	r.cpuPercent /= 100
+	r.memoryPercent /= 100
+
+	return r
+}
+
 //
-// Styles.
+// Styles
 //
 
-type Styles struct {
+type SystemResourcesStyles struct {
 	Border lipgloss.Style
 	Label  lipgloss.Style
 	Value  lipgloss.Style
 }
 
-func DefaultStyles() Styles {
-	return Styles{
+func DefaultStyles() SystemResourcesStyles {
+	return SystemResourcesStyles{
 		Border: lipgloss.NewStyle(),
 		Label:  lipgloss.NewStyle().Bold(true),
 		Value:  lipgloss.NewStyle(),
@@ -28,12 +56,12 @@ func DefaultStyles() Styles {
 }
 
 //
-// Model State.
+// Model state
 //
 
 type SystemResources struct {
 	res        resources
-	styles     Styles
+	styles     SystemResourcesStyles
 	progress   progress.Model
 	peakMemory uint64
 	width      int
@@ -52,7 +80,7 @@ func NewSystemResources() SystemResources {
 }
 
 //
-// Custom Messages and Commands.
+// Commands/messages
 //
 
 type TickMsg struct{}
@@ -67,7 +95,7 @@ func TickEvery() tea.Cmd {
 }
 
 //
-// Bubbletea Methods.
+// Bubbletea methods
 //
 
 func (m SystemResources) Init() tea.Cmd {

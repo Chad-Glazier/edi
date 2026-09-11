@@ -3,8 +3,7 @@ package ui
 import "fmt"
 
 //
-// This file includes a bunch of ANSI escape codes and utility functions that
-// use them.
+// This file just includes a bunch of ANSI escape codes and utility functions.
 //
 
 const (

@@ -38,7 +38,7 @@ const (
 )
 
 //
-// Defining the model state.
+// Model state
 //
 
 type BoardModel struct {
@@ -53,7 +53,7 @@ func NewBoardModel() BoardModel {
 }
 
 //
-// Bubbletea methods.
+// Bubbletea methods
 //
 
 func (b BoardModel) Init() tea.Cmd {
@@ -74,7 +74,7 @@ func (b BoardModel) View() string {
 		"    0 1 2 3 4 5 6 7 8 9 ",
 		"  " +
 			cornerTopLeft +
-			Repeat(21, lineHorizontal) +
+			strings.Repeat(lineHorizontal, 21) +
 			cornerTopRight,
 	}
 
@@ -103,15 +103,11 @@ func (b BoardModel) View() string {
 	lines = append(lines,
 		"  "+
 			cornerBottomLeft+
-			Repeat(21, lineHorizontal)+
+			strings.Repeat(lineHorizontal, 21)+
 			cornerBottomRight,
 	)
 
 	return b.Style.Render(strings.Join(lines, "\n"))
 }
-
-//
-// Messages.
-//
 
 type SetBoardMsg state.Board

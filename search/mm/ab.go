@@ -46,7 +46,7 @@ func AlphaBeta(
 	}
 
 	go func() {
-		<- time.After(timeLimit)
+		time.Sleep(timeLimit)
 		ctx.outOfTime = true
 	}()
 

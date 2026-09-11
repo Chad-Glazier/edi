@@ -5,7 +5,6 @@ import (
 	"image/color"
 	"math"
 	"sort"
-	"strings"
 
 	"github.com/Chad-Glazier/edi/state"
 	"github.com/Chad-Glazier/edi/vi"
@@ -46,12 +45,12 @@ func AnalyticsView(v vi.VI, colour state.PlayerColor) string {
 		table.WithWidth(30),
 		table.WithFocused(false),
 	)
-	setStyles(&t, colour)
+	setTableStyles(&t, colour)
 
 	return t.View()
 }
 
-func setStyles(t *table.Model, colour state.PlayerColor) {
+func setTableStyles(t *table.Model, colour state.PlayerColor) {
 	var (
 		borderColor     color.Color
 		foregroundColor color.Color
@@ -90,24 +89,9 @@ func setStyles(t *table.Model, colour state.PlayerColor) {
 // Helper functions
 //
 
-func rightPad(s string, width int, ch string) string {
-	delta := width - len([]rune(s))
-	if delta <= 0 {
-		return s
-	}
-	delta /= len([]rune(ch))
-	return s + strings.Repeat(ch, delta)
-}
-
-func leftPad(s string, width int, ch string) string {
-	delta := width - len([]rune(s))
-	if delta <= 0 {
-		return s
-	}
-	delta /= len([]rune(ch))
-	return strings.Repeat(ch, delta) + s
-}
-
+// Converts a float64 to a string with a precision of two fractional digits.
+// However, in the case that the float represents a whole number, there will
+// be no fractional digits.
 func formatF64(x float64) string {
 	if x == math.Trunc(x) {
 		return fmt.Sprintf("%.0f", x)

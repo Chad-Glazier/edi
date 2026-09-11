@@ -9,7 +9,7 @@ import (
 )
 
 //
-// Defining the list items.
+// Defining the list items
 //
 
 type item struct {
@@ -46,7 +46,7 @@ var VIList = []list.Item{
 }
 
 //
-// Defining the model state.
+// Model state
 //
 
 type VISelectorStyle uint8
@@ -65,8 +65,9 @@ type VISelector struct {
 }
 
 func NewVISelector(style VISelectorStyle) VISelector {
-	v := VISelector{}
+	var v VISelector
 	v.list = list.New(VIList, list.NewDefaultDelegate(), 0, 0)
+
 	switch style {
 	case White:
 		setWhiteStyles(&v)
@@ -79,7 +80,7 @@ func NewVISelector(style VISelectorStyle) VISelector {
 }
 
 //
-// Bubbletea methods.
+// Bubbletea methods
 //
 
 func (m VISelector) Init() tea.Cmd {
@@ -115,7 +116,7 @@ func (m VISelector) View() tea.View {
 }
 
 //
-// Styling functions.
+// Styling functions
 //
 
 func setNeutralStyles(m *VISelector) {

@@ -28,7 +28,7 @@ func BenchmarkEDI(b *testing.B) {
 		board := state.Initial()
 
 		for b.Loop() {
-			edi.Consult(board, 10 * time.Second)
+			edi.Consult(board, 10*time.Second)
 		}
 	})
 }

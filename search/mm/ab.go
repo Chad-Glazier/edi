@@ -21,7 +21,7 @@ var (
 type alphaBetaContext struct {
 	heuristic eval.EvalFunc
 	analytics AlphaBetaAnalytics
-	deadline  time.Time
+	outOfTime bool
 }
 
 // Conducts a simple alpha-beta search.
@@ -42,8 +42,13 @@ func AlphaBeta(
 
 	ctx := alphaBetaContext{
 		heuristic: heuristic,
-		deadline:  time.Now().Add(timeLimit),
+		outOfTime: false,
 	}
+
+	go func() {
+		<- time.After(timeLimit)
+		ctx.outOfTime = true
+	}()
 
 	var (
 		turn      = uint8(bb.Count(board.Occupancy)-8) + 1
@@ -130,7 +135,7 @@ func (ctx *alphaBetaContext) alphaBeta(
 	color float64,
 ) (float64, error) {
 
-	if ctx.outOfTime() {
+	if ctx.outOfTime {
 		return 0.0, ErrOutOfTime
 	}
 
@@ -176,18 +181,6 @@ func (ctx *alphaBetaContext) alphaBeta(
 //
 // Helper functions
 //
-
-const callsPerCheck = 1 << 10
-
-var callsSinceLastCheck = 0
-
-func (ctx *alphaBetaContext) outOfTime() bool {
-	callsSinceLastCheck = (callsSinceLastCheck + 1) % callsPerCheck
-	if callsSinceLastCheck == 0 {
-		return time.Now().After(ctx.deadline)
-	}
-	return false
-}
 
 func color(board state.Board) float64 {
 	if board.Player == state.White {

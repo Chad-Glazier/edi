@@ -2,6 +2,7 @@ package mm
 
 import (
 	"math"
+	"sort"
 	"time"
 
 	"github.com/Chad-Glazier/edi/bb"
@@ -34,9 +35,13 @@ func HistoricAlphaBeta(
 
 	ctx := historicAbContext{
 		heuristic: heuristic,
-		deadline:  time.Now().Add(timeLimit),
 		history:   history,
 	}
+
+	go func() {
+		<- time.After(timeLimit)
+		ctx.outOfTime = true
+	}()
 
 	var (
 		turn      = uint8(bb.Count(board.Occupancy)-8) + 1
@@ -124,7 +129,7 @@ func (ctx *historicAbContext) alphaBeta(
 	color float64,
 ) (float64, error) {
 
-	if ctx.outOfTime() {
+	if ctx.outOfTime {
 		return 0.0, ErrOutOfTime
 	}
 
@@ -205,36 +210,28 @@ func (h *HistoryTable) Update(board state.Board, depth int) {
 	h.Set(board, new)
 }
 
-// Sorts a slice of states in descending order by their history scores.
-func (h *HistoryTable) Sort(states *state.SuccessorSlice) {
-	if states.Length <= 1 {
-		return
-	}
-	quicksort(h, states, 0, states.Length-1)
+// Sorts a slice of states in-place, in descending order by their history
+// scores.
+func (history *HistoryTable) Sort(successors *state.SuccessorSlice) {
+	sort.Sort(&stateSorter{
+		states:  successors,
+		history: history,
+	})
 }
 
-func quicksort(h *HistoryTable, states *state.SuccessorSlice, lo, hi int) {
-	if lo >= hi || lo < 0 {
-		return
-	}
-
-	p := partition(h, states, lo, hi)
-
-	quicksort(h, states, lo, p-1)
-	quicksort(h, states, p+1, hi)
+type stateSorter struct {
+	states  *state.SuccessorSlice
+	history *HistoryTable
 }
 
-func partition(h *HistoryTable, states *state.SuccessorSlice, lo, hi int) int {
-	pivot := h.Get(states.Array[hi])
-	i := lo
+func (s *stateSorter) Len() int {
+	return s.states.Length
+}
 
-	for j := lo; j < hi; j++ {
-		if h.Get(states.Array[j]) >= pivot {
-			states.Array[i], states.Array[j] = states.Array[j], states.Array[i]
-			i++
-		}
-	}
+func (s *stateSorter) Less(i, j int) bool {
+	return s.history.Get(s.states.Array[i]) > s.history.Get(s.states.Array[j])
+}
 
-	states.Array[i], states.Array[hi] = states.Array[hi], states.Array[i]
-	return i
+func (s *stateSorter) Swap(i, j int) {
+	s.states.Array[i], s.states.Array[j] = s.states.Array[j], s.states.Array[i]
 }

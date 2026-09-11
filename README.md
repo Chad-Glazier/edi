@@ -31,6 +31,8 @@ The main library behind EDI gives you the tools to do the following:
   - *Arrow* is a program created by Martin Muller and Theodore Tegos and documented in their 2002 paper ["Experiments in Computer Amazons"](https://www.cambridge.org/core/books/abs/more-games-of-no-chance/experiments-in-computer-amazons/F12D696AF38F435BC2C47E41DAA621E4).
   - *EDI* is a program created by myself to participate in an undergraduate computer amazons tournament held at UBC in early 2026. My original report for the Java implementation can be found [here](https://raw.githubusercontent.com/Chad-Glazier/edi/main/docs/EDI_Report.pdf).
 
+The following minimal example demonstrates some of the library's functionality by making two programs play against each other.
+
 ```go
 package main
 
@@ -39,14 +41,15 @@ import (
 	"time"
 
 	"github.com/Chad-Glazier/edi/vi"
+	"github.com/Chad-Glazier/edi/eval"
 	"github.com/Chad-Glazier/edi/state"
 )
 
 func main() {
 
-	// First, we select the VI (i.e., game-playing programs) we want to play
+	// First, we select the VI (i.e., game-playing programs) we want to pit
 	// against each other.
-	white := vi.NewEDI()
+	white := vi.NewSparrow()
 	black := vi.NewArrow()
 
 	// Next we set up the initial board state and decide a per-turn time limit.
@@ -62,7 +65,6 @@ func main() {
 		// The "consult" method of a VI tells it to recommend a move within
 		// the allotted time limit. The "player" field of a board state tracks
 		// which player should move next.
-
 		if board.Player == state.White {
 			move, _ = white.Consult(board, turnTimer)
 		} else {
@@ -73,6 +75,19 @@ func main() {
 		newBoard, err := state.Apply(board, move)
 		if err != nil {
 			panic(err.Error())
+		}
+
+		// We quickly evaluate the board state to assess who is winning. By
+		// convention, heuristic evaluation functions return positive values to
+		// represent favorability for White and negative values for Black.
+		evaluation := eval.QMinDist(newBoard)
+		switch {
+		case evaluation > 0:
+			fmt.Println("looks like White is winning...")
+		case evaluation < 0:
+			fmt.Println("looks like Black has the upper hand...")
+		default:
+			fmt.Println("the game is remarkably close...")
 		}
 
 		// Finally, we update the board state.

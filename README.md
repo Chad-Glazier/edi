@@ -28,7 +28,7 @@ import (
 )
 
 func main() {
-	board := state.InitialState() // Set up the initial board state.
+	board := state.Initial() // Set up the initial board state.
 	turnTimer := time.Second * 3  // The per-turn time limit.
 
 	// Note: This library refers to game-playing programs as "VI," short for
@@ -48,7 +48,7 @@ func main() {
 		// return a reference to a Move struct or nil if no move is available.
 
 		var move state.Move
-		if board.Player == state.WHITE {
+		if board.Player == state.White {
 			move = *white.Consult(board, turnTimer)
 			fmt.Println(white.Id() + " moves " + move.String())
 		} else {
@@ -70,7 +70,7 @@ func main() {
 
 	// Amazons games run until the active player has no available moves. This
 	// means that, in a terminal board state, the active player is the loser.
-	if board.Player == state.WHITE {
+	if board.Player == state.White {
 		fmt.Printf("%s (Black) wins!\n", black.Id())
 	} else {
 		fmt.Printf("%s (White) wins!\n", white.Id())

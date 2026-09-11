@@ -1,4 +1,4 @@
-package edi
+package vi
 
 import (
 	"time"

@@ -6,7 +6,7 @@ import (
 )
 
 //
-// Helper functions.
+// Helper functions
 //
 
 func randomBoard(density float64) (
@@ -30,7 +30,7 @@ func randomBoard(density float64) (
 }
 
 //
-// Tests.
+// Tests
 //
 
 func TestFlagging(t *testing.T) {
@@ -47,7 +47,7 @@ func TestFlagging(t *testing.T) {
 	}
 
 	iteratedPositions := 0
-	for bb, pos := Next(bb); pos != NULL_POS; bb, pos = Next(bb) {
+	for bb, pos := Next(bb); pos != NullPos; bb, pos = Next(bb) {
 		iteratedPositions++
 		if !flagged[pos] {
 			t.Errorf("Expected iterated position %d to be flagged.", pos)
@@ -84,14 +84,14 @@ func TestFlagging(t *testing.T) {
 func TestMsbLsb(t *testing.T) {
 
 	empty := BitBoard{}
-	if Msb(empty) != NULL_POS {
+	if Msb(empty) != NullPos {
 		t.Errorf(
-			"Expected MSB of empty board to be NULL_POS, got %d", Msb(empty),
+			"Expected MSB of empty board to be NullPos, got %d", Msb(empty),
 		)
 	}
-	if Lsb(empty) != NULL_POS {
+	if Lsb(empty) != NullPos {
 		t.Errorf(
-			"Expected LSB of empty board to be NULL_POS, got %d", Lsb(empty),
+			"Expected LSB of empty board to be NullPos, got %d", Lsb(empty),
 		)
 	}
 
@@ -173,7 +173,7 @@ func BenchmarkIsNotEmpty(b *testing.B) {
 func BenchmarkNext(b *testing.B) {
 	bb, _, _ := randomBoard(0.20)
 	for b.Loop() {
-		for bb, pos := Next(bb); pos != NULL_POS; bb, pos = Next(bb) {
+		for bb, pos := Next(bb); pos != NullPos; bb, pos = Next(bb) {
 			// ...
 		}
 	}

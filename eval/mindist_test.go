@@ -7,14 +7,14 @@ import (
 )
 
 func BenchmarkKMinDist(b *testing.B) {
-	board := state.InitialState()
+	board := state.Initial()
 	for b.Loop() {
 		KMinDist(board)
 	}
 }
 
 func BenchmarkQMinDist(b *testing.B) {
-	board := state.InitialState()
+	board := state.Initial()
 	for b.Loop() {
 		QMinDist(board)
 	}

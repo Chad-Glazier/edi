@@ -3,11 +3,11 @@ package run
 import (
 	"time"
 
-	"github.com/Chad-Glazier/edi"
 	"github.com/Chad-Glazier/edi/cli/cmd/flags"
 	"github.com/Chad-Glazier/edi/cli/sim"
 	"github.com/Chad-Glazier/edi/cli/ui"
 	"github.com/Chad-Glazier/edi/state"
+	"github.com/Chad-Glazier/edi/vi"
 
 	tea "charm.land/bubbletea/v2"
 )
@@ -20,8 +20,8 @@ type gameModel struct {
 	height int
 	width  int
 
-	white     edi.VI
-	black     edi.VI
+	white     vi.VI
+	black     vi.VI
 	turnTimer time.Duration
 	game      <-chan state.Board
 	winner    *state.PlayerColor
@@ -36,8 +36,8 @@ type gameModel struct {
 func NewGameModel(white, black flags.VI, turnTimer time.Duration) gameModel {
 	m := gameModel{
 		turnTimer:       turnTimer,
-		whiteSelector:   ui.NewVISelector(ui.WHITE),
-		blackSelector:   ui.NewVISelector(ui.BLACK),
+		whiteSelector:   ui.NewVISelector(ui.White),
+		blackSelector:   ui.NewVISelector(ui.Black),
 		timeSelector:    ui.NewTimeSelector(),
 		board:           ui.NewBoardModel(),
 		systemResources: ui.NewSystemResources(),
@@ -198,11 +198,11 @@ func (m gameModel) View() tea.View {
 	case m.ShowingEndScreen():
 		caption := ""
 		switch *m.winner {
-		case state.WHITE:
+		case state.White:
 			caption += ui.FgBrightCyan(m.white.Id())
 			caption += " wins against "
 			caption += ui.FgBrightRed(m.black.Id())
-		case state.BLACK:
+		case state.Black:
 			caption += ui.FgBrightRed(m.black.Id())
 			caption += " wins against "
 			caption += ui.FgBrightCyan(m.white.Id())
@@ -229,10 +229,10 @@ func awaitGameUpdate(m *gameModel) tea.Cmd {
 		updatedGameState, ok := <-m.game
 		if !ok {
 			switch m.board.State.Player {
-			case state.WHITE:
-				return GameOverMsg{winner: state.BLACK}
-			case state.BLACK:
-				return GameOverMsg{winner: state.WHITE}
+			case state.White:
+				return GameOverMsg{winner: state.Black}
+			case state.Black:
+				return GameOverMsg{winner: state.White}
 			}
 		}
 		return ui.SetBoardMsg(updatedGameState)

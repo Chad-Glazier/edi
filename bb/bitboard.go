@@ -1,14 +1,34 @@
 /*
-This package implements a 10x10 bitboard for Amazons.
+Package bb implements a 10x10 bitboard for Amazons.
 */
 package bb
 
 import (
 	"fmt"
-	"io"
 	"math/bits"
 	"strings"
 )
+
+// Represents a position on the 10x10 Amazons board with an index from 0 to 99.
+// We use row-major ordering, so you can get the row index with position / 10
+// and the column with position % 10.
+type Position uint8
+
+// Represents a null position. I.e., for functions that return a position,
+// the null position should be returned if no valid position exists.
+const NullPos Position = 100
+
+// Converts row and column indices into a position index.
+func Pos(row, col int) Position {
+	return Position(row*10 + col)
+}
+
+// Converts a position index into row and column coordinates
+func Coords(pos Position) (row, col int) {
+	row = int(pos) / 10
+	col = int(pos) % 10
+	return
+}
 
 // Represents a board where each position index (0-99, since Amazons is played
 // on a 10x10 board) is either 0 or 1, which we refer to as "unflagged" and
@@ -59,7 +79,7 @@ func IsNotEmpty(bb BitBoard) bool {
 
 // Returns the "lowest" position on the board, meaning that which is the
 // closest to the bottom-right corner, and unflags it. If the bitboard is
-// empty, then NULL_POS is returned.
+// empty, then [NullPos] is returned.
 func Next(bb BitBoard) (BitBoard, Position) {
 	switch {
 	case bb.lo != 0:
@@ -71,7 +91,7 @@ func Next(bb BitBoard) (BitBoard, Position) {
 		bb.hi &= bb.hi - 1
 		return bb, pos
 	default:
-		return bb, NULL_POS
+		return bb, NullPos
 	}
 }
 
@@ -81,7 +101,7 @@ func Count(bb BitBoard) int {
 }
 
 // Returns the greatest flagged position index on the board. If the
-// board is empty, then the null position (NULL_POS) is returned.
+// board is empty, then [NullPos] is returned.
 func Lsb(bb BitBoard) Position {
 	switch {
 	case bb.lo != 0:
@@ -89,12 +109,12 @@ func Lsb(bb BitBoard) Position {
 	case bb.hi != 0:
 		return Position(64 + bits.TrailingZeros64(bb.hi))
 	default:
-		return NULL_POS
+		return NullPos
 	}
 }
 
 // Returns the position index of the most-significant bit in the board. If the
-// board is empty, then the null position (NULL_POS) is returned .
+// board is empty, then [NullPos] is returned .
 func Msb(bb BitBoard) Position {
 	switch {
 	case bb.hi != 0:
@@ -102,7 +122,7 @@ func Msb(bb BitBoard) Position {
 	case bb.lo != 0:
 		return Position(63 - bits.LeadingZeros64(bb.lo))
 	default:
-		return NULL_POS
+		return NullPos
 	}
 }
 
@@ -146,52 +166,51 @@ func Not(bb BitBoard) BitBoard {
 	}
 }
 
-// Visualizes a bitboard, writing it to the given output.
-func Print(w io.Writer, bb BitBoard) {
-
-	const (
-		LINE_HORIZONTAL     = "\u2500" // ─
-		LINE_VERTICAL       = "\u2502" // │
-		CORNER_TOP_LEFT     = "\u250C" // ┌
-		CORNER_TOP_RIGHT    = "\u2510" // ┐
-		CORNER_BOTTOM_LEFT  = "\u2514" // └
-		CORNER_BOTTOM_RIGHT = "\u2518" // ┘
-		FLAGGED_SQUARE      = "\u2715" // ✕
-		VACANT_SQUARE       = "\u00B7" // ·
-	)
+// Visualizes a bitboard.
+func (bb BitBoard) String() string {
 
 	lines := []string{
 		"    0 1 2 3 4 5 6 7 8 9 ",
 		"  " +
-			CORNER_TOP_LEFT +
-			strings.Repeat(LINE_HORIZONTAL, 21) +
-			CORNER_TOP_RIGHT,
+			cornerTopLeft +
+			strings.Repeat(lineHorizontal, 21) +
+			cornerTopRight,
 	}
 
 	for row := range 10 {
 		var line strings.Builder
-		fmt.Fprintf(&line, "%d %s", row, LINE_VERTICAL)
+		fmt.Fprintf(&line, "%d %s", row, lineVertical)
 		for col := range 10 {
 			var s string
 			line.WriteString(" ")
 			if IsFlagged(bb, Pos(row, col)) {
-				line.WriteString(FLAGGED_SQUARE)
+				line.WriteString(flaggedSquare)
 			} else {
-				line.WriteString(VACANT_SQUARE)
+				line.WriteString(vacantSquare)
 			}
 			line.WriteString(s)
 		}
-		line.WriteString(" " + LINE_VERTICAL)
+		line.WriteString(" " + lineVertical)
 		lines = append(lines, line.String())
 	}
-	
+
 	lines = append(lines,
 		"  "+
-			CORNER_BOTTOM_LEFT+
-			strings.Repeat(LINE_HORIZONTAL, 21)+
-			CORNER_BOTTOM_RIGHT,
+			cornerBottomLeft+
+			strings.Repeat(lineHorizontal, 21)+
+			cornerBottomRight,
 	)
 
-	fmt.Fprint(w, strings.Join(lines, "\n"))
-
+	return strings.Join(lines, "\n")
 }
+
+const (
+	lineHorizontal    = "\u2500" // ─
+	lineVertical      = "\u2502" // │
+	cornerTopLeft     = "\u250C" // ┌
+	cornerTopRight    = "\u2510" // ┐
+	cornerBottomLeft  = "\u2514" // └
+	cornerBottomRight = "\u2518" // ┘
+	flaggedSquare     = "\u2715" // ✕
+	vacantSquare      = "\u00B7" // ·
+)

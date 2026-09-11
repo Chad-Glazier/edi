@@ -7,6 +7,10 @@ import (
 	"github.com/Chad-Glazier/edi/bb"
 )
 
+//
+// Helper functions
+//
+
 func randomBoard(density float64) (
 	b bb.BitBoard, flagged map[bb.Position]bool, flagCount int,
 ) {
@@ -26,11 +30,6 @@ func randomBoard(density float64) (
 
 	return
 }
-
-//
-// Ground-truth functions. These implementations are certainly correct, just
-// terribly inefficient. We can use them to get the expected results.
-//
 
 func inBounds(row, col int) bool {
 	return row >= 0 && row < 10 && col >= 0 && col < 10
@@ -93,9 +92,9 @@ func expectedFrontier(
 
 	result := bb.BitBoard{}
 
-	for i, pos := bb.Next(territory); pos != bb.NULL_POS; i, pos = bb.Next(i) {
+	for i, pos := bb.Next(territory); pos != bb.NullPos; i, pos = bb.Next(i) {
 		neighbors := neighborFn(occ, pos)
-		for i, n := bb.Next(neighbors); n != bb.NULL_POS; i, n = bb.Next(i) {
+		for i, n := bb.Next(neighbors); n != bb.NullPos; i, n = bb.Next(i) {
 			if !bb.IsFlagged(territory, n) {
 				result = bb.Flag(result, n)
 			}
@@ -121,7 +120,7 @@ func TestKNeighbors(t *testing.T) {
 				t.Fatalf("KNeighbors size mismatch at %d", pos)
 			}
 
-			for i, p := bb.Next(expected); p != bb.NULL_POS; i, p = bb.Next(i) {
+			for i, p := bb.Next(expected); p != bb.NullPos; i, p = bb.Next(i) {
 				if !bb.IsFlagged(got, p) {
 					t.Errorf("KNeighbors missing %d from %d", p, pos)
 				}
@@ -142,7 +141,7 @@ func TestQNeighbors(t *testing.T) {
 				t.Fatalf("QNeighbors size mismatch at %d", pos)
 			}
 
-			for i, p := bb.Next(expected); p != bb.NULL_POS; i, p = bb.Next(i) {
+			for i, p := bb.Next(expected); p != bb.NullPos; i, p = bb.Next(i) {
 				if !bb.IsFlagged(got, p) {
 					t.Errorf("QNeighbors missing %d from %d", p, pos)
 				}
@@ -163,7 +162,7 @@ func TestKFrontier(t *testing.T) {
 			t.Fatalf("KFrontier size mismatch")
 		}
 
-		for i, p := bb.Next(expected); p != bb.NULL_POS; i, p = bb.Next(i) {
+		for i, p := bb.Next(expected); p != bb.NullPos; i, p = bb.Next(i) {
 			if !bb.IsFlagged(got, p) {
 				t.Errorf("KFrontier missing %d", p)
 			}
@@ -183,7 +182,7 @@ func TestQFrontier(t *testing.T) {
 			t.Fatalf("QFrontier size mismatch")
 		}
 
-		for i, p := bb.Next(expected); p != bb.NULL_POS; i, p = bb.Next(i) {
+		for i, p := bb.Next(expected); p != bb.NullPos; i, p = bb.Next(i) {
 			if !bb.IsFlagged(got, p) {
 				t.Errorf("QFrontier missing %d", p)
 			}

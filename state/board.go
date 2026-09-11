@@ -1,6 +1,6 @@
 /*
-This package is used to represent an Amazons board state and provide the means
-to construct a game tree.
+Package state implements a representation of Amazons board states and provides
+the means to construct a game tree.
 */
 package state
 
@@ -14,8 +14,8 @@ import (
 type PlayerColor byte
 
 const (
-	WHITE PlayerColor = 0 // Represents the player on White
-	BLACK PlayerColor = 1 // Represents the player on Black
+	White PlayerColor = 0 // Represents the player on White
+	Black PlayerColor = 1 // Represents the player on Black
 )
 
 // Represents a board state.
@@ -33,48 +33,48 @@ type Board struct {
 	Player PlayerColor
 }
 
+// Represents the status of a given position on the board. That is, whether it
+// is vacant, covered by an arrow, or occupied by a queen.
 type PositionStatus uint8
 
 const (
-	VACANT PositionStatus = iota
-	WHITE_QUEEN
-	BLACK_QUEEN
-	ARROW
+	StatusVacant PositionStatus = iota
+	StatusWhiteQueen
+	StatusBlackQueen
+	StatusArrow
 )
 
-// Returns VACANT, WHITE_QUEEN, BLACK_QUEEN, or ARROW, depending on what the
-// status of the position is on the board. This function is not optimal and is
-// only provided for convenience.
+// Returns [StatusVacant], [StatusWhiteQueen], [StatusBlackQueen], or
+// [StatusArrow], depending on what the status of the position is on the board.
+// This function is not optimal and is only provided for convenience.
 func (b *Board) Status(pos bb.Position) PositionStatus {
 	if !bb.IsFlagged(b.Occupancy, pos) {
-		return VACANT
+		return StatusVacant
 	}
 
 	for i := range 4 {
 		if b.White[i] == pos {
-			return WHITE_QUEEN
+			return StatusWhiteQueen
 		}
 		if b.Black[i] == pos {
-			return BLACK_QUEEN
+			return StatusBlackQueen
 		}
 	}
 
-	return ARROW
-}
-
-// Returns a pointer to the queens belonging to the active player. That is,
-// the array of queens that can move from this position.
-func (b *Board) ActiveQueens() *[4]bb.Position {
-	if b.Player == WHITE {
-		return &b.White
-	} else {
-		return &b.Black
-	}
+	return StatusArrow
 }
 
 // Returns true if and only if the board state is terminal.
 func (b *Board) IsTerminal() bool {
-	for _, queen := range b.ActiveQueens() {
+
+	var activeQueens [4]bb.Position
+	if b.Player == White {
+		activeQueens = b.White
+	} else {
+		activeQueens = b.Black
+	}
+
+	for _, queen := range activeQueens {
 		if bb.Count(KNeighbors(b.Occupancy, queen)) > 0 {
 			return false
 		}
@@ -87,23 +87,26 @@ func (b *Board) IsTerminal() bool {
 // same as the number of arrows, and getting the zeroth turn will always yield
 // the initial board state.
 func RandomBoard(turns int) Board {
-	board := InitialState()
 
+	board := Initial()
 	successors := SuccessorSlice{}
 
-	// Run randomized moves.
 	for range turns {
 		board.Successors(&successors)
-		board = successors.Arr[rand.Intn(int(successors.Len))]
+		if successors.Length == 0 {
+			break
+		}
+
+		board = successors.Array[rand.Intn(int(successors.Length))]
 	}
 
 	return board
 }
 
 // Represents the starting position for an Amazons game.
-func InitialState() Board {
+func Initial() Board {
 	board := Board{
-		Player: WHITE,
+		Player: White,
 		White:  [4]bb.Position{30, 03, 06, 39},
 		Black:  [4]bb.Position{60, 93, 96, 69},
 	}
@@ -117,3 +120,70 @@ func InitialState() Board {
 
 	return board
 }
+
+// Computes the successors of a state and stores them in the specified array.
+// The number of computed successors is returned.
+func (board Board) Successors(dst *SuccessorSlice) {
+
+	var (
+		i          int
+		queens     *[4]bb.Position
+		nextPlayer PlayerColor
+	)
+
+	if board.Player == White {
+		queens = &board.White
+		nextPlayer = Black
+	} else {
+		queens = &board.Black
+		nextPlayer = White
+	}
+
+	for queenIdx, from := range queens {
+
+		i2 := QNeighbors(board.Occupancy, from)
+		for i2, to := bb.Next(i2); to != bb.NullPos; i2, to = bb.Next(i2) {
+
+			queens[queenIdx] = to
+
+			board.Occupancy = bb.Unflag(board.Occupancy, from)
+			board.Occupancy = bb.Flag(board.Occupancy, to)
+
+			i3 := QNeighbors(board.Occupancy, to)
+			for i3, arrow := bb.Next(i3); arrow != bb.NullPos; i3, arrow = bb.Next(i3) {
+
+				board.Occupancy = bb.Flag(board.Occupancy, arrow)
+
+				dst.Array[i] = Board{
+					Occupancy: board.Occupancy,
+					White:     board.White,
+					Black:     board.Black,
+					Player:    nextPlayer,
+					Move: Move{
+						From:  from,
+						To:    to,
+						Arrow: arrow,
+					},
+				}
+				i++
+
+				board.Occupancy = bb.Unflag(board.Occupancy, arrow)
+			}
+
+			queens[queenIdx] = from
+
+			board.Occupancy = bb.Flag(board.Occupancy, from)
+			board.Occupancy = bb.Unflag(board.Occupancy, to)
+		}
+	}
+
+	dst.Length = i
+}
+
+const maxSuccessors = 3000
+
+type SuccessorSlice struct {
+	Array [maxSuccessors]Board
+	Length int
+}
+

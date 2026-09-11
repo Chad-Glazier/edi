@@ -6,8 +6,8 @@ package sim
 import (
 	"time"
 
-	"github.com/Chad-Glazier/edi"
 	"github.com/Chad-Glazier/edi/state"
+	"github.com/Chad-Glazier/edi/vi"
 )
 
 // Makes two VIs play against each other, updating the board state through the
@@ -16,7 +16,7 @@ import (
 // next move. That is, if White is the active player when the channel closes,
 // that means that White had no moves left and Black is the winner.
 func Game(
-	white, black edi.VI,
+	white, black vi.VI,
 	turnTimer time.Duration,
 ) <-chan state.Board {
 
@@ -25,14 +25,14 @@ func Game(
 	go func() {
 		defer close(ch)
 
-		board := state.InitialState()
+		board := state.Initial()
 		ch <- board
 
 		for !board.IsTerminal() {
 
 			var move state.Move
 
-			if board.Player == state.WHITE {
+			if board.Player == state.White {
 				move = *white.Consult(board, turnTimer)
 			} else {
 				move = *black.Consult(board, turnTimer)

@@ -1,7 +1,7 @@
 package ui
 
 import (
-	"github.com/Chad-Glazier/edi"
+	"github.com/Chad-Glazier/edi/vi"
 
 	"charm.land/bubbles/v2/list"
 	tea "charm.land/bubbletea/v2"
@@ -15,7 +15,7 @@ import (
 type item struct {
 	title string
 	desc  string
-	new   func() edi.VI
+	new   func() vi.VI
 }
 
 func (i item) Title() string       { return i.title }
@@ -26,22 +26,22 @@ var VIList = []list.Item{
 	item{
 		title: "EDI",
 		desc:  "Alpha-beta search with the k-mindist heuristic for leaf evaluation and the History Heuristic for move ordering.",
-		new:   edi.NewEDI,
+		new:   vi.NewEDI,
 	},
 	item{
 		title: "Arrow",
 		desc:  "Alpha-beta search with the q-mindist heuristic for leaf evaluation and no move ordering.",
-		new:   edi.NewArrow,
+		new:   vi.NewArrow,
 	},
 	item{
 		title: "Sparrow",
 		desc:  "Alpha-beta search with the k-mindist heuristic for leaf evaluation and no move ordering.",
-		new:   edi.NewSparrow,
+		new:   vi.NewSparrow,
 	},
 	item{
 		title: "Random",
 		desc:  "Chooses moves at random.",
-		new:   edi.NewRandom,
+		new:   vi.NewRandom,
 	},
 }
 
@@ -52,15 +52,15 @@ var VIList = []list.Item{
 type VISelectorStyle uint8
 
 const (
-	WHITE VISelectorStyle = iota
-	BLACK
+	White VISelectorStyle = iota
+	Black
 	NEUTRAL
 )
 
 type VISelector struct {
 	list  list.Model
-	VI    edi.VI
-	NewVI func() edi.VI
+	VI    vi.VI
+	NewVI func() vi.VI
 	Style lipgloss.Style
 }
 
@@ -68,9 +68,9 @@ func NewVISelector(style VISelectorStyle) VISelector {
 	v := VISelector{}
 	v.list = list.New(VIList, list.NewDefaultDelegate(), 0, 0)
 	switch style {
-	case WHITE:
+	case White:
 		setWhiteStyles(&v)
-	case BLACK:
+	case Black:
 		setBlackStyles(&v)
 	default:
 		setNeutralStyles(&v)

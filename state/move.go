@@ -16,57 +16,57 @@ type Move struct {
 	Arrow bb.Position
 }
 
-func (move Move) String() string {
+func (m Move) String() string {
 	return fmt.Sprintf(
 		"(%d, %d)->(%d, %d) X(%d, %d)",
-		move.From/10, move.From%10,
-		move.To/10, move.To%10,
-		move.Arrow/10, move.Arrow%10,
+		m.From/10, m.From%10,
+		m.To/10, m.To%10,
+		m.Arrow/10, m.Arrow%10,
 	)
 }
 
 // If the given move is legal on the current board, this returns nil.
 // Otherwise, it returns an error that explains why the move isn't allowed.
-func (move Move) IsLegal(board Board) error {
+func (m Move) IsLegal(board Board) error {
 
 	// Confirm that the `from` position is a queen.
 	whiteFrom := false
 	blackFrom := false
 	for i := range 4 {
-		if board.Black[i] == move.From {
+		if board.Black[i] == m.From {
 			blackFrom = true
 			break
 		}
-		if board.White[i] == move.From {
+		if board.White[i] == m.From {
 			whiteFrom = true
 			break
 		}
 	}
 	if !(whiteFrom || blackFrom) {
-		return fmt.Errorf("bad move - queen not found %v", move)
+		return fmt.Errorf("bad move - queen not found %v", m)
 	}
 
 	// Confirm that the queen being moved belongs to the active player.
-	if whiteFrom && board.Player != WHITE {
-		return fmt.Errorf("bad move - invalid 'from' position %v", move)
+	if whiteFrom && board.Player != White {
+		return fmt.Errorf("bad move - invalid 'from' position %v", m)
 	}
-	if blackFrom && board.Player != BLACK {
-		return fmt.Errorf("bad move - moving opponent's queen %v", move)
+	if blackFrom && board.Player != Black {
+		return fmt.Errorf("bad move - moving opponent's queen %v", m)
 	}
 
 	// Confirm that the (from, to) squares are Q-adjacent.
-	acceptableTo := QNeighbors(board.Occupancy, move.From)
-	if !bb.IsFlagged(acceptableTo, move.To) {
-		return fmt.Errorf("bad move - nonadjacent destination %v", move)
+	acceptableTo := QNeighbors(board.Occupancy, m.From)
+	if !bb.IsFlagged(acceptableTo, m.To) {
+		return fmt.Errorf("bad move - nonadjacent destination %v", m)
 	}
 
 	// Confirm that the arrow square is Q-adjacent to the destination.
 	newOcc := board.Occupancy
-	newOcc = bb.Unflag(newOcc, move.From)
-	newOcc = bb.Flag(newOcc, move.To)
-	acceptableArrow := QNeighbors(newOcc, move.To)
-	if !bb.IsFlagged(acceptableArrow, move.Arrow) {
-		return fmt.Errorf("bad move - nonadjacent arrow %v", move)
+	newOcc = bb.Unflag(newOcc, m.From)
+	newOcc = bb.Flag(newOcc, m.To)
+	acceptableArrow := QNeighbors(newOcc, m.To)
+	if !bb.IsFlagged(acceptableArrow, m.Arrow) {
+		return fmt.Errorf("bad move - nonadjacent arrow %v", m)
 	}
 
 	return nil
@@ -92,10 +92,10 @@ func Apply(board Board, move Move) (Board, error) {
 		}
 	}
 
-	if board.Player == WHITE {
-		board.Player = BLACK
+	if board.Player == White {
+		board.Player = Black
 	} else {
-		board.Player = WHITE
+		board.Player = White
 	}
 
 	board.Occupancy = bb.Unflag(board.Occupancy, move.From)

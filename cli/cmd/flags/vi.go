@@ -3,14 +3,14 @@ package flags
 import (
 	"fmt"
 
-	"github.com/Chad-Glazier/edi"
+	"github.com/Chad-Glazier/edi/vi"
 )
 
 const VI_USAGE = "a VI player: edi, arrow, or random"
 
 type VI struct {
 	Name string
-	New  func() edi.VI
+	New  func() vi.VI
 }
 
 //
@@ -26,16 +26,16 @@ func (v *VI) String() string {
 func (v *VI) Set(s string) error {
 	switch s {
 	case "edi":
-		v.New = edi.NewEDI
+		v.New = vi.NewEDI
 		v.Name = "edi"
 	case "arrow":
-		v.New = edi.NewArrow
+		v.New = vi.NewArrow
 		v.Name = "arrow"
 	case "random":
-		v.New = edi.NewRandom
+		v.New = vi.NewRandom
 		v.Name = "random"
 	case "sparrow":
-		v.New = edi.NewSparrow
+		v.New = vi.NewSparrow
 		v.Name = "sparrow"
 	default:
 		return fmt.Errorf(`must be one of "edi", "arrow", "sparrow" or "random"`)

@@ -84,13 +84,13 @@ func (b BoardModel) View() string {
 		for col := range 10 {
 			var s string
 			switch b.State.Status(bb.Pos(row, col)) {
-			case state.VACANT:
+			case state.StatusVacant:
 				s = FgBrightBlack(VACANT_SQUARE)
-			case state.WHITE_QUEEN:
+			case state.StatusWhiteQueen:
 				s = FgBrightCyan(WHITE_QUEEN_SQUARE)
-			case state.BLACK_QUEEN:
+			case state.StatusBlackQueen:
 				s = FgBrightRed(BLACK_QUEEN_SQUARE)
-			case state.ARROW:
+			case state.StatusArrow:
 				s = FgBrightBlack(ARROW_SQUARE)
 			}
 			line.WriteString(" ")

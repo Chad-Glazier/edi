@@ -20,7 +20,7 @@ func KFrontier(occupancy bb.BitBoard, territory bb.BitBoard) bb.BitBoard {
 
 	frontier := bb.BitBoard{}
 
-	for i, pos := bb.Next(territory); pos != bb.NULL_POS; i, pos = bb.Next(i) {
+	for i, pos := bb.Next(territory); pos != bb.NullPos; i, pos = bb.Next(i) {
 		frontier = bb.Or(frontier, KNeighbors(occupancy, pos))
 	}
 
@@ -42,7 +42,7 @@ func QNeighbors(occupancy bb.BitBoard, position bb.Position) bb.BitBoard {
 		blockers := bb.And(ray, occupancy)
 
 		nearestBlocker := bb.Msb(blockers) // the direction is forward
-		if nearestBlocker == bb.NULL_POS {
+		if nearestBlocker == bb.NullPos {
 			neighbors = bb.Or(neighbors, ray)
 			continue
 		}
@@ -60,7 +60,7 @@ func QNeighbors(occupancy bb.BitBoard, position bb.Position) bb.BitBoard {
 		blockers := bb.And(ray, occupancy)
 
 		nearestBlocker := bb.Lsb(blockers) // the direction is backward
-		if nearestBlocker == bb.NULL_POS {
+		if nearestBlocker == bb.NullPos {
 			neighbors = bb.Or(neighbors, ray)
 			continue
 		}
@@ -84,7 +84,7 @@ func QFrontier(occupancy bb.BitBoard, territory bb.BitBoard) bb.BitBoard {
 
 	frontier := bb.BitBoard{}
 
-	for i, pos := bb.Next(territory); pos != bb.NULL_POS; i, pos = bb.Next(i) {
+	for i, pos := bb.Next(territory); pos != bb.NullPos; i, pos = bb.Next(i) {
 		frontier = bb.Or(frontier, QNeighbors(occupancy, pos))
 	}
 

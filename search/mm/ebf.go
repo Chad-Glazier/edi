@@ -1,7 +1,7 @@
 package mm
 
 // Computes the effective branching factor of a depth-limited minimax search.
-func effectiveBranchingFactor(nodes uint64, depth int) float64 {
+func ebf(nodes uint64, depth int) float64 {
 
 	//
 	// The effective branching factor of a minimax search is defined as the b*
